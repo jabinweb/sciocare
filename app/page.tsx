@@ -187,7 +187,7 @@ export default function CarePage() {
                     <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
                       <Image
                         src={`https://images.unsplash.com/photo-${
-                          index === 0 ? '1576091160399-112bbcf9a4a5' : // Healthcare professionals
+                          index === 0 ? '1725870953863-4ad4db0acfc2' : // Healthcare professionals
                           index === 1 ? '1559757148-5c350d0d3c56' : // Training session
                           '1582750433449-648ed127bb54' // Medical education
                         }?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
@@ -236,12 +236,9 @@ export default function CarePage() {
                       <IconComponent className="w-8 h-8 text-white" />
                     </div>
                     
-                    <div className="flex items-center justify-center mb-3">
-                      <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
-                      <h3 className="font-heading text-lg font-semibold text-gray-900">
-                        {feature.title}
-                      </h3>
-                    </div>
+                    <h3 className="font-heading text-lg font-semibold text-gray-900 mb-3">
+                      {feature.title}
+                    </h3>
                     
                     <p className="text-gray-600 leading-relaxed">
                       {feature.description}
@@ -255,36 +252,37 @@ export default function CarePage() {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="py-20 bg-gradient-to-r from-blue-600 via-green-600 to-purple-600 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/20"></div>
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-2xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
+      <section id="contact" className="py-20 bg-gradient-to-br from-slate-900 via-slate-800 to-gray-900 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-900/20 via-purple-900/10 to-slate-900/30"></div>
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-20 left-20 w-96 h-96 bg-blue-400 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-20 right-20 w-80 h-80 bg-purple-400 rounded-full blur-3xl"></div>
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-indigo-400 rounded-full blur-3xl"></div>
         </div>
         
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-          <Heart className="w-16 h-16 text-white mx-auto mb-6 animate-pulse" />
+          <Heart className="w-16 h-16 text-white mx-auto mb-6" />
           
           <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">
             Ready to empower your students?
           </h2>
           
-          <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+          <p className="text-xl text-gray-200 mb-8 leading-relaxed">
             Download our full program brochures or schedule a demo with our team.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+            <Button size="lg" className="bg-white text-slate-900 hover:bg-gray-100 font-semibold">
               <Download className="w-5 h-5 mr-2" />
               Download PDFs
             </Button>
-            <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white hover:text-blue-600">
+            <Button size="lg" variant="outline" className="border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 font-semibold">
               <Calendar className="w-5 h-5 mr-2" />
               Book a Demo
             </Button>
           </div>
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-blue-100">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-300">
             <div className="flex items-center">
               <Users className="w-5 h-5 mr-2" />
               <span>500+ Healthcare Professionals Trained</span>
