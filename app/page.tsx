@@ -1,103 +1,301 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Heart, Users, GraduationCap, CheckCircle, Download, Calendar, Clock, PlayCircle, BookOpen, Target, Award } from 'lucide-react';
+import Image from 'next/image';
+
+export default function CarePage() {
+  const programs = [
+    {
+      id: 'carebridge',
+      title: 'CareBridge English',
+      subtitle: 'Empowering caregivers with role‑specific English and workplace communication skills',
+      duration: '80 hours',
+      icon: Heart,
+      color: 'bg-blue-500',
+      features: [
+        'Interactive, workbook‑first lessons with QR‑coded video support',
+        'Clinical communication practice in listening, speaking, reading & writing',
+        'IELTS/OET‑inspired structure for global and practical relevance',
+        'Classroom‑facilitated or fully self‑paced delivery',
+        'Self‑learning resources (videos, notes, review games) for independent practice'
+      ]
+    },
+    {
+      id: 'caresteps',
+      title: 'CareSteps',
+      subtitle: 'Foundational soft‑skills training for freshers entering caregiving professions',
+      duration: '20 hours',
+      icon: Users,
+      color: 'bg-green-500',
+      features: [
+        'Core self‑management and emotional resilience practices',
+        'Communication essentials for academic and clinical settings',
+        'Learning strategies and college-readiness tools',
+        'Reflective assignments and interactive video lessons',
+        'On-campus mentor model with year-long access to resources'
+      ]
+    },
+    {
+      id: 'pathways360',
+      title: 'Pathways360°',
+      subtitle: 'Finishing‑school program for healthcare professionals for personal, social, and professional readiness',
+      duration: '30 hours',
+      icon: GraduationCap,
+      color: 'bg-purple-500',
+      features: [
+        'Core self‑management and emotional resilience practices',
+        'Communication essentials for clinical settings',
+        'Presentation and Public speaking Skills',
+        'Periodic Live Sessions with Experts',
+        'AI-powered portfolio building and Interview preparation',
+        'On-campus mentor model with year-long access to resources'
+      ]
+    }
+  ];
+
+  const whyChooseFeatures = [
+    {
+      icon: Target,
+      title: 'Role‑Specific Design',
+      description: 'Built for healthcare languages & behaviours, not generic English.'
+    },
+    {
+      icon: Clock,
+      title: 'Blended & Flexible',
+      description: 'Classroom‑led, self‑paced, or hybrid delivery to fit your schedule.'
+    },
+    {
+      icon: Users,
+      title: 'Expert Faculty',
+      description: 'Trainers & mentors with real‑world nursing, clinical, and pedagogy experience.'
+    },
+    {
+      icon: Award,
+      title: 'Measurable Outcomes',
+      description: 'Assessments, CV audits, and completion certificates to track learner progress.'
+    }
+  ];
+
   return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+    <>
+      {/* Hero Section */}
+      <section className="py-20 pt-28 bg-gradient-to-br from-blue-50 via-green-50 to-purple-50 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-green-600/10 to-purple-600/10"></div>
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-48 h-48 bg-green-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
+          <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-purple-400 rounded-full blur-xl animate-pulse delay-500"></div>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="text-center">
+            <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 mb-6">
+              <Heart className="w-5 h-5 text-red-500 mr-2" />
+              <span className="text-sm font-medium text-gray-700">Healthcare Education Excellence</span>
+            </div>
+            
+            <h1 className="font-heading text-4xl md:text-6xl font-bold mb-6">
+              <span className="bg-gradient-to-r from-blue-600 via-green-600 to-purple-600 bg-clip-text text-transparent">
+                ScioCare
+              </span>
+            </h1>
+            
+            <p className="font-body text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed mb-8">
+              Equipping healthcare professionals with essential communication and professional skills
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
+                <PlayCircle className="w-5 h-5 mr-2" />
+                Watch Overview
+              </Button>
+              <Button size="lg" variant="outline" className="border-blue-200 hover:bg-blue-50">
+                <Download className="w-5 h-5 mr-2" />
+                Download Brochure
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Programs Section */}
+      <section id="programs" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Our Healthcare Training Programs
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Comprehensive skill development programs designed specifically for healthcare professionals
+            </p>
+          </div>
+
+          <div className="space-y-16">
+            {programs.map((program, index) => {
+              const IconComponent = program.icon;
+              const isEven = index % 2 === 0;
+              
+              return (
+                <div key={program.id} className={`grid grid-cols-1 lg:grid-cols-2 gap-12 items-center ${!isEven ? 'lg:grid-flow-col-dense' : ''}`}>
+                  {/* Content */}
+                  <div className={`space-y-6 ${!isEven ? 'lg:col-start-2' : ''}`}>
+                    <div className="flex items-center space-x-4">
+                      <div className={`w-16 h-16 ${program.color} rounded-2xl flex items-center justify-center`}>
+                        <IconComponent className="w-8 h-8 text-white" />
+                      </div>
+                      <div>
+                        <Badge variant="outline" className="mb-2">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {program.duration}
+                        </Badge>
+                        <h3 className="font-heading text-2xl font-bold text-gray-900">
+                          {program.title}
+                        </h3>
+                      </div>
+                    </div>
+
+                    <p className="text-lg text-gray-600 leading-relaxed">
+                      {program.subtitle}
+                    </p>
+
+                    <div className="space-y-3">
+                      {program.features.map((feature, i) => (
+                        <div key={i} className="flex items-start space-x-3">
+                          <CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
+                          <span className="text-gray-700">{feature}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="flex gap-3">
+                      <Button className={`${program.color} hover:opacity-90 text-white`}>
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        Learn More
+                      </Button>
+                      <Button variant="outline">
+                        <Download className="w-4 h-4 mr-2" />
+                        Get Brochure
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Image */}
+                  <div className={`relative ${!isEven ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
+                    <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
+                      <Image
+                        src={`https://images.unsplash.com/photo-${
+                          index === 0 ? '1576091160399-112bbcf9a4a5' : // Healthcare professionals
+                          index === 1 ? '1559757148-5c350d0d3c56' : // Training session
+                          '1582750433449-648ed127bb54' // Medical education
+                        }?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                        alt={program.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
+                    
+                    {/* Floating badge */}
+                    <div className="absolute -top-4 -right-4 bg-white rounded-xl shadow-lg p-4">
+                      <div className="text-center">
+                        <div className="text-2xl font-bold text-gray-900">{program.duration}</div>
+                        <div className="text-sm text-gray-600">Duration</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Why Choose ScioCare Section */}
+      <section id="why-choose" className="py-20 bg-gradient-to-br from-gray-50 to-blue-50">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <h2 className="font-heading text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Why Choose ScioCare?
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              Our programs are specifically designed for healthcare professionals with proven methodologies
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {whyChooseFeatures.map((feature, index) => {
+              const IconComponent = feature.icon;
+              
+              return (
+                <Card key={index} className="group bg-white/80 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                  <CardContent className="p-8 text-center">
+                    <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                      <IconComponent className="w-8 h-8 text-white" />
+                    </div>
+                    
+                    <div className="flex items-center justify-center mb-3">
+                      <CheckCircle className="w-5 h-5 text-green-500 mr-2" />
+                      <h3 className="font-heading text-lg font-semibold text-gray-900">
+                        {feature.title}
+                      </h3>
+                    </div>
+                    
+                    <p className="text-gray-600 leading-relaxed">
+                      {feature.description}
+                    </p>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section id="contact" className="py-20 bg-gradient-to-r from-blue-600 via-green-600 to-purple-600 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/20"></div>
+        <div className="absolute inset-0 opacity-30">
+          <div className="absolute top-10 left-10 w-32 h-32 bg-white rounded-full blur-2xl animate-pulse"></div>
+          <div className="absolute bottom-10 right-10 w-48 h-48 bg-white rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
+          <Heart className="w-16 h-16 text-white mx-auto mb-6 animate-pulse" />
+          
+          <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">
+            Ready to empower your students?
+          </h2>
+          
+          <p className="text-xl text-blue-100 mb-8 leading-relaxed">
+            Download our full program brochures or schedule a demo with our team.
+          </p>
+
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
+              <Download className="w-5 h-5 mr-2" />
+              Download PDFs
+            </Button>
+            <Button size="lg" variant="outline" className="border-white bg-transparent text-white hover:bg-white hover:text-blue-600">
+              <Calendar className="w-5 h-5 mr-2" />
+              Book a Demo
+            </Button>
+          </div>
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-blue-100">
+            <div className="flex items-center">
+              <Users className="w-5 h-5 mr-2" />
+              <span>500+ Healthcare Professionals Trained</span>
+            </div>
+            <div className="flex items-center">
+              <Award className="w-5 h-5 mr-2" />
+              <span>95% Course Completion Rate</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }
