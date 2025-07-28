@@ -82,40 +82,61 @@ export default function CarePage() {
   return (
     <>
       {/* Hero Section */}
-      <section className="py-20 pt-28 bg-gradient-to-br from-blue-50 via-green-50 to-purple-50 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-green-600/10 to-purple-600/10"></div>
-        <div className="absolute inset-0 opacity-40">
-          <div className="absolute top-10 left-10 w-32 h-32 bg-blue-400 rounded-full blur-2xl animate-pulse"></div>
-          <div className="absolute bottom-10 right-10 w-48 h-48 bg-green-400 rounded-full blur-3xl animate-pulse delay-1000"></div>
-          <div className="absolute top-1/2 left-1/2 w-24 h-24 bg-purple-400 rounded-full blur-xl animate-pulse delay-500"></div>
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 w-full h-full">
+          <video
+            className="w-full h-full object-cover"
+            autoPlay
+            muted
+            loop
+            playsInline
+          >
+            <source src="https://videos.pexels.com/video-files/6130537/6130537-hd_1920_1080_30fps.mp4" type="video/mp4" />
+            {/* Fallback for browsers that don't support video */}
+            <div className="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-green-600"></div>
+          </video>
         </div>
         
-        <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="text-center">
-            <div className="inline-flex items-center px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-blue-200 mb-6">
-              <Heart className="w-5 h-5 text-red-500 mr-2" />
-              <span className="text-sm font-medium text-gray-700">Healthcare Education Excellence</span>
-            </div>
-            
-            <h1 className="font-heading text-4xl md:text-6xl font-bold mb-6">
-              <span className="bg-gradient-to-r from-blue-600 via-green-600 to-purple-600 bg-clip-text text-transparent">
-                ScioCare
-              </span>
-            </h1>
-            
-            <p className="font-body text-xl md:text-2xl text-gray-700 max-w-4xl mx-auto leading-relaxed mb-8">
-              Equipping healthcare professionals with essential communication and professional skills
-            </p>
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-slate-900/80"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
+        
+        {/* Content */}
+        <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
+          <div className="inline-flex items-center px-5 py-2.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-8 shadow-lg">
+            <Heart className="w-4 h-4 text-emerald-400 mr-2" />
+            <span className="text-sm font-medium text-white/90">Healthcare Education Excellence</span>
+          </div>
+          
+          <h1 className="font-heading mb-8">
+            <span className="block text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
+              ScioCare
+            </span>
+            <span className="block text-xl md:text-2xl lg:text-3xl font-normal text-white/80 tracking-wide">
+              Professional Healthcare Training
+            </span>
+          </h1>
+          
+          <p className="font-body text-lg md:text-xl text-white/70 max-w-4xl mx-auto leading-relaxed mb-10">
+            Equipping healthcare professionals with essential communication and professional skills through evidence-based training programs
+          </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                <PlayCircle className="w-5 h-5 mr-2" />
-                Watch Overview
-              </Button>
-              <Button size="lg" variant="outline" className="border-blue-200 hover:bg-blue-50">
-                <Download className="w-5 h-5 mr-2" />
-                Download Brochure
-              </Button>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+            <Button size="lg" className="bg-white text-slate-900 hover:bg-gray-100 font-semibold text-base px-8 py-3 shadow-xl rounded-lg">
+              <PlayCircle className="w-5 h-5 mr-2" />
+              Watch Overview
+            </Button>
+            <Button size="lg" variant="outline" className="border-white/40 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 font-semibold text-base px-8 py-3 rounded-lg">
+              <Download className="w-5 h-5 mr-2" />
+              Download Brochure
+            </Button>
+          </div>
+          
+          {/* Scroll Indicator */}
+          <div className="absolute -bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
+              <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse"></div>
             </div>
           </div>
         </div>
