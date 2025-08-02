@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Heart, Mail, Phone, MapPin } from 'lucide-react';
+import Image from 'next/image';
+import { Mail, Phone, MapPin } from 'lucide-react';
 
 export default function Footer() {
   return (
@@ -9,14 +10,13 @@ export default function Footer() {
           {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 via-green-500 to-purple-500 rounded-xl flex items-center justify-center">
-                <Heart className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <span className="font-heading text-xl font-bold text-white">
-                  ScioCare
-                </span>
-                <div className="text-sm text-gray-400 -mt-1">Healthcare Education</div>
+              <div className="w-32 h-8 relative">
+                <Image
+                  src="/sciocare_light.png"
+                  alt="ScioCare Logo"
+                  fill
+                  className="object-contain"
+                />
               </div>
             </div>
             <p className="text-gray-300 text-sm">
