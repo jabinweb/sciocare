@@ -27,22 +27,22 @@ export default function HeroSection() {
       
       {/* Content */}
       <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        <div className="inline-flex items-center px-5 py-2.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-8 shadow-lg">
+        {/* <div className="inline-flex items-center px-5 py-2.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-8 shadow-lg">
           <Heart className="w-4 h-4 text-orange-400 mr-2" />
           <span className="text-sm font-medium text-white/90">Healthcare Education Excellence</span>
-        </div>
+        </div> */}
         
         <h1 className="font-heading mb-8">
           <span className="block text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
             ScioCare
           </span>
           <span className="block text-xl md:text-2xl lg:text-3xl font-normal text-white/80 tracking-wide">
-            Discover ScioCare
+            Equipping Caregivers with Confidence
           </span>
         </h1>
         
         <p className="font-body text-lg md:text-xl text-white/70 max-w-4xl mx-auto leading-relaxed mb-10">
-          Explore our programs and see how we equip caregivers with skills, confidence, and workplace readiness.
+          Our training solutions build the language, behavior, and workplace confidence caregivers need to succeed—from classrooms in India to hospitals around the globe.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
