@@ -20,7 +20,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-gray-300 text-sm">
-              Equipping healthcare professionals with essential communication and professional skills.
+              Training solutions that equip caregivers with the skills and confidence to succeed—from classrooms in India to hospitals around the globe.
             </p>
           </div>
 

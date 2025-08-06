@@ -4,8 +4,8 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
+import BookDemo from '@/components/BookDemo';
 import { 
-  Heart, 
   Menu, 
   X, 
   Phone, 
@@ -31,7 +31,7 @@ export default function Header() {
 
   const navigation = [
     { name: 'Programs', href: '#programs', icon: BookOpen },
-    { name: 'About', href: '#about', icon: Heart },
+    // { name: 'About', href: '#about', icon: Heart },
     { name: 'Why ScioCare', href: '#why-choose', icon: Users },
     { name: 'Contact', href: '#contact', icon: Phone },
   ];
@@ -78,7 +78,7 @@ export default function Header() {
                   href={item.href}
                   className={`flex items-center space-x-2 font-medium transition-colors duration-300 ${
                     isScrolled 
-                      ? 'text-gray-700 hover:text-blue-600' 
+                      ? 'text-gray-700 hover:text-blue-700' 
                       : 'text-white/80 hover:text-white'
                   }`}
                 >
@@ -96,24 +96,26 @@ export default function Header() {
               size="sm" 
               className={`transition-colors duration-300 ${
                 isScrolled
-                  ? 'border-blue-200 hover:bg-blue-50 text-gray-700'
+                  ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
                   : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
               }`}
             >
               <Download className="w-4 h-4 mr-2" />
               Brochure
             </Button>
-            <Button 
-              size="sm" 
-              className={`font-semibold transition-colors duration-300 ${
-                isScrolled
-                  ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                  : 'bg-white text-slate-900 hover:bg-white/90'
-              }`}
-            >
-              <Mail className="w-4 h-4 mr-2" />
-              Get Demo
-            </Button>
+            <BookDemo>
+              <Button 
+                size="sm" 
+                className={`font-semibold transition-colors duration-300 ${
+                  isScrolled
+                    ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                    : 'bg-white text-slate-900 hover:bg-white/90'
+                }`}
+              >
+                <Mail className="w-4 h-4 mr-2" />
+                Get Demo
+              </Button>
+            </BookDemo>
           </div>
 
           {/* Mobile menu button */}
@@ -150,7 +152,7 @@ export default function Header() {
                     href={item.href}
                     className={`flex items-center space-x-3 font-medium py-2 transition-colors duration-300 ${
                       isScrolled 
-                        ? 'text-gray-700 hover:text-blue-600' 
+                        ? 'text-gray-700 hover:text-blue-700' 
                         : 'text-white/80 hover:text-white'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
@@ -167,7 +169,7 @@ export default function Header() {
                 variant="outline" 
                 className={`w-full transition-colors duration-300 ${
                   isScrolled
-                    ? 'border-blue-200 hover:bg-blue-50 text-gray-700'
+                    ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
                     : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
                 }`}
                 onClick={() => setIsMenuOpen(false)}
@@ -175,17 +177,19 @@ export default function Header() {
                 <Download className="w-4 h-4 mr-2" />
                 Download Brochure
               </Button>
-              <Button 
-                className={`w-full font-semibold transition-colors duration-300 ${
-                  isScrolled
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                    : 'bg-white text-slate-900 hover:bg-white/90'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Get Demo
-              </Button>
+              <BookDemo>
+                <Button 
+                  className={`w-full font-semibold transition-colors duration-300 ${
+                    isScrolled
+                      ? 'bg-blue-700 hover:bg-blue-800 text-white'
+                      : 'bg-white text-slate-900 hover:bg-white/90'
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Mail className="w-4 h-4 mr-2" />
+                  Get Demo
+                </Button>
+              </BookDemo>
             </div>
           </div>
         )}
