@@ -1,72 +1,88 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Heart, PlayCircle, Download } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import BookDemo from '@/components/BookDemo';
 
 export default function HeroSection() {
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Video */}
-      <div className="absolute inset-0 w-full h-full">
-        <video
-          className="w-full h-full object-cover"
-          autoPlay
-          muted
-          loop
-          playsInline
-        >
-          <source src="https://videos.pexels.com/video-files/6130537/6130537-hd_1920_1080_30fps.mp4" type="video/mp4" />
-          {/* Fallback for browsers that don't support video */}
-          <div className="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-green-600"></div>
-        </video>
+    <section className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-blue-300 to-blue-500 relative overflow-hidden pt-24 pb-20">
+      {/* Subtle Cloud Elements - Acadru Style */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-16 w-32 h-20 bg-white/8 rounded-full blur-3xl"></div>
+        <div className="absolute top-40 right-20 w-40 h-24 bg-white/6 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-32 left-1/3 w-28 h-16 bg-white/10 rounded-full blur-2xl"></div>
+        <div className="absolute top-1/2 right-1/4 w-24 h-16 bg-white/5 rounded-full blur-xl"></div>
       </div>
       
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-slate-900/80"></div>
-      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/60"></div>
-      
-      {/* Content */}
-      <div className="relative z-10 max-w-6xl mx-auto px-6 text-center">
-        {/* <div className="inline-flex items-center px-5 py-2.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 mb-8 shadow-lg">
-          <Heart className="w-4 h-4 text-orange-400 mr-2" />
-          <span className="text-sm font-medium text-white/90">Healthcare Education Excellence</span>
-        </div> */}
+      <div className="max-w-5xl mx-auto px-6 text-center relative z-10">
         
-        <h1 className="font-heading mb-8">
-          <span className="block text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-4 tracking-tight drop-shadow-lg">
-            ScioCare
-          </span>
-          <span className="block text-xl md:text-2xl lg:text-3xl font-normal text-white/80 tracking-wide">
-            Equipping Caregivers with Confidence
+        {/* Professional Trust Badge */}
+        <div className="inline-flex items-center gap-2 px-6 py-3 bg-white/20 backdrop-blur-md text-white text-sm font-medium rounded-full mb-10 border border-white/30 shadow-lg">
+          🏥 <span className="text-white">Trusted by 50+ Healthcare Institutions</span>
+        </div>
+        
+        {/* Professional Headline with Better Contrast */}
+        <h1 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-8 leading-tight drop-shadow-lg">
+          <span className="block mb-4">Healthcare Communication Training</span>
+          <span className="block">
+            <span className="text-white">That </span>
+            <span className="bg-yellow-400 text-gray-900 px-6 py-3 rounded-2xl font-black inline-block transform hover:scale-105 transition-transform duration-200 shadow-xl">
+              Actually Works
+            </span>
           </span>
         </h1>
         
-        <p className="font-body text-lg md:text-xl text-white/70 max-w-4xl mx-auto leading-relaxed mb-10">
-          Our training solutions build the language, behavior, and workplace confidence caregivers need to succeed—from classrooms in India to hospitals around the globe.
+        {/* Professional Value Proposition */}
+        <p className="text-lg md:text-xl text-white mb-14 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
+          Transform from clinical expert to <span className="font-bold text-white">confident communicator</span> in just 8 weeks.<br />
+          <span className="text-white/95">Evidence-based methods. Real-world results.</span>
         </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-          <a href="#brochures">
-            <Button size="lg" className="bg-white text-slate-900 hover:bg-gray-100 font-semibold text-base px-8 py-3 shadow-xl rounded-lg">
-              <PlayCircle className="w-5 h-5 mr-2" />
-              Watch Overview
+        {/* Professional CTA */}
+        <div className="mb-14">
+          <BookDemo>
+            <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+              Start Your Training
+              <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
-          </a>
-          <a href="#brochures">
-            <Button size="lg" variant="outline" className="border-white/40 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 font-semibold text-base px-8 py-3 rounded-lg">
-              <Download className="w-5 h-5 mr-2" />
-              Download Brochures
-            </Button>
-          </a>
+          </BookDemo>
         </div>
-        
-        {/* Scroll Indicator */}
-        <div className="absolute -bottom-24 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/50 rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white/70 rounded-full mt-2 animate-pulse"></div>
+
+        {/* Professional Program Navigation */}
+        <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+          <div className="bg-white text-blue-700 px-6 py-3 rounded-full font-semibold text-sm shadow-md">
+            Foundation Program
+          </div>
+          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors cursor-pointer">
+            Advanced Certification
+          </div>
+          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors cursor-pointer">
+            Leadership Excellence
           </div>
         </div>
+
+        {/* Enhanced Stats Display with Better Contrast */}
+        <div className="flex flex-wrap items-center justify-center gap-6 text-white text-sm drop-shadow-sm">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-white text-lg">1000+</span>
+            <span className="text-white/95">professionals trained</span>
+          </div>
+          <div className="w-1 h-1 bg-white/70 rounded-full hidden sm:block"></div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-white text-lg">95%</span>
+            <span className="text-white/95">career advancement</span>
+          </div>
+          <div className="w-1 h-1 bg-white/70 rounded-full hidden sm:block"></div>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-white text-lg">HIPAA</span>
+            <span className="text-white/95">compliant training</span>
+          </div>
+        </div>
+
       </div>
     </section>
   );
 }
+        
+        

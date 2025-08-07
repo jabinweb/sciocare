@@ -1,9 +1,11 @@
 import {
   HeroSection,
   VideoSection,
+  ProblemStatementSection,
   CounterSection,
   ProgramsSection,
   WhyChooseSection,
+  SocialProofSection,
   BrochuresSection
 } from '@/components/landing';
 
@@ -12,9 +14,11 @@ export default function CarePage() {
     <>
       <HeroSection />
       <VideoSection />
-      <CounterSection />
+      <ProblemStatementSection />
+      {/* <CounterSection /> */}
       <ProgramsSection />
       <WhyChooseSection />
+      <SocialProofSection />
       <BrochuresSection />
     </>
   );
