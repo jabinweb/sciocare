@@ -30,8 +30,26 @@ export default function HeroSection() {
   }, [skills.length]);
 
   return (
-    <section className="min-h-screen flex items-center justify-center pt-24 pb-20">
-      <div className="max-w-6xl mx-auto px-6 text-center">
+    <section className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      {/* Video Background */}
+      <div className="absolute inset-0 w-full h-full">
+        <video
+          autoPlay
+          muted
+          loop
+          className="w-full h-full object-cover"
+        >
+          <source src="https://videos.pexels.com/video-files/6130537/6130537-hd_1920_1080_30fps.mp4" type="video/mp4" />
+          {/* Fallback for browsers that don't support video */}
+          <div className="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-green-600"></div>
+          {/* Fallback gradient background */}
+        </video>
+        {/* Dark overlay for better text readability */}
+        <div className="absolute inset-0 bg-black/60"></div>
+      </div>
+
+      {/* Content */}
+      <div className="max-w-6xl mx-auto px-6 text-center relative z-10 pt-24 pb-20">
         {/* Professional Trust Badge */}
         <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/20 backdrop-blur-md text-white text-sm font-medium rounded-full mb-10 border border-white/30 shadow-lg">
           <span className="text-white">Trusted by 1000+ Learners</span>
@@ -55,9 +73,9 @@ export default function HeroSection() {
 
         {/* Professional Value Proposition */}
         <p className="text-lg md:text-xl text-white mb-14 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
-          Transform from clinical expert to{" "}
-          <span className="font-bold text-white">confident communicator</span> in
-          just 8 weeks.
+          Your students’ journey to{" "}
+          <span className="font-bold text-white">confident caregiving</span> in
+          starts here!
           <br />
           <span className="text-white/95">
             Evidence-based methods. Real-world results.
@@ -71,7 +89,7 @@ export default function HeroSection() {
               size="lg"
               className="bg-white animate-shake text-blue-700 hover:bg-blue-50 px-10 py-5 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
             >
-              Start Your Training
+              Book a Demo
               <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </BookDemo>
@@ -80,13 +98,13 @@ export default function HeroSection() {
         {/* Professional Program Navigation */}
         <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
           <div className="bg-white text-blue-700 px-6 py-3 rounded-full font-semibold text-sm shadow-md">
-            Foundation Program
+            English for Healthcare
           </div>
-          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors cursor-pointer">
-            Advanced Certification
+          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors">
+            Skills for Freshers
           </div>
-          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors cursor-pointer">
-            Leadership Excellence
+          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors">
+            Finishing School Program
           </div>
         </div>
 

@@ -11,47 +11,50 @@ export default function ProgramsSection() {
     {
       id: 'carebridge',
       title: 'CareBridge English',
-      subtitle: 'Empowering caregivers with role‑specific English and workplace communication skills',
+      subtitle: 'Builds job-specific English and workplace communication skills to help students thrive in clinical settings and prepare for global opportunities.',
+      target: 'All students (open-entry)',
       duration: '80 hours',
       icon: Heart,
       color: 'bg-blue-700',
       features: [
-        'Interactive, workbook‑first lessons with QR‑coded video support',
-        'Clinical communication practice in listening, speaking, reading & writing',
-        'IELTS/OET‑inspired structure for global and practical relevance',
-        'Classroom‑facilitated or fully self‑paced delivery',
-        'Gamified resources for independent practice'
+        'Workbook-first lessons with QR-coded video support',
+        'Clinical English practice: LSRW',
+        'IELTS/OET-inspired structure for international relevance',
+        'Gamified tools for self-practice',
+        'Classroom-led or self-paced delivery'
       ]
     },
     {
       id: 'caresteps',
       title: 'CareSteps',
-      subtitle: 'Foundational soft‑skills training for freshers entering caregiving professions',
+      subtitle: 'A soft-skills foundation program that helps new students transition smoothly into nursing education.',
+      target: 'First-year nursing students',
       duration: '20 hours',
       icon: Users,
       color: 'bg-orange-500',
       features: [
-        'Core self‑management and emotional resilience practices',
-        'Communication essentials for academic and clinical settings',
-        'Learning strategies and college-readiness tools',
-        'Reflective assignments and interactive video lessons',
-        'On-campus mentor model with year-long access to resources'
+        'Essential personal and interpersonal skills',
+        'Learning strategies and study discipline',
+        'Communication skill for clinical settings',
+        'Reflective tasks and video-based lessons',
+        'On-campus mentor model with year-long support'
       ]
     },
     {
       id: 'pathways360',
       title: 'Pathways360°',
-      subtitle: 'Finishing‑school program for healthcare professionals for personal, social, and professional readiness',
+      subtitle: 'A workplace readiness and career grooming program that helps final-year students make a confident transition into professional roles.',
+      target: 'Final-year nursing students',
       duration: '30 hours',
       icon: GraduationCap,
       color: 'bg-blue-600',
       features: [
-        'Core self‑management and emotional resilience practices',
-        'Communication essentials for clinical settings',
-        'Presentation and Public speaking Skills',
-        'Periodic Live Sessions with Experts',
-        'AI-powered portfolio building and Interview preparation',
-        'On-campus mentor model with year-long access to resources'
+        'Workplace communication & interaction skills',
+        'Collaboration & leadership in healthcare settings',
+        'Professional presentation & public speaking',
+        'Expert-led masterclasses on workplace trends',
+        'AI-powered resume building & interview prep',
+        'On-campus mentor model'
       ]
     }
   ];
@@ -109,13 +112,16 @@ export default function ProgramsSection() {
                         <IconComponent className="w-8 h-8 text-white" />
                       </div>
                       <div>
-                        <Badge variant="outline" className="mb-2">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {program.duration}
+                        <Badge variant="outline" className="mb-2 text-xs">
+                          For: {program.target}
                         </Badge>
                         <h3 className="font-heading text-2xl font-bold text-gray-900">
                           {program.title}
                         </h3>
+                        {/* <Badge variant="outline" className="mt-1">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {program.duration}
+                        </Badge> */}
                       </div>
                     </div>
 
@@ -158,13 +164,16 @@ export default function ProgramsSection() {
                         <IconComponent className="w-8 h-8 text-white" />
                       </div>
                       <div>
-                        <Badge variant="outline" className="mb-2">
-                          <Clock className="w-3 h-3 mr-1" />
-                          {program.duration}
+                        <Badge variant="outline" className="mb-2 text-xs">
+                          For: {program.target}
                         </Badge>
                         <h3 className="font-heading text-2xl font-bold text-gray-900">
                           {program.title}
                         </h3>
+                        {/* <Badge variant="outline" className="mt-1">
+                          <Clock className="w-3 h-3 mr-1" />
+                          {program.duration}
+                        </Badge> */}
                       </div>
                     </div>
 

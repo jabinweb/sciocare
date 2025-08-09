@@ -1,55 +1,82 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Users, Clock, TrendingDown, ArrowRight } from 'lucide-react';
+import { AlertTriangle, Users, Clock, TrendingDown, ArrowRight, Globe, Monitor, ExternalLink } from 'lucide-react';
 import BookDemo from '@/components/BookDemo';
+import { useState } from 'react';
 
 export default function ProblemStatementSection() {
+  const [hoveredStat, setHoveredStat] = useState<number | null>(null);
+
   const painPoints = [
     {
       icon: <Users className="w-8 h-8 text-yellow-600" />,
-      problem: "Communication Barriers",
-      description: "Healthcare professionals struggle with patient interactions due to language barriers and lack of soft skills training.",
-      stat: "67% report communication issues",
-      impact: "Leads to patient dissatisfaction and medical errors"
-    },
-    {
-      icon: <Clock className="w-8 h-8 text-yellow-600" />,
-      problem: "Lengthy Onboarding",
-      description: "New hires take months to become workplace-ready, delaying productivity and increasing training costs.",
-      stat: "4-6 months average onboarding",
-      impact: "High training costs and delayed ROI"
-    },
-    {
-      icon: <TrendingDown className="w-8 h-8 text-yellow-600" />,
-      problem: "High Turnover Rates",
-      description: "Healthcare professionals leave due to inadequate communication skills and workplace confidence issues.",
-      stat: "23% annual turnover rate",
-      impact: "Constant recruitment and retraining costs"
+      problem: "Job-Ready ≠ Work-Ready",
+      description: "Nursing graduates know the theory but struggle with practical, day-to-day communication—speaking to patients, reporting to doctors, handling tense moments, or even writing shift notes.",
+      stat: "10% Employable",
+      impact: "Most healthcare graduates lack the soft skills needed to succeed from day one.",
+      source: {
+        title: "Only 10% of healthcare graduates in India are considered employable.",
+        publication: "The Hindu BusinessLine (April 2023)",
+        article: "Skill gap hits healthcare sector — only 10% of graduates are job-ready",
+        link: "https://businessline.com"
+      }
     },
     {
       icon: <AlertTriangle className="w-8 h-8 text-yellow-600" />,
-      problem: "Skills-Job Mismatch",
-      description: "Clinical skills don&apos;t translate to workplace communication, creating a gap between education and employment.",
-      stat: "78% feel unprepared for work",
-      impact: "Lower job satisfaction and performance"
+      problem: "Transition Shock",
+      description: "The leap from classroom to clinic is overwhelming. New nurses face anxiety, self-doubt, and burnout during their first year—especially when expected to handle patients and teams with confidence.",
+      stat: "69% Want Soft Skills",
+      impact: "Students say communication and emotional readiness should be part of their training throughout.",
+      source: {
+        title: "69% of nursing students believe soft skills should be part of their curriculum.",
+        publication: "National Center for Biotechnology Information (NCBI), 2018",
+        article: "Awareness and Importance of Soft Skills among Nursing Students",
+        link: "https://ncbi.nlm.nih.gov"
+      }
+    },
+    {
+      icon: <Globe className="w-8 h-8 text-yellow-600" />,
+      problem: "Global Dreams, English Gaps",
+      description: "Thousands of students aim to work abroad—but their spoken English, patient interaction, and documentation skills fall short of global standards.",
+      stat: "7.0 IELTS Barrier",
+      impact: "Most fall below the required IELTS score, missing out on international placements and global careers.",
+      source: {
+        title: "Most international nursing jobs require a 7.0 band in IELTS; many Indian candidates fall below 6.5.",
+        publication: "NMC UK (Nursing and Midwifery Council)",
+        article: "IELTS requirement for international nurses is overall 7.0, with no band below 7.0 in speaking, reading, or listening",
+        link: "https://nmc.org.uk"
+      }
+    },
+    {
+      icon: <Monitor className="w-8 h-8 text-yellow-600" />,
+      problem: "Not Ready for Tech-First Care",
+      description: "Digital health is here—telemedicine, AI-assisted tools, and electronic records are the new normal. But most nurses are trained only for bedside care, not tech-enabled workflows.",
+      stat: "22% More Demand",
+      impact: "Digital-first healthcare jobs are growing fast, but colleges aren't keeping pace.",
+      source: {
+        title: "Healthcare jobs in India saw a 22% rise between 2021 and 2023, driven by digital health.",
+        publication: "The Hindu BusinessLine (March 2023)",
+        article: "Demand for healthcare workers in India grew 22% during 2021–23",
+        link: "https://businessline.com"
+      }
     }
   ];
 
   return (
-    <section className="py-20 text-white">
+    <section className="py-20 text-white bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Section Header */}
         <div className="text-center mb-16">
-          <div className="inline-block px-6 py-3 bg-yellow-500/80 backdrop-blur-md text-white text-sm font-semibold rounded-full mb-6 border border-yellow-400/50 shadow-lg">
-            The Healthcare Communication Crisis
+          <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/20 backdrop-blur-md text-white text-sm font-medium rounded-full mb-10 border border-white/30 shadow-lg pointer-events-none">
+            <span className="text-white">The Healthcare Communication Crisis</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white drop-shadow-lg">
-            Why Healthcare Professionals Struggle in the Workplace
+            Why Nursing Graduates Struggle in the Workplace
           </h2>
           <p className="text-xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
-            Despite having excellent clinical skills, many healthcare professionals face significant challenges when it comes to workplace communication. Here&apos;s what hospitals and healthcare institutions are dealing with:
+            Despite solid academic training, many nursing students are unprepared for the real-world demands of modern healthcare. The issue isn&apos;t clinical competence—it&apos;s a critical gap in communication, confidence, and digital readiness.
           </p>
         </div>
 
@@ -63,18 +90,58 @@ export default function ProblemStatementSection() {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold mb-4 text-white drop-shadow-md">
-                    {point.problem}
+                    #{index + 1}. {point.problem}
                   </h3>
                   <p className="text-white/90 mb-6 leading-relaxed text-lg">
                     {point.description}
                   </p>
-                  <div className="bg-gradient-to-r from-yellow-500/30 to-yellow-600/30 backdrop-blur-sm p-4 rounded-xl border border-yellow-400/40 shadow-lg">
+                  <div 
+                    className="relative bg-gradient-to-r from-yellow-500/30 to-yellow-600/30 backdrop-blur-sm p-4 rounded-xl border border-yellow-400/40 shadow-lg cursor-pointer"
+                    onMouseEnter={() => setHoveredStat(index)}
+                    onMouseLeave={(e) => {
+                      // Only hide if not moving to the tooltip
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const tooltipRect = e.currentTarget.querySelector('.tooltip')?.getBoundingClientRect();
+                      if (!tooltipRect || (e.clientY > rect.top && e.clientX >= rect.left && e.clientX <= rect.right)) {
+                        setHoveredStat(null);
+                      }
+                    }}
+                  >
                     <div className="text-2xl font-bold text-yellow-200 mb-2 drop-shadow-md">
                       {point.stat}
                     </div>
                     <div className="text-sm text-yellow-100/90">
                       {point.impact}
                     </div>
+
+                    {/* Hover Tooltip */}
+                    {hoveredStat === index && (
+                      <div 
+                        className="tooltip absolute bottom-full left-0 right-0 mb-2 p-4 bg-gray-900/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-10"
+                        onMouseEnter={() => setHoveredStat(index)}
+                        onMouseLeave={() => setHoveredStat(null)}
+                      >
+                        <div className="text-sm text-white mb-2 font-semibold">
+                          {point.source.title}
+                        </div>
+                        <div className="text-xs text-gray-300 mb-1">
+                          Source: {point.source.publication}
+                        </div>
+                        <div className="text-xs text-gray-400 mb-3">
+                          &quot;{point.source.article}&quot;
+                        </div>
+                        <a 
+                          href={point.source.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center text-xs text-blue-400 hover:text-blue-300 transition-colors"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <ExternalLink className="w-3 h-3 mr-1" />
+                          View Source
+                        </a>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>
@@ -82,44 +149,13 @@ export default function ProblemStatementSection() {
           ))}
         </div>
 
-        {/* Cost Impact */}
-        <div className="bg-gradient-to-r from-white/15 to-white/20 backdrop-blur-lg rounded-3xl p-10 mb-16 border border-white/40 shadow-2xl">
-          <div className="text-center mb-10">
-            <h3 className="text-3xl font-bold mb-6 text-white drop-shadow-lg">
-              The Hidden Cost of Poor Communication
-            </h3>
-            <p className="text-white/90 max-w-3xl mx-auto text-lg leading-relaxed">
-              Communication issues in healthcare don&apos;t just affect patient satisfaction - they impact your bottom line significantly.
-            </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8 text-center">
-            <div className="p-6 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30">
-              <div className="text-4xl font-bold text-yellow-300 mb-3 drop-shadow-lg">₹15L+</div>
-              <div className="text-lg font-semibold text-white mb-2">Average Annual Cost</div>
-              <div className="text-sm text-white/80">Per untrained professional (turnover + retraining)</div>
-            </div>
-            <div className="p-6 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30">
-              <div className="text-4xl font-bold text-yellow-300 mb-3 drop-shadow-lg">40%</div>
-              <div className="text-lg font-semibold text-white mb-2">Productivity Loss</div>
-              <div className="text-sm text-white/80">During extended onboarding periods</div>
-            </div>
-            <div className="p-6 bg-white/20 backdrop-blur-md rounded-2xl border border-white/30">
-              <div className="text-4xl font-bold text-yellow-300 mb-3 drop-shadow-lg">60%</div>
-              <div className="text-lg font-semibold text-white mb-2">Patient Complaints</div>
-              <div className="text-sm text-white/80">Related to communication issues</div>
-            </div>
-          </div>
-        </div>
-
         {/* Solution Transition */}
         <div className="text-center bg-white/15 backdrop-blur-lg rounded-3xl p-10 border border-white/30 shadow-2xl">
           <h3 className="text-3xl font-bold mb-6 text-white drop-shadow-lg">
-            There&apos;s a Better Way
+            Bridging the Readiness Gap
           </h3>
           <p className="text-xl text-white/95 mb-8 max-w-3xl mx-auto leading-relaxed">
-            What if you could hire healthcare professionals who are <strong className="text-yellow-300">workplace-ready from day one</strong>? 
-            What if communication barriers could be eliminated before they even start working?
+            ScioCare prepares nursing students for the real world—by building <strong className="text-yellow-300">communication confidence, workplace behavior, and digital fluency</strong>. Graduates walk in not just qualified—but ready.
           </p>
           <BookDemo>
             <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 text-xl font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
@@ -133,4 +169,3 @@ export default function ProblemStatementSection() {
     </section>
   );
 }
-

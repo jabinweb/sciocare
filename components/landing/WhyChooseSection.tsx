@@ -5,23 +5,27 @@ export default function WhyChooseSection() {
   const whyChooseFeatures = [
     {
       icon: Target,
-      title: 'Role‑Specific Design',
-      description: 'Built for healthcare languages & behaviours, not generic English.'
+      emoji: '✅',
+      title: 'Role‑Specific Learning',
+      description: 'Designed exclusively for nursing and caregiving—focused on real clinical language, communication, and behavior.'
     },
     {
       icon: Clock,
-      title: 'Blended & Flexible',
-      description: 'Classroom‑led, self‑paced, or hybrid delivery to fit your schedule.'
+      emoji: '🔄',
+      title: 'Flexible Delivery Models',
+      description: 'Available in classroom, self-paced, or hybrid formats—adaptable to your institution\'s needs.'
     },
     {
       icon: Users,
-      title: 'Expert Faculty',
-      description: 'Trainers & mentors with real‑world nursing, clinical, and pedagogy experience.'
+      emoji: '👩‍⚕️',
+      title: 'Aligned with Standards',
+      description: 'Supports NEP 2020 goals—integrating soft skills, communication, and career-readiness and follows INC syllabus.'
     },
     {
       icon: Award,
-      title: 'Measurable Outcomes',
-      description: 'Assessments, CV audits, and completion certificates to track learner progress.'
+      emoji: '📊',
+      title: 'Trackable Progress & Outcomes',
+      description: 'Periodic assessments, reflection journals, edited resumes, and completion certificates—so institutions and students can see measurable growth.'
     }
   ];
 
@@ -33,7 +37,7 @@ export default function WhyChooseSection() {
             Why Choose ScioCare?
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Our programs are specifically designed for healthcare professionals with proven methodologies
+            Purpose-built for healthcare education. Proven to build confident, career-ready caregivers.
           </p>
         </div>
 
@@ -44,8 +48,11 @@ export default function WhyChooseSection() {
             return (
               <Card key={index} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
                 <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-gradient-to-br from-blue-700 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
+                  <div className="relative w-16 h-16 bg-gradient-to-br from-blue-700 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                     <IconComponent className="w-8 h-8 text-white" />
+                    {/* <div className="absolute -top-2 -right-2 text-2xl">
+                      {feature.emoji}
+                    </div> */}
                   </div>
                   
                   <h3 className="font-heading text-lg font-semibold text-gray-900 mb-3">
