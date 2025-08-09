@@ -2,7 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import BookDemo from '@/components/BookDemo';
-import { Heart, Download, Calendar, Users, Award } from 'lucide-react';
+import { Stethoscope, Download, Calendar, Users, Award } from 'lucide-react';
 
 export default function BrochuresSection() {
   return (
@@ -15,7 +15,7 @@ export default function BrochuresSection() {
       </div>
       
       <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-        <Heart className="w-16 h-16 text-white mx-auto mb-6" />
+        <Stethoscope className="w-16 h-16 text-white mx-auto mb-6" />
         
         <h2 className="font-heading text-3xl md:text-4xl font-bold text-white mb-4">
           Ready to empower your students?
@@ -41,11 +41,15 @@ export default function BrochuresSection() {
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-6 text-gray-300">
           <div className="flex items-center">
             <Users className="w-5 h-5 mr-2" />
-            <span>1000+ Healthcare Professionals Trained</span>
+            <span>1000+ Students Empowered</span>
           </div>
           <div className="flex items-center">
             <Award className="w-5 h-5 mr-2" />
-            <span>95% Course Completion Rate</span>
+            <span>INC Syllabus Aligned</span>
+          </div>
+          <div className="flex items-center">
+            <Award className="w-5 h-5 mr-2" />
+            <span>Compliant with NEP 2020</span>
           </div>
         </div>
       </div>
