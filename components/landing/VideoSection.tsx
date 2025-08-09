@@ -17,7 +17,7 @@ export default function VideoSection() {
             Discover ScioCare
           </h2>
           <p className="text-lg md:text-xl text-gray-700 max-w-4xl mx-auto leading-relaxed px-4">
-            Explore how we prepare caregivers for the real world—through practical training, role‑specific English, and workplace readiness programs designed for today&apos;s healthcare challenges.
+            Explore how we prepare caregivers for the real world—through practical training, role‑specific English, and workplace readiness programs designed<br /> for today&apos;s healthcare challenges.
           </p>
         </div>
 

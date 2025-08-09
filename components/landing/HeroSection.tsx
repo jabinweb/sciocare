@@ -39,7 +39,7 @@ export default function HeroSection() {
           loop
           className="w-full h-full object-cover"
         >
-          <source src="https://videos.pexels.com/video-files/6130537/6130537-hd_1920_1080_30fps.mp4" type="video/mp4" />
+          <source src="/hero_video.mp4" type="video/mp4" />
           {/* Fallback for browsers that don't support video */}
           <div className="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-green-600"></div>
           {/* Fallback gradient background */}
@@ -74,7 +74,7 @@ export default function HeroSection() {
         {/* Professional Value Proposition */}
         <p className="text-lg md:text-xl text-white mb-14 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
           Your students’ journey to{" "}
-          <span className="font-bold text-white">confident caregiving</span> in
+          <span className="font-bold text-white">confident caregiving</span>
           starts here!
           <br />
           <span className="text-white/95">

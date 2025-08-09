@@ -152,7 +152,7 @@ export default function ProblemStatementSection() {
           </p>
           <BookDemo>
             <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-6 md:px-10 py-4 md:py-5 text-lg md:text-xl font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
-              See How ScioCare Solves This
+              Book a Demo
               <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 md:ml-3" />
             </Button>
           </BookDemo>

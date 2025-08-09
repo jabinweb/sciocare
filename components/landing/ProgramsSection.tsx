@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import BookDemo from '@/components/BookDemo';
-import { Heart, Users, GraduationCap, CheckCircle, Download, Calendar, Clock } from 'lucide-react';
+import { CheckCircle, Download, Calendar, Clock } from 'lucide-react';
 import Image from 'next/image';
 
 export default function ProgramsSection() {
@@ -12,9 +12,9 @@ export default function ProgramsSection() {
       id: 'carebridge',
       title: 'CareBridge English',
       subtitle: 'Builds job-specific English and workplace communication skills to help students thrive in clinical settings and prepare for global opportunities.',
-      target: 'All students (open-entry)',
+      target: 'All students',
       duration: '80 hours',
-      icon: Heart,
+      logo: '/logos/carebridge.png',
       color: 'bg-blue-700',
       features: [
         'Workbook-first lessons with QR-coded video support',
@@ -30,7 +30,7 @@ export default function ProgramsSection() {
       subtitle: 'A soft-skills foundation program that helps new students transition smoothly into nursing education.',
       target: 'First-year nursing students',
       duration: '20 hours',
-      icon: Users,
+      logo: '/logos/caresteps.png',
       color: 'bg-orange-500',
       features: [
         'Essential personal and interpersonal skills',
@@ -46,7 +46,7 @@ export default function ProgramsSection() {
       subtitle: 'A workplace readiness and career grooming program that helps final-year students make a confident transition into professional roles.',
       target: 'Final-year nursing students',
       duration: '30 hours',
-      icon: GraduationCap,
+      logo: '/logos/pathways.png',
       color: 'bg-blue-600',
       features: [
         'Workplace communication & interaction skills',
@@ -73,7 +73,6 @@ export default function ProgramsSection() {
 
         <div className="space-y-16">
           {programs.map((program, index) => {
-            const IconComponent = program.icon;
             const isEven = index % 2 === 0;
             
             return (
@@ -108,8 +107,14 @@ export default function ProgramsSection() {
                   {/* Mobile Content */}
                   <div className="space-y-6">
                     <div className="flex items-center space-x-4">
-                      <div className={`w-16 h-16 ${program.color} rounded-2xl flex items-center justify-center`}>
-                        <IconComponent className="w-8 h-8 text-white" />
+                      <div className={`w-16 h-16 bg-white border border-gray-200 rounded-2xl flex items-center justify-center p-2`}>
+                        <Image
+                          src={program.logo}
+                          alt={`${program.title} logo`}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
                       </div>
                       <div>
                         <Badge variant="outline" className="mb-2 text-xs">
@@ -160,8 +165,14 @@ export default function ProgramsSection() {
                   {/* Content */}
                   <div className={`space-y-6 ${!isEven ? 'lg:col-start-2' : ''}`}>
                     <div className="flex items-center space-x-4">
-                      <div className={`w-16 h-16 ${program.color} rounded-2xl flex items-center justify-center`}>
-                        <IconComponent className="w-8 h-8 text-white" />
+                      <div className={`w-16 h-16 bg-white shadow-md border border-gray-200 rounded-2xl flex items-center justify-center p-2`}>
+                        <Image
+                          src={program.logo}
+                          alt={`${program.title} logo`}
+                          width={40}
+                          height={40}
+                          className="object-contain"
+                        />
                       </div>
                       <div>
                         <Badge variant="outline" className="mb-2 text-xs">
