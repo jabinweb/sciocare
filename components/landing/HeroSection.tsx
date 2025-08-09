@@ -45,7 +45,7 @@ export default function HeroSection() {
           {/* Fallback gradient background */}
         </video>
         {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/60"></div>
+        <div className="absolute inset-0 bg-black/70"></div>
       </div>
 
       {/* Content */}
@@ -73,12 +73,11 @@ export default function HeroSection() {
 
         {/* Professional Value Proposition */}
         <p className="text-lg md:text-xl text-white mb-14 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
-          Your students’ journey to{" "}
+          Your students&apos; journey to{" "}
           <span className="font-bold text-white">confident caregiving</span>
-          starts here!
-          <br />
-          <span className="text-white/95">
-            Evidence-based methods. Real-world results.
+          {" "}starts here! Evidence-based methods.{" "}
+          <span className="block md:inline text-white/95">
+            Real-world results.
           </span>
         </p>
 
