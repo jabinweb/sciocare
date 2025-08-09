@@ -56,13 +56,13 @@ export default function HeroSection() {
         </div>
 
         {/* Professional Headline with Better Contrast */}
-        <h1 className="text-4xl sm:text-5xl md:text-5xl font-black text-white mb-8 leading-tight drop-shadow-lg">
+        <h1 className="text-2xl md:text-5xl font-black text-white mb-8 md:leading-tight leading-[1.5] drop-shadow-lg">
           <span className="block mb-4">
             Equipping future-ready healthcare professionals with essential
           </span>
           <span className="block">
             <span
-              className={`bg-yellow-400 text-gray-800 px-5 py-2 rounded-2xl font-black inline-block transform hover:scale-105 transition-all duration-300 shadow-xl min-w-[280px] sm:min-w-[350px] md:min-w-[420px] ${
+              className={`bg-yellow-400 text-xl md:text-5xl text-gray-800 px-5 py-3 rounded-2xl font-black inline-block transform hover:scale-105 transition-all duration-300 shadow-xl ${
                 isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
               }`}
             >
@@ -96,7 +96,7 @@ export default function HeroSection() {
         </div>
 
         {/* Professional Program Navigation */}
-        <div className="flex flex-wrap items-center justify-center gap-3 mb-12">
+        <div className="md:flex flex-wrap items-center justify-center gap-3 mb-12 hidden">
           <div className="bg-white text-blue-700 px-6 py-3 rounded-full font-semibold text-sm shadow-md">
             English for Healthcare
           </div>

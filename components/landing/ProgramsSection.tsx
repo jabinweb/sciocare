@@ -142,16 +142,16 @@ export default function ProgramsSection() {
                       ))}
                     </div>
 
-                    <div className="flex gap-3">
+                    <div className="flex md:flex-nowrap flex-wrap gap-3">
                       <a href="#brochures">
                         <Button variant="outline">
-                          <Download className="w-4 h-4 mr-2" />
+                          <Download className="w-4 h-4 mr-1" />
                           Download Brochure
                         </Button>
                       </a>
                       <BookDemo>
                         <Button className={`${program.color} hover:opacity-90 text-white`}>
-                          <Calendar className="w-4 h-4 mr-2" />
+                          <Calendar className="w-4 h-4 mr-1" />
                           Book a Demo
                         </Button>
                       </BookDemo>
