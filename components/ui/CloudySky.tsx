@@ -34,26 +34,26 @@ export default function CloudySky({
   // Generate clouds with fixed values to avoid hydration mismatch
   const clouds = useMemo(() => {
     const cloudSizes = [
-      { width: 300, height: 180 },
-      { width: 250, height: 150 },
-      { width: 200, height: 120 },
+      { width: 200, height: 120 }, // Smaller clouds for mobile
       { width: 180, height: 108 },
       { width: 160, height: 96 },
-      { width: 220, height: 132 },
-      { width: 280, height: 168 },
+      { width: 140, height: 84 },
+      { width: 120, height: 72 },
+      { width: 170, height: 102 },
       { width: 190, height: 114 },
+      { width: 150, height: 90 },
     ];
 
-    // Use fixed values with better screen coverage
+    // Better mobile positioning
     const predefinedValues = [
-      { opacity: 0.25, top: 5, delay: 0, left: '15%' },
-      { opacity: 0.2, top: 20, delay: 8, left: '60%' },
-      { opacity: 0.3, top: 35, delay: 16, left: '5%' },
-      { opacity: 0.18, top: 50, delay: 24, left: '75%' },
-      { opacity: 0.22, top: 65, delay: 32, left: '25%' },
-      { opacity: 0.15, top: 80, delay: 40, left: '85%' },
-      { opacity: 0.28, top: 10, delay: 48, left: '40%' },
-      { opacity: 0.2, top: 45, delay: 56, left: '90%' },
+      { opacity: 0.25, top: 5, delay: 0, left: '10%' },
+      { opacity: 0.2, top: 15, delay: 8, left: '70%' },
+      { opacity: 0.3, top: 30, delay: 16, left: '0%' },
+      { opacity: 0.18, top: 45, delay: 24, left: '80%' },
+      { opacity: 0.22, top: 60, delay: 32, left: '20%' },
+      { opacity: 0.15, top: 75, delay: 40, left: '90%' },
+      { opacity: 0.28, top: 8, delay: 48, left: '40%' },
+      { opacity: 0.2, top: 40, delay: 56, left: '95%' },
     ];
 
     return Array.from({ length: 8 }, (_, index) => {

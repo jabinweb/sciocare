@@ -64,64 +64,57 @@ export default function ProblemStatementSection() {
   ];
 
   return (
-    <section className="py-20 text-white bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-16 md:py-20 text-white bg-gradient-to-b from-blue-900 via-blue-800 to-blue-900">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
         
         {/* Section Header */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-6 py-2 bg-white/20 backdrop-blur-md text-white text-sm font-medium rounded-full mb-10 border border-white/30 shadow-lg pointer-events-none">
+        <div className="text-center mb-12 md:mb-16">
+          <div className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-2 bg-white/20 backdrop-blur-md text-white text-xs md:text-sm font-medium rounded-full mb-8 md:mb-10 border border-white/30 shadow-lg pointer-events-none">
             <span className="text-white">The Healthcare Communication Crisis</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white drop-shadow-lg">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 text-white drop-shadow-lg px-4">
             Why Nursing Graduates Struggle in the Workplace
           </h2>
-          <p className="text-xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-md">
+          <p className="text-lg md:text-xl text-white/95 max-w-4xl mx-auto leading-relaxed drop-shadow-md px-4">
             Despite solid academic training, many nursing students are unprepared for the real-world demands of modern healthcare. The issue isn&apos;t clinical competence—it&apos;s a critical gap in communication, confidence, and digital readiness.
           </p>
         </div>
 
         {/* Pain Points Grid */}
-        <div className="grid md:grid-cols-2 gap-8 mb-16">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 mb-12 md:mb-16">
           {painPoints.map((point, index) => (
-            <div key={index} className="group p-8 bg-white/15 backdrop-blur-lg hover:bg-white/25 transition-all duration-500 rounded-2xl border border-white/30 shadow-2xl hover:shadow-3xl hover:scale-105">
-              <div className="flex items-start space-x-6">
-                <div className="flex-shrink-0 p-3 bg-white/90 rounded-full backdrop-blur-md shadow-lg">
+            <div key={index} className="group p-6 md:p-8 bg-white/15 backdrop-blur-lg hover:bg-white/25 transition-all duration-500 rounded-2xl border border-white/30 shadow-2xl hover:shadow-3xl hover:scale-105">
+              <div className="flex flex-col sm:flex-row items-start space-y-4 sm:space-y-0 sm:space-x-6">
+                <div className="flex-shrink-0 p-3 bg-white/90 rounded-full backdrop-blur-md shadow-lg self-center sm:self-start">
                   {point.icon}
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-2xl font-bold mb-4 text-white drop-shadow-md">
+                <div className="flex-1 text-center sm:text-left">
+                  <h3 className="text-xl md:text-2xl font-bold mb-3 md:mb-4 text-white drop-shadow-md">
                     #{index + 1}. {point.problem}
                   </h3>
-                  <p className="text-white/90 mb-6 leading-relaxed text-lg">
+                  <p className="text-white/90 mb-4 md:mb-6 leading-relaxed text-base md:text-lg">
                     {point.description}
                   </p>
                   <div 
                     className="relative bg-gradient-to-r from-yellow-500/30 to-yellow-600/30 backdrop-blur-sm p-4 rounded-xl border border-yellow-400/40 shadow-lg cursor-pointer"
                     onMouseEnter={() => setHoveredStat(index)}
-                    onMouseLeave={(e) => {
-                      // Only hide if not moving to the tooltip
-                      const rect = e.currentTarget.getBoundingClientRect();
-                      const tooltipRect = e.currentTarget.querySelector('.tooltip')?.getBoundingClientRect();
-                      if (!tooltipRect || (e.clientY > rect.top && e.clientX >= rect.left && e.clientX <= rect.right)) {
-                        setHoveredStat(null);
-                      }
-                    }}
+                    onMouseLeave={() => setHoveredStat(null)}
                   >
-                    <div className="text-2xl font-bold text-yellow-200 mb-2 drop-shadow-md">
+                    <div className="text-xl md:text-2xl font-bold text-yellow-200 mb-2 drop-shadow-md">
                       {point.stat}
                     </div>
                     <div className="text-sm text-yellow-100/90">
                       {point.impact}
                     </div>
 
-                    {/* Hover Tooltip */}
+                    {/* Hover Tooltip - Better mobile positioning */}
                     {hoveredStat === index && (
                       <div 
-                        className="tooltip absolute bottom-full left-0 right-0 mb-2 p-4 bg-gray-900/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-10"
+                        className="tooltip absolute bottom-full left-0 right-0 mb-2 p-3 md:p-4 bg-gray-900/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-10"
                         onMouseEnter={() => setHoveredStat(index)}
                         onMouseLeave={() => setHoveredStat(null)}
                       >
-                        <div className="text-sm text-white mb-2 font-semibold">
+                        <div className="text-xs md:text-sm text-white mb-2 font-semibold">
                           {point.source.title}
                         </div>
                         <div className="text-xs text-gray-300 mb-1">
@@ -150,17 +143,17 @@ export default function ProblemStatementSection() {
         </div>
 
         {/* Solution Transition */}
-        <div className="text-center bg-white/15 backdrop-blur-lg rounded-3xl p-10 border border-white/30 shadow-2xl">
-          <h3 className="text-3xl font-bold mb-6 text-white drop-shadow-lg">
+        <div className="text-center bg-white/15 backdrop-blur-lg rounded-2xl md:rounded-3xl p-6 md:p-10 border border-white/30 shadow-2xl">
+          <h3 className="text-2xl md:text-3xl font-bold mb-4 md:mb-6 text-white drop-shadow-lg">
             Bridging the Readiness Gap
           </h3>
-          <p className="text-xl text-white/95 mb-8 max-w-3xl mx-auto leading-relaxed">
+          <p className="text-lg md:text-xl text-white/95 mb-6 md:mb-8 max-w-3xl mx-auto leading-relaxed px-4">
             ScioCare prepares nursing students for the real world—by building <strong className="text-yellow-300">communication confidence, workplace behavior, and digital fluency</strong>. Graduates walk in not just qualified—but ready.
           </p>
           <BookDemo>
-            <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-10 py-5 text-xl font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+            <Button size="lg" className="bg-white text-blue-700 hover:bg-blue-50 px-6 md:px-10 py-4 md:py-5 text-lg md:text-xl font-bold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105 w-full sm:w-auto">
               See How ScioCare Solves This
-              <ArrowRight className="w-6 h-6 ml-3" />
+              <ArrowRight className="w-5 h-5 md:w-6 md:h-6 ml-2 md:ml-3" />
             </Button>
           </BookDemo>
         </div>
@@ -169,3 +162,4 @@ export default function ProblemStatementSection() {
     </section>
   );
 }
+         

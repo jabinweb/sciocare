@@ -25,7 +25,7 @@ export default function WhyChooseSection() {
       icon: Award,
       emoji: '📊',
       title: 'Trackable Progress & Outcomes',
-      description: 'Periodic assessments, reflection journals, edited resumes, and completion certificates—so institutions and students can see measurable growth.'
+      description: 'Periodic assessments, reflection journals, edited resumes, and completion certificates.'
     }
   ];
 
