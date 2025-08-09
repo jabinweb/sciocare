@@ -3,7 +3,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import BookDemo from '@/components/BookDemo';
-import { CheckCircle, Download, Calendar, Clock } from 'lucide-react';
+import { CheckCircle, Download, Calendar } from 'lucide-react';
 import Image from 'next/image';
 
 export default function ProgramsSection() {
@@ -15,6 +15,7 @@ export default function ProgramsSection() {
       target: 'All students',
       duration: '80 hours',
       logo: '/logos/carebridge.png',
+      image: '/carebridge.jpg',
       color: 'bg-blue-700',
       features: [
         'Workbook-first lessons with QR-coded video support',
@@ -31,6 +32,7 @@ export default function ProgramsSection() {
       target: 'First-year nursing students',
       duration: '20 hours',
       logo: '/logos/caresteps.png',
+      image: '/caresteps.jpg',
       color: 'bg-orange-500',
       features: [
         'Essential personal and interpersonal skills',
@@ -47,6 +49,7 @@ export default function ProgramsSection() {
       target: 'Final-year nursing students',
       duration: '30 hours',
       logo: '/logos/pathways.png',
+      image: '/pathways.jpg',
       color: 'bg-blue-600',
       features: [
         'Workplace communication & interaction skills',
@@ -83,11 +86,7 @@ export default function ProgramsSection() {
                   <div className="relative mb-8">
                     <div className="relative h-[300px] rounded-2xl overflow-hidden shadow-2xl">
                       <Image
-                        src={`https://images.unsplash.com/photo-${
-                          index === 0 ? '1725870953863-4ad4db0acfc2' : // Healthcare professionals
-                          index === 1 ? '1559757148-5c350d0d3c56' : // Training session
-                          '1582750433449-648ed127bb54' // Medical education
-                        }?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                        src={program.image}
                         alt={program.title}
                         fill
                         className="object-cover"
@@ -221,11 +220,7 @@ export default function ProgramsSection() {
                   <div className={`relative ${!isEven ? 'lg:col-start-1 lg:row-start-1' : ''}`}>
                     <div className="relative h-[400px] rounded-2xl overflow-hidden shadow-2xl">
                       <Image
-                        src={`https://images.unsplash.com/photo-${
-                          index === 0 ? '1725870953863-4ad4db0acfc2' : // Healthcare professionals
-                          index === 1 ? '1559757148-5c350d0d3c56' : // Training session
-                          '1582750433449-648ed127bb54' // Medical education
-                        }?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`}
+                        src={program.image}
                         alt={program.title}
                         fill
                         className="object-cover"
@@ -250,3 +245,4 @@ export default function ProgramsSection() {
     </section>
   );
 }
+       
