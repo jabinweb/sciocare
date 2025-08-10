@@ -72,7 +72,7 @@ export default function HeroSection() {
         </h1>
 
         {/* Professional Value Proposition */}
-        <p className="text-lg md:text-xl text-white mb-14 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
+        <p className="text-lg md:text-xl text-white mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
           Your students&apos; journey to{" "}
           <span className="font-bold text-white">confident caregiving</span>
           {" "}starts here! Evidence-based methods.{" "}
