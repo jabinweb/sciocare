@@ -16,8 +16,6 @@ export default function Footer() {
     { name: 'Our Programs', href: '#programs' },
     { name: 'Why Choose Us', href: '#why-choose' },
     { name: 'Success Stories', href: '#testimonials' },
-    { name: 'About Us', href: '/about' },
-    { name: 'Contact', href: '/contact' }
   ];
 
   const socialLinks = [
@@ -107,7 +105,7 @@ export default function Footer() {
             </div>
 
             {/* Social Links */}
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <h4 className="text-sm font-semibold text-white mb-3">Follow Us</h4>
               <div className="flex space-x-4">
                 {socialLinks.map((social) => (
@@ -121,7 +119,7 @@ export default function Footer() {
                   </Link>
                 ))}
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -129,10 +127,10 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 text-center md:text-left">
             <div className="text-gray-400 text-xs md:text-sm">
-              © {currentYear} ScioCare. All rights reserved. | Healthcare Communication Training Excellence
+              © {currentYear} ScioCare. All rights reserved. | Healthcare Education Excellence
             </div>
             <div className="flex space-x-4 text-xs md:text-sm">
-              <span className="text-gray-500">Made with ❤️ by <Link href="https://web.jabin.org" target='_blank' className="text-gray-400 hover:text-white transition-colors">Jabin Web</Link></span>
+              <span className="text-gray-500">Powered by <Link href="https://sciolabs.in" target='_blank' className="text-gray-400 hover:text-white transition-colors">ScioLabs</Link> | Made with ❤️ by <Link href="https://web.jabin.org" target='_blank' className="text-gray-400 hover:text-white transition-colors">Jabin Web</Link></span>
             </div>
           </div>
         </div>

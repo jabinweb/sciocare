@@ -1,7 +1,6 @@
 import { FileText } from 'lucide-react';
 import type { Metadata } from 'next';
 import LegalPageHero from '@/components/legal/LegalPageHero';
-import ContactSection from '@/components/legal/ContactSection';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',

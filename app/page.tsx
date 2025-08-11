@@ -13,8 +13,8 @@ export default function CarePage() {
   return (
     <>
       <HeroSection />
-      <VideoSection />
       <ProblemStatementSection />
+      <VideoSection />
       {/* <CounterSection /> */}
       <ProgramsSection />
       <WhyChooseSection />

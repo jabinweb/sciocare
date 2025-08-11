@@ -12,7 +12,7 @@ import {
   Mail, 
   Download,
   BookOpen,
-  Users
+  Users, Globe
 } from 'lucide-react';
 
 export default function Header() {
@@ -30,10 +30,10 @@ export default function Header() {
   }, []);
 
   const navigation = [
+    { name: 'Discover ScioCare', href: '#discover', icon: Globe },
     { name: 'Programs', href: '#programs', icon: BookOpen },
-    // { name: 'About', href: '#about', icon: Heart },
     { name: 'Why ScioCare', href: '#why-choose', icon: Users },
-    { name: 'Contact', href: '#contact', icon: Phone },
+    { name: 'Contact', href: '#brochures', icon: Phone },
   ];
 
   return (
@@ -91,18 +91,20 @@ export default function Header() {
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-3">
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className={`transition-colors duration-300 ${
-                isScrolled
-                  ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
-                  : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
-              }`}
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Brochure
-            </Button>
+            <Link href="#brochures">
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className={`transition-colors duration-300 ${
+                  isScrolled
+                    ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
+                    : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
+                }`}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Brochure
+              </Button>
+            </Link>
             <BookDemo>
               <Button 
                 size="sm" 
@@ -165,18 +167,20 @@ export default function Header() {
             </nav>
             
             <div className="mt-6 space-y-3">
-              <Button 
-                variant="outline" 
-                className={`w-full transition-colors duration-300 ${
-                  isScrolled
-                    ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
+              <Link href="#brochures">
+                <Button 
+                  variant="outline" 
+                  className={`w-full transition-colors duration-300 ${
+                    isScrolled
+                      ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
                     : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
-                }`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <Download className="w-4 h-4 mr-2" />
-                Download Brochure
-              </Button>
+                  }`}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Brochure
+                </Button>
+              </Link>
               <BookDemo>
                 <Button 
                   className={`w-full font-semibold transition-colors duration-300 ${
