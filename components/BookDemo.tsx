@@ -1,7 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Dialog, 
   DialogContent, 
@@ -12,12 +16,8 @@ import {
 } from '@/components/ui/dialog';
 import { 
   Calendar, 
-  Mail, 
-  Phone, 
-  User, 
-  Building, 
+  Clock,
   Users, 
-  CheckCircle 
 } from 'lucide-react';
 
 interface BookDemoProps {
@@ -25,14 +25,13 @@ interface BookDemoProps {
 }
 
 export default function BookDemo({ children }: BookDemoProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     phone: '',
     organization: '',
     role: '',
-    participants: '',
     program: '',
     message: ''
   });
@@ -40,15 +39,7 @@ export default function BookDemo({ children }: BookDemoProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-
-  const programs = [
-    'CareBridge English',
-    'CareSteps',
-    'Pathways360°',
-    'All Programs'
-  ];
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
@@ -56,11 +47,17 @@ export default function BookDemo({ children }: BookDemoProps) {
     }));
   };
 
+  const handleSelectChange = (field: string, value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
     setError(null);
-    
     
     try {      
       const payload = {
@@ -81,7 +78,6 @@ export default function BookDemo({ children }: BookDemoProps) {
         body: JSON.stringify(payload),
       });
 
-
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Server error response:', errorText);
@@ -96,14 +92,13 @@ export default function BookDemo({ children }: BookDemoProps) {
         // Reset form after 3 seconds
         setTimeout(() => {
           setIsSubmitted(false);
-          setIsOpen(false);
+          setOpen(false);
           setFormData({
             name: '',
             email: '',
             phone: '',
             organization: '',
             role: '',
-            participants: '',
             program: '',
             message: ''
           });
@@ -113,9 +108,6 @@ export default function BookDemo({ children }: BookDemoProps) {
       }
     } catch (error) {
       console.error('Full error object:', error);
-      console.error('Error name:', error instanceof Error ? error.name : 'Unknown');
-      console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
-      console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
       
       let errorMessage = 'Failed to submit demo request. Please try again.';
       
@@ -131,216 +123,179 @@ export default function BookDemo({ children }: BookDemoProps) {
     }
   };
 
+  const handleOpenDialog = () => {
+    setOpen(true);
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild onClick={handleOpenDialog}>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
+      <DialogContent className="sm:max-w-lg max-w-[95vw] mx-auto max-h-[95vh] overflow-y-auto p-4 sm:p-6">
+        <DialogHeader className="text-left">
+          <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Calendar className="w-5 h-5 text-blue-600" />
-            <span>Book a Demo</span>
+            Book a Demo Session
           </DialogTitle>
-          <DialogDescription>
-            Schedule a personalized demo of our healthcare training programs. We&apos;ll show you how ScioCare can benefit your organization.
+          <DialogDescription className="text-sm sm:text-base">
+            Schedule a personalized demo to see how ScioCare can transform your healthcare education programs.
           </DialogDescription>
         </DialogHeader>
 
-        {!isSubmitted ? (
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Name */}
-              <div className="space-y-2">
-                <label htmlFor="name" className="text-sm font-medium text-gray-700 flex items-center">
-                  <User className="w-4 h-4 mr-1" />
-                  Full Name *
-                </label>
-                <input
-                  type="text"
+        {isSubmitted ? (
+          <div className="text-center py-6 sm:py-8">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Calendar className="w-6 h-6 sm:w-8 sm:h-8 text-green-600" />
+            </div>
+            <h3 className="text-base sm:text-lg font-semibold text-green-800 mb-2">Demo Booked Successfully!</h3>
+            <p className="text-sm sm:text-base text-green-600">We&apos;ll contact you within 24 hours to schedule your personalized demo.</p>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
+            {/* Mobile: Single column, Desktop: Two columns */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-1">
+                <Label htmlFor="name" className="text-sm font-medium">Full Name *</Label>
+                <Input
                   id="name"
                   name="name"
-                  required
                   value={formData.name}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your full name"
+                  placeholder="Your full name"
+                  className="mt-1"
+                  required
                 />
               </div>
-
-              {/* Email */}
-              <div className="space-y-2">
-                <label htmlFor="email" className="text-sm font-medium text-gray-700 flex items-center">
-                  <Mail className="w-4 h-4 mr-1" />
-                  Email Address *
-                </label>
-                <input
-                  type="email"
+              <div className="sm:col-span-1">
+                <Label htmlFor="email" className="text-sm font-medium">Email *</Label>
+                <Input
                   id="email"
                   name="email"
-                  required
+                  type="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your email"
+                  placeholder="your@email.com"
+                  className="mt-1"
+                  required
                 />
               </div>
+            </div>
 
-              {/* Phone */}
-              <div className="space-y-2">
-                <label htmlFor="phone" className="text-sm font-medium text-gray-700 flex items-center">
-                  <Phone className="w-4 h-4 mr-1" />
-                  Phone Number *
-                </label>
-                <input
-                  type="tel"
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-1">
+                <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
+                <Input
                   id="phone"
                   name="phone"
-                  required
                   value={formData.phone}
                   onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Enter your phone number"
+                  placeholder="+91 9876543210"
+                  className="mt-1"
                 />
               </div>
-
-              {/* Organization */}
-              <div className="space-y-2">
-                <label htmlFor="organization" className="text-sm font-medium text-gray-700 flex items-center">
-                  <Building className="w-4 h-4 mr-1" />
-                  Organization *
-                </label>
-                <input
-                  type="text"
-                  id="organization"
-                  name="organization"
-                  required
-                  value={formData.organization}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="Your institution/organization"
-                />
-              </div>
-
-              {/* Role */}
-              <div className="space-y-2">
-                <label htmlFor="role" className="text-sm font-medium text-gray-700">
-                  Your Role
-                </label>
-                <input
-                  type="text"
-                  id="role"
-                  name="role"
-                  value={formData.role}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  placeholder="e.g., Director, Dean, Administrator"
-                />
-              </div>
-
-              {/* Participants */}
-              <div className="space-y-2">
-                <label htmlFor="participants" className="text-sm font-medium text-gray-700 flex items-center">
-                  <Users className="w-4 h-4 mr-1" />
-                  Expected Participants
-                </label>
-                <select
-                  id="participants"
-                  name="participants"
-                  value={formData.participants}
-                  onChange={handleInputChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                >
-                  <option value="">Select range</option>
-                  <option value="1-10">1-10 students</option>
-                  <option value="11-50">11-50 students</option>
-                  <option value="51-100">51-100 students</option>
-                  <option value="100+">100+ students</option>
-                </select>
+              <div className="sm:col-span-1">
+                <Label htmlFor="role" className="text-sm font-medium">Your Role</Label>
+                <Select value={formData.role} onValueChange={(value) => handleSelectChange('role', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select your role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="principal">Principal/Director</SelectItem>
+                    <SelectItem value="hod">Head of Department</SelectItem>
+                    <SelectItem value="faculty">Faculty Member</SelectItem>
+                    <SelectItem value="coordinator">Training Coordinator</SelectItem>
+                    <SelectItem value="admin">Administrative Staff</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
-            {/* Program Interest */}
-            <div className="space-y-2">
-              <label htmlFor="program" className="text-sm font-medium text-gray-700">
-                Program of Interest
-              </label>
-              <select
-                id="program"
-                name="program"
-                value={formData.program}
+            <div>
+              <Label htmlFor="organization" className="text-sm font-medium">Institution/Organization *</Label>
+              <Input
+                id="organization"
+                name="organization"
+                value={formData.organization}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="">Select a program</option>
-                {programs.map((program) => (
-                  <option key={program} value={program}>
-                    {program}
-                  </option>
-                ))}
-              </select>
+                placeholder="Your nursing college or healthcare institution"
+                className="mt-1"
+                required
+              />
             </div>
 
-            {/* Message */}
-            <div className="space-y-2">
-              <label htmlFor="message" className="text-sm font-medium text-gray-700">
-                Additional Message
-              </label>
-              <textarea
+            <div>
+              <Label htmlFor="program" className="text-sm font-medium">Program of Interest</Label>
+              <Select value={formData.program} onValueChange={(value) => handleSelectChange('program', value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select a program" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="carebridge">CareBridge English</SelectItem>
+                  <SelectItem value="caresteps">CareSteps</SelectItem>
+                  <SelectItem value="pathways360">Pathways360°</SelectItem>
+                  <SelectItem value="all">All Programs</SelectItem>
+                  <SelectItem value="custom">Custom Solution</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="message" className="text-sm font-medium">Message (Optional)</Label>
+              <Textarea
                 id="message"
                 name="message"
-                rows={3}
                 value={formData.message}
                 onChange={handleInputChange}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder="Tell us about your specific needs or questions..."
+                rows={3}
+                className="mt-1 resize-none"
               />
             </div>
 
             {/* Error Message */}
             {error && (
               <div className="bg-red-50 border border-red-200 rounded-md p-3">
-                <p className="text-red-600 text-sm">{error}</p>
+                <p className="text-red-600 text-xs sm:text-sm">{error}</p>
               </div>
             )}
 
-            {/* Submit Button */}
             <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <Calendar className="w-4 h-4 mr-2" />
-                {isSubmitting ? 'Submitting...' : 'Schedule Demo'}
-              </Button>
               <Button
                 type="button"
                 variant="outline"
-                disabled={isSubmitting}
-                onClick={() => setIsOpen(false)}
-                className="flex-1"
+                onClick={() => setOpen(false)}
+                className="w-full sm:flex-1 py-2.5"
               >
                 Cancel
               </Button>
+              <Button
+                type="submit"
+                className="w-full sm:flex-1 bg-blue-600 hover:bg-blue-700 py-2.5"
+                disabled={isSubmitting}
+              >
+                <Clock className="w-4 h-4 mr-2" />
+                {isSubmitting ? 'Submitting...' : 'Book Demo'}
+              </Button>
             </div>
           </form>
-        ) : (
-          <div className="text-center py-8">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <CheckCircle className="w-8 h-8 text-green-600" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">
-              Demo Request Submitted!
-            </h3>
-            <p className="text-gray-600 mb-4">
-              Thank you for your interest in ScioCare. Our team will contact you within 24 hours to schedule your personalized demo.
-            </p>
-            <div className="text-sm text-gray-500">
-              This dialog will close automatically...
+        )}
+
+        <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg">
+          <div className="flex items-start gap-3">
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <h4 className="font-semibold text-blue-900 text-sm sm:text-base">What to expect:</h4>
+              <ul className="text-xs sm:text-sm text-blue-700 mt-1 space-y-1">
+                <li>• 30-minute personalized demo session</li>
+                <li>• Program overview and customization options</li>
+                <li>• Implementation roadmap discussion</li>
+                <li>• Q&A with our education specialists</li>
+              </ul>
             </div>
           </div>
-        )}
+        </div>
       </DialogContent>
     </Dialog>
   );

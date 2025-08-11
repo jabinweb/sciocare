@@ -178,7 +178,6 @@ export default function Header() {
                       ? 'bg-blue-700 hover:bg-blue-800 text-white'
                       : 'bg-white text-slate-900 hover:bg-white/90'
                   }`}
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   <Mail className="w-5 h-5 mr-2" />
                   Get Demo
@@ -191,4 +190,4 @@ export default function Header() {
     </header>
   );
 }
-                
+         
