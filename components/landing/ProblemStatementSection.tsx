@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Users, ArrowRight, Globe, Monitor, ExternalLink } from 'lucide-react';
+import { AlertTriangle, Users, ArrowRight, Globe, Monitor, ExternalLink, Info } from 'lucide-react';
 import BookDemo from '@/components/BookDemo';
 import { useState, useRef } from 'react';
 
@@ -130,11 +130,22 @@ export default function ProblemStatementSection() {
                     onMouseEnter={() => handleMouseEnter(index)}
                     onMouseLeave={handleMouseLeave}
                   >
+                    {/* Mobile Link Indicator */}
+                    <div className="absolute top-2 right-2 flex items-center gap-1 md:hidden">
+                      <Info className="w-3 h-3 text-orange-200" />
+                      <ExternalLink className="w-3 h-3 text-orange-200" />
+                    </div>
+                    
                     <div className="text-xl md:text-2xl font-bold text-white mb-2">
                       {point.stat}
                     </div>
-                    <div className="text-sm text-orange-50/90">
+                    <div className="text-sm text-orange-50/90 pr-8 md:pr-0">
                       {point.impact}
+                    </div>
+                    
+                    {/* Mobile tap hint */}
+                    <div className="text-xs text-orange-200/80 mt-2 md:hidden">
+                      Tap for source
                     </div>
 
                     {/* Hover Tooltip */}
