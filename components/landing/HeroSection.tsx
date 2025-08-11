@@ -45,7 +45,7 @@ export default function HeroSection() {
           {/* Fallback gradient background */}
         </video>
         {/* Subtle blue overlay for better text readability */}
-        <div className="absolute inset-0 bg-blue-900/50"></div>
+        <div className="absolute inset-0 bg-blue-900/80"></div>
       </div>
 
       {/* Content */}
