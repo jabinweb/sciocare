@@ -17,6 +17,7 @@ export default function ProgramsSection() {
       logo: '/logos/carebridge.png',
       image: '/carebridge.jpg',
       color: 'bg-blue-700',
+      brochure: '/ScioCare_CareBridge.pdf',
       features: [
         'Workbook-first lessons with QR-coded video support',
         'Clinical English practice: LSRW',
@@ -34,6 +35,7 @@ export default function ProgramsSection() {
       logo: '/logos/caresteps.png',
       image: '/caresteps.jpg',
       color: 'bg-orange-500',
+      brochure: '/ScioCare_CareSteps.pdf',
       features: [
         'Essential personal and interpersonal skills',
         'Learning strategies and study discipline',
@@ -51,6 +53,7 @@ export default function ProgramsSection() {
       logo: '/logos/pathways.png',
       image: '/pathways.jpg',
       color: 'bg-blue-600',
+      brochure: '/ScioCare_Pathways 360.pdf',
       features: [
         'Workplace communication & interaction skills',
         'Collaboration & leadership in healthcare settings',
@@ -143,7 +146,7 @@ export default function ProgramsSection() {
                     </div>
 
                     <div className="flex md:flex-nowrap flex-wrap gap-3">
-                      <a href="#brochures">
+                      <a href={program.brochure} download>
                         <Button variant="outline">
                           <Download className="w-4 h-4 mr-1" />
                           Download Brochure
@@ -201,7 +204,7 @@ export default function ProgramsSection() {
                     </div>
 
                     <div className="flex gap-3">
-                      <a href="#brochures">
+                      <a href={program.brochure} download>
                         <Button variant="outline">
                           <Download className="w-4 h-4 mr-2" />
                           Download Brochure
@@ -245,4 +248,3 @@ export default function ProgramsSection() {
     </section>
   );
 }
-       

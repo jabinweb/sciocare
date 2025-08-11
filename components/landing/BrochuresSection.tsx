@@ -26,10 +26,12 @@ export default function BrochuresSection() {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center px-4">
-          <Button size="lg" className="bg-white text-slate-900 hover:bg-gray-100 font-semibold w-full sm:w-auto">
-            <Download className="w-4 h-4 md:w-5 md:h-5 mr-2" />
-            Download PDFs
-          </Button>
+          <a href="/ScioCare_Overview.pdf" download>
+            <Button size="lg" className="bg-white text-slate-900 hover:bg-gray-100 font-semibold w-full sm:w-auto">
+              <Download className="w-4 h-4 md:w-5 md:h-5 mr-2" />
+              Download PDFs
+            </Button>
+          </a>
           <BookDemo>
             <Button size="lg" variant="outline" className="border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900 font-semibold w-full sm:w-auto">
               <Calendar className="w-4 h-4 md:w-5 md:h-5 mr-2" />

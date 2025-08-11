@@ -86,7 +86,7 @@ export default function HeroSection() {
           <BookDemo>
             <Button
               size="lg"
-              className="bg-white animate-shake text-blue-700 hover:bg-blue-50 px-10 py-5 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              className="bg-white animate-shake text-blue-700 hover:bg-blue-50 px-12 py-5 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
             >
               Book a Demo
               <ArrowRight className="w-5 h-5 ml-2" />

@@ -3,10 +3,34 @@
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Users, ArrowRight, Globe, Monitor, ExternalLink } from 'lucide-react';
 import BookDemo from '@/components/BookDemo';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 export default function ProblemStatementSection() {
   const [hoveredStat, setHoveredStat] = useState<number | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (index: number) => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    setHoveredStat(index);
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setHoveredStat(null);
+    }, 200); // 200ms delay before hiding
+  };
+
+  const handleTooltipEnter = () => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
+  const handleTooltipLeave = () => {
+    setHoveredStat(null);
+  };
 
   const painPoints = [
     {
@@ -103,8 +127,8 @@ export default function ProblemStatementSection() {
                   </p>
                   <div 
                     className="relative bg-gradient-to-r from-orange-600/80 to-orange-700/80 backdrop-blur-sm p-4 rounded-xl border border-orange-500/50 shadow-lg cursor-pointer"
-                    onMouseEnter={() => setHoveredStat(index)}
-                    onMouseLeave={() => setHoveredStat(null)}
+                    onMouseEnter={() => handleMouseEnter(index)}
+                    onMouseLeave={handleMouseLeave}
                   >
                     <div className="text-xl md:text-2xl font-bold text-white mb-2">
                       {point.stat}
@@ -117,8 +141,8 @@ export default function ProblemStatementSection() {
                     {hoveredStat === index && (
                       <div 
                         className="tooltip absolute bottom-full left-0 right-0 mb-2 p-3 md:p-4 bg-gray-900/95 backdrop-blur-md rounded-lg border border-gray-700 shadow-xl z-10"
-                        onMouseEnter={() => setHoveredStat(index)}
-                        onMouseLeave={() => setHoveredStat(null)}
+                        onMouseEnter={handleTooltipEnter}
+                        onMouseLeave={handleTooltipLeave}
                       >
                         <div className="text-xs md:text-sm text-white mb-2 font-semibold">
                           {point.source.title}
