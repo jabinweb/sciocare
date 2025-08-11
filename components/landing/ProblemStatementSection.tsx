@@ -19,7 +19,7 @@ export default function ProblemStatementSection() {
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setHoveredStat(null);
-    }, 200); // 200ms delay before hiding
+    }, 300); // 200ms delay before hiding
   };
 
   const handleTooltipEnter = () => {
