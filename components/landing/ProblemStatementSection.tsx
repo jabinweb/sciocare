@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { AlertTriangle, Users, Clock, TrendingDown, ArrowRight, Globe, Monitor, ExternalLink } from 'lucide-react';
+import { AlertTriangle, Users, ArrowRight, Globe, Monitor, ExternalLink } from 'lucide-react';
 import BookDemo from '@/components/BookDemo';
 import { useState } from 'react';
 
@@ -38,7 +38,7 @@ export default function ProblemStatementSection() {
     {
       icon: <Globe className="w-8 h-8 text-yellow-600" />,
       problem: "Global Dreams, English Gaps",
-      description: "Thousands of students aim to work abroad—but their spoken English, patient interaction, and documentation skills fall short of global standards.",
+      description: "Thousands of nursing students aim to work abroad—but their spoken English, patient interaction, and documentation skills often fall short of global workplace standards.",
       stat: "7.0 IELTS Barrier",
       impact: "Most fall below the required IELTS score, missing out on international placements and global careers.",
       source: {
@@ -51,7 +51,7 @@ export default function ProblemStatementSection() {
     {
       icon: <Monitor className="w-8 h-8 text-yellow-600" />,
       problem: "Not Ready for Tech-First Care",
-      description: "Digital health is here—telemedicine, AI-assisted tools, and electronic records are the new normal. But most nurses are trained only for bedside care, not tech-enabled workflows.",
+      description: "With telemedicine, AI-assisted tools, and electronic health records becoming standard, many nurses lack practical training in technology-enabled healthcare workflows.",
       stat: "22% More Demand",
       impact: "Digital-first healthcare jobs are growing fast, but colleges aren't keeping pace.",
       source: {
@@ -102,14 +102,14 @@ export default function ProblemStatementSection() {
                     {point.description}
                   </p>
                   <div 
-                    className="relative bg-gradient-to-r from-yellow-100/80 to-yellow-200/80 backdrop-blur-sm p-4 rounded-xl border border-yellow-300/60 shadow-md cursor-pointer"
+                    className="relative bg-gradient-to-r from-orange-600/80 to-orange-700/80 backdrop-blur-sm p-4 rounded-xl border border-orange-500/50 shadow-lg cursor-pointer"
                     onMouseEnter={() => setHoveredStat(index)}
                     onMouseLeave={() => setHoveredStat(null)}
                   >
-                    <div className="text-xl md:text-2xl font-bold text-yellow-700 mb-2">
+                    <div className="text-xl md:text-2xl font-bold text-white mb-2">
                       {point.stat}
                     </div>
-                    <div className="text-sm text-yellow-600">
+                    <div className="text-sm text-orange-50/90">
                       {point.impact}
                     </div>
 

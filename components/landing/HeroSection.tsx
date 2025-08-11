@@ -75,7 +75,7 @@ export default function HeroSection() {
         <p className="text-lg md:text-xl text-white mb-8 max-w-3xl mx-auto leading-relaxed drop-shadow-md font-medium">
           Your students&apos; journey to{" "}
           <span className="font-bold text-white">confident caregiving</span>
-          {" "}starts here! Evidence-based methods.{" "}
+          {" "}starts here! <br />Evidence-based methods.{" "}
           <span className="block md:inline text-white/95">
             Real-world results.
           </span>
@@ -96,7 +96,7 @@ export default function HeroSection() {
 
         {/* Professional Program Navigation */}
         <div className="md:flex flex-wrap items-center justify-center gap-3 mb-12 hidden">
-          <div className="bg-white text-blue-700 px-6 py-3 rounded-full font-semibold text-sm shadow-md">
+          <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors">
             English for Healthcare
           </div>
           <div className="bg-white/25 backdrop-blur-sm px-6 py-3 rounded-full text-white font-medium text-sm border border-white/40 hover:bg-white/35 transition-colors">
