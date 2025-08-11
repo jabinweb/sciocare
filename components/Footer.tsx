@@ -15,7 +15,7 @@ export default function Footer() {
   const quickLinks = [
     { name: 'Our Programs', href: '#programs' },
     { name: 'Why Choose Us', href: '#why-choose' },
-    { name: 'Success Stories', href: '#testimonials' },
+    // { name: 'Success Stories', href: '#testimonials' },
   ];
 
   const socialLinks = [
