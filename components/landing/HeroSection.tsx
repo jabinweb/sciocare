@@ -44,8 +44,8 @@ export default function HeroSection() {
           <div className="w-full h-full bg-gradient-to-br from-blue-600 via-purple-600 to-green-600"></div>
           {/* Fallback gradient background */}
         </video>
-        {/* Dark overlay for better text readability */}
-        <div className="absolute inset-0 bg-black/70"></div>
+        {/* Subtle blue overlay for better text readability */}
+        <div className="absolute inset-0 bg-blue-900/50"></div>
       </div>
 
       {/* Content */}
