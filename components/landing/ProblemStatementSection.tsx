@@ -75,7 +75,7 @@ export default function ProblemStatementSection() {
         
         {/* Section Header */}
         <div className="text-center mb-12 md:mb-16">
-          <div className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-2 bg-yellow-500/80 backdrop-blur-md text-gray-900 text-xs md:text-sm font-medium rounded-full mb-8 md:mb-10 border border-yellow-400/50 shadow-lg pointer-events-none">
+          <div className="inline-flex items-center gap-2 px-4 md:px-6 py-2 md:py-2 bg-gradient-to-r from-orange-600/80 to-orange-700/80 backdrop-blur-md text-gray-900 text-xs md:text-sm font-medium rounded-full mb-8 md:mb-10 border border-yellow-400/50 shadow-lg pointer-events-none">
             <span className="text-white">The Healthcare Communication Crisis</span>
           </div>
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold mb-4 md:mb-6 text-gray-900 drop-shadow-sm px-4">
