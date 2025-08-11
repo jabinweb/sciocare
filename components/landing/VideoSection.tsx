@@ -12,11 +12,11 @@ export default function VideoSection() {
       <div className="max-w-6xl mx-auto px-4 md:px-6 relative z-10">
         {/* Content Header */}
         <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6 px-4 drop-shadow-lg">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6 px-2 drop-shadow-lg">
             Discover ScioCare
           </h2>
-          <p className="text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed px-4 drop-shadow-md">
-            Explore how we prepare caregivers for the real world—through practical training, role‑specific English, and workplace readiness programs designed<br /> for today&apos;s healthcare challenges.
+          <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed px-2 drop-shadow-md">
+            Explore how we prepare caregivers for the real world—through practical training, role‑specific English, and workplace readiness programs designed for today&apos;s healthcare challenges.
           </p>
         </div>
 
