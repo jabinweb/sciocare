@@ -42,11 +42,11 @@ export default function Header() {
         ? 'bg-white/95 backdrop-blur-md border-b border-gray-200' 
         : 'bg-transparent backdrop-blur-md border-b border-white/10'
     }`}>
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-3">
-            <div className="w-32 h-30 relative">
+            <div className="w-28 md:w-32 h-8 relative">
               <Image
                 src={isScrolled ? "/logo.png" : "/sciocare_light.png"}
                 alt="ScioCare Logo"
@@ -54,18 +54,6 @@ export default function Header() {
                 className="object-contain"
               />
             </div>
-            {/* <div>
-              <span className={`font-heading text-xl font-bold transition-colors duration-300 ${
-                isScrolled 
-                  ? 'bg-gradient-to-r from-blue-600 via-green-600 to-purple-600 bg-clip-text text-transparent' 
-                  : 'text-white'
-              }`}>
-                ScioCare
-              </span>
-              <div className={`text-xs -mt-1 transition-colors duration-300 ${
-                isScrolled ? 'text-gray-600' : 'text-white/80'
-              }`}>Healthcare Education</div>
-            </div> */}
           </Link>
 
           {/* Desktop Navigation */}
@@ -122,7 +110,7 @@ export default function Header() {
 
           {/* Mobile menu button */}
           <button
-            className="md:hidden p-2"
+            className="md:hidden p-2 rounded-lg transition-colors duration-300"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
@@ -140,57 +128,59 @@ export default function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className={`md:hidden py-4 backdrop-blur-sm transition-colors duration-300 ${
+          <div className={`md:hidden pb-6 pt-4 backdrop-blur-sm transition-all duration-300 ${
             isScrolled 
               ? 'border-t border-gray-200 bg-white/95' 
               : 'border-t border-white/10 bg-slate-900/95'
           }`}>
-            <nav className="space-y-4">
+            {/* Mobile Navigation Links */}
+            <nav className="space-y-1 mb-6">
               {navigation.map((item) => {
                 const IconComponent = item.icon;
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`flex items-center space-x-3 font-medium py-2 transition-colors duration-300 ${
+                    className={`flex items-center space-x-3 font-medium py-3 px-4 rounded-lg transition-all duration-300 ${
                       isScrolled 
-                        ? 'text-gray-700 hover:text-blue-700' 
-                        : 'text-white/80 hover:text-white'
+                        ? 'text-gray-700 hover:text-blue-700 hover:bg-blue-50' 
+                        : 'text-white/90 hover:text-white hover:bg-white/10'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     <IconComponent className="w-5 h-5" />
-                    <span>{item.name}</span>
+                    <span className="text-base">{item.name}</span>
                   </Link>
                 );
               })}
             </nav>
             
-            <div className="mt-6 space-y-3">
-              <Link href="#brochures">
+            {/* Mobile CTA Buttons */}
+            <div className="space-y-3 px-4">
+              <Link href="#brochures" className="block">
                 <Button 
                   variant="outline" 
-                  className={`w-full transition-colors duration-300 ${
+                  className={`w-full py-3 text-base transition-colors duration-300 ${
                     isScrolled
-                      ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
+                      ? 'border-gray-300 hover:bg-gray-50 text-gray-700'
                     : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="w-5 h-5 mr-2" />
                   Download Brochure
                 </Button>
               </Link>
               <BookDemo>
                 <Button 
-                  className={`w-full font-semibold transition-colors duration-300 ${
+                  className={`w-full py-3 text-base font-semibold transition-colors duration-300 ${
                     isScrolled
                       ? 'bg-blue-700 hover:bg-blue-800 text-white'
                       : 'bg-white text-slate-900 hover:bg-white/90'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <Mail className="w-4 h-4 mr-2" />
+                  <Mail className="w-5 h-5 mr-2" />
                   Get Demo
                 </Button>
               </BookDemo>
@@ -201,3 +191,4 @@ export default function Header() {
     </header>
   );
 }
+                
