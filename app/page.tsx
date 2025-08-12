@@ -6,7 +6,8 @@ import {
   ProgramsSection,
   WhyChooseSection,
   SocialProofSection,
-  BrochuresSection
+  BrochuresSection,
+  FaqSection
 } from '@/components/landing';
 
 export default function CarePage() {
@@ -18,6 +19,7 @@ export default function CarePage() {
       {/* <CounterSection /> */}
       <ProgramsSection />
       <WhyChooseSection />
+      <FaqSection />
       {/* <SocialProofSection /> */}
       <BrochuresSection />
     </>

@@ -6,3 +6,4 @@ export { default as ProgramsSection } from './ProgramsSection';
 export { default as WhyChooseSection } from './WhyChooseSection';
 export { default as SocialProofSection } from './SocialProofSection';
 export { default as BrochuresSection } from './BrochuresSection';
+export { default as FaqSection } from './FaqSection';
