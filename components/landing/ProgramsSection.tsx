@@ -35,7 +35,7 @@ export default function ProgramsSection() {
       logo: '/logos/caresteps.png',
       image: '/caresteps.jpg',
       color: 'bg-orange-500',
-      brochure: '/ScioCare_CareSteps.pdf',
+      brochure: '/ScioLabs_CareSteps.pdf',
       features: [
         'Essential personal and interpersonal skills',
         'Learning strategies and study discipline',
@@ -53,7 +53,7 @@ export default function ProgramsSection() {
       logo: '/logos/pathways.png',
       image: '/pathways.jpg',
       color: 'bg-blue-600',
-      brochure: '/ScioCare_Pathways 360.pdf',
+      brochure: '/ScioLabs_Pathways 360.pdf',
       features: [
         'Workplace communication & interaction skills',
         'Collaboration & leadership in healthcare settings',
