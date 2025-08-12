@@ -164,7 +164,7 @@ export default function ProblemStatementSection() {
                         <div className="text-xs text-gray-400 mb-3">
                           &quot;{point.source.article}&quot;
                         </div>
-                        <a 
+                        {/* <a 
                           href={point.source.link}
                           target="_blank"
                           rel="noopener noreferrer"
@@ -173,7 +173,7 @@ export default function ProblemStatementSection() {
                         >
                           <ExternalLink className="w-3 h-3 mr-1" />
                           View Source
-                        </a>
+                        </a> */}
                       </div>
                     )}
                   </div>
