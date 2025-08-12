@@ -19,9 +19,9 @@ export default function CarePage() {
       {/* <CounterSection /> */}
       <ProgramsSection />
       <WhyChooseSection />
-      <FaqSection />
       {/* <SocialProofSection /> */}
       <BrochuresSection />
+      <FaqSection />
     </>
   );
 }
