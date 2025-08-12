@@ -15,7 +15,7 @@ export default function VideoSection() {
           <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6 px-2 drop-shadow-lg">
             Discover ScioCare
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-4xl mx-auto leading-relaxed px-2 drop-shadow-md">
+          <p className="text-base sm:text-lg md:text-xl text-white/90 max-w-3xl mx-auto leading-relaxed px-2 drop-shadow-md">
             Explore how we prepare caregivers for the real world—through practical training, role‑specific English, and workplace readiness programs designed for today&apos;s healthcare challenges.
           </p>
         </div>
