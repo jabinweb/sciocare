@@ -440,7 +440,8 @@ async function processAutoRenewal(subscription: SubscriptionWithRelations) {
   console.log(`Processing auto-renewal for subscription: ${subscriptionId}`);
 
   // Use database transaction for consistency
-  const result = await prisma.$transaction(async (tx) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = await prisma.$transaction(async (tx: any) => {
     // Calculate new end date based on renewal period
     const currentEndDate = new Date(subscription.endDate!);
     
