@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { Prisma, NotificationType, NotificationPriority } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -22,9 +21,10 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     // Build where clause
-    const where: Prisma.NotificationWhereInput = {};
-    if (type) where.type = type as NotificationType;
-    if (priority) where.priority = priority as NotificationPriority;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = {};
+    if (type) where.type = type;
+    if (priority) where.priority = priority;
     if (read === 'true') where.isRead = true;
     if (read === 'false') where.isRead = false;
     if (search) {
