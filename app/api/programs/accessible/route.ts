@@ -139,7 +139,7 @@ export async function GET(request: Request) {
     }
 
     // Add access metadata to each class
-    const classesWithAccess = accessibleClasses.map(cls => {
+    const classesWithAccess = accessibleClasses.map((cls: typeof accessibleClasses[number]) => {
       const hasSchoolAccess = user.school?.isActive && user.grade && 
         (gradeToClassMap[user.grade] || []).includes(cls.id);
       const hasClassSubscription = classSubscriptions.has(cls.id);

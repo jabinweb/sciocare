@@ -50,7 +50,7 @@ export async function GET(request: Request) {
     });
 
     // Transform the response to ensure content is properly structured
-    const transformedTopics = topics.map(topic => {
+    const transformedTopics = topics.map((topic: typeof topics[number]) => {
       let content = undefined;
       
       if (topic.content) {

@@ -74,7 +74,7 @@ export async function GET(request: Request) {
           cashfreeOrderId: payment.cashfreeOrderId,
           metadata: payment.metadata
         },
-        subscriptions: subscriptions.map(sub => ({
+        subscriptions: subscriptions.map((sub: typeof subscriptions[number]) => ({
           id: sub.id,
           status: sub.status,
           planType: sub.planType,
@@ -121,7 +121,7 @@ export async function GET(request: Request) {
         updatedAt: payment.updatedAt,
         user: isAdmin && payment.user ? payment.user : undefined
       })),
-      subscriptions: subscriptions.map(sub => ({
+      subscriptions: subscriptions.map((sub: typeof subscriptions[number]) => ({
         id: sub.id,
         status: sub.status,
         planType: sub.planType,

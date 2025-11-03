@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Format the response
-    const formattedSubscriptions = subscriptions.map(sub => ({
+    const formattedSubscriptions = subscriptions.map((sub: typeof subscriptions[number]) => ({
       id: sub.id,
       planType: sub.planType,
       status: sub.status,

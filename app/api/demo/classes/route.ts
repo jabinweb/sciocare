@@ -51,7 +51,7 @@ export async function GET(request: Request) {
       description: demoClass.description,
       price: demoClass.price,
       currency: demoClass.currency,
-      subjects: demoClass.subjects.map(subject => ({
+      subjects: demoClass.subjects.map((subject: typeof demoClass.subjects[number]) => ({
         id: subject.id,
         name: subject.name,
         icon: subject.icon,
@@ -59,11 +59,11 @@ export async function GET(request: Request) {
         isLocked: subject.isLocked,
         price: subject.price,
         currency: subject.currency,
-        chapters: subject.chapters.map((chapter, chapterIndex) => ({
+        chapters: subject.chapters.map((chapter: typeof subject.chapters[number], chapterIndex: number) => ({
           id: chapter.id,
           name: chapter.name,
           isLocked: chapterIndex > 0, // First chapter (index 0) is free, rest are locked
-          topics: chapter.topics.map(topic => ({
+          topics: chapter.topics.map((topic: typeof chapter.topics[number]) => ({
             id: topic.id,
             name: topic.name,
             type: topic.type,

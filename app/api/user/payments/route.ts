@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     ]);
 
     // Format the response
-    const formattedPayments = payments.map(payment => ({
+    const formattedPayments = payments.map((payment: typeof payments[number]) => ({
       id: payment.id,
       razorpayPaymentId: payment.razorpayPaymentId,
       razorpayOrderId: payment.razorpayOrderId,

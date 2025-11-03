@@ -38,7 +38,7 @@ export async function GET() {
     });
 
     // Transform the data to a format suitable for demo
-    const transformedClasses = classes.map(cls => ({
+    const transformedClasses = classes.map((cls: typeof classes[number]) => ({
       id: cls.id,
       name: cls.name,
       description: cls.description,

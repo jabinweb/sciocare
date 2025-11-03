@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
       });
 
       // Convert to the expected format
-      const topicRatings = userRatings.map(rating => ({
+      const topicRatings = userRatings.map((rating: typeof userRatings[number]) => ({
         topicId: rating.topicId,
         userRating: rating.rating,  // Individual user rating, not average
         hasRated: true
