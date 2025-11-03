@@ -49,17 +49,17 @@ export async function GET() {
       topicCount: cls.subjects.reduce((acc: number, subject: typeof cls.subjects[number]) => 
         acc + subject.chapters.reduce((chAcc: number, chapter: typeof subject.chapters[number]) => chAcc + chapter.topics.length, 0), 0
       ),
-      subjects: cls.subjects.map(subject => ({
+      subjects: cls.subjects.map((subject: typeof cls.subjects[number]) => ({
         id: subject.id,
         name: subject.name,
         icon: subject.icon,
         color: subject.color,
         isLocked: subject.isLocked,
         price: subject.price,
-        chapters: subject.chapters.map(chapter => ({
+        chapters: subject.chapters.map((chapter: typeof subject.chapters[number]) => ({
           id: chapter.id,
           name: chapter.name,
-          topics: chapter.topics.map(topic => ({
+          topics: chapter.topics.map((topic: typeof chapter.topics[number]) => ({
             id: topic.id,
             name: topic.name,
             type: topic.type,
