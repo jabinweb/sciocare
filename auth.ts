@@ -59,7 +59,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
 
           if (dbSettings.length > 0) {
-            const settingsObj = dbSettings.reduce((acc: Record<string, string>, setting) => {
+            const settingsObj = dbSettings.reduce((acc: Record<string, string>, setting: typeof dbSettings[number]) => {
               acc[setting.key] = setting.value;
               return acc;
             }, {});
