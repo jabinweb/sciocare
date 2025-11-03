@@ -253,7 +253,7 @@ async function getDailySubscriptionData(startDate: Date, endDate: Date) {
   const dateMap = new Map();
   
   // Initialize with subscription data
-  dailySubscriptions.forEach(item => {
+  dailySubscriptions.forEach((item: { date: Date; new_subscriptions: bigint; daily_revenue: bigint }) => {
     const dateStr = item.date.toISOString().split('T')[0];
     dateMap.set(dateStr, {
       date: dateStr,
@@ -264,7 +264,7 @@ async function getDailySubscriptionData(startDate: Date, endDate: Date) {
   });
 
   // Add expiry data
-  dailyExpiries.forEach(item => {
+  dailyExpiries.forEach((item: { date: Date; expired_subscriptions: bigint }) => {
     const dateStr = item.date.toISOString().split('T')[0];
     if (dateMap.has(dateStr)) {
       dateMap.get(dateStr).expiredSubscriptions = Number(item.expired_subscriptions);
