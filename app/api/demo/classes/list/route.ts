@@ -45,9 +45,9 @@ export async function GET() {
       price: cls.price || 29900, // Default price if not set
       currency: cls.currency || 'INR',
       subjectCount: cls.subjects.length,
-      chapterCount: cls.subjects.reduce((acc, subject) => acc + subject.chapters.length, 0),
-      topicCount: cls.subjects.reduce((acc, subject) => 
-        acc + subject.chapters.reduce((chAcc, chapter) => chAcc + chapter.topics.length, 0), 0
+      chapterCount: cls.subjects.reduce((acc: number, subject: typeof cls.subjects[number]) => acc + subject.chapters.length, 0),
+      topicCount: cls.subjects.reduce((acc: number, subject: typeof cls.subjects[number]) => 
+        acc + subject.chapters.reduce((chAcc: number, chapter: typeof subject.chapters[number]) => chAcc + chapter.topics.length, 0), 0
       ),
       subjects: cls.subjects.map(subject => ({
         id: subject.id,

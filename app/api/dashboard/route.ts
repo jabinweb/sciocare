@@ -104,7 +104,7 @@ export async function GET() {
 
         // Determine if user has partial access (some subjects but not full class)
         const hasPartialAccess = !classAccess.hasClassAccess && 
-          subjectsWithAccess.some(s => s.hasAccess);
+          subjectsWithAccess.some((s: typeof subjectsWithAccess[number]) => s.hasAccess);
 
         return {
           ...cls,
@@ -113,7 +113,7 @@ export async function GET() {
           subscriptionAccess: classAccess.hasClassAccess,
           hasPartialAccess,
           accessType: classAccess.accessType,
-          subjectAccess: subjectsWithAccess.reduce((acc, subject) => {
+          subjectAccess: subjectsWithAccess.reduce((acc: Record<string, { hasAccess: boolean; accessType: string }>, subject: typeof subjectsWithAccess[number]) => {
             acc[subject.id] = {
               hasAccess: subject.hasAccess,
               accessType: subject.accessType
@@ -147,12 +147,12 @@ function generateAccessMessage(userProfile: UserProfileWithSchool | null, classe
     return `✓ School Access: You have access through ${userProfile.school.name}`;
   }
 
-  const hasAnySubscription = classes.some(c => c.subscriptionAccess);
+  const hasAnySubscription = classes.some((c: typeof classes[number]) => c.subscriptionAccess);
   if (hasAnySubscription) {
     return `✓ Subscription Access: You have active subscriptions`;
   }
 
-  const hasPartialAccess = classes.some(c => c.hasPartialAccess);
+  const hasPartialAccess = classes.some((c: typeof classes[number]) => c.hasPartialAccess);
   if (hasPartialAccess) {
     return `⚡ Partial Access: You have access to some subjects`;
   }
@@ -161,8 +161,8 @@ function generateAccessMessage(userProfile: UserProfileWithSchool | null, classe
 }
 
 function determineOverallAccessType(classes: ClassWithAccess[]): string {
-  if (classes.some(c => c.schoolAccess)) return 'school';
-  if (classes.some(c => c.subscriptionAccess)) return 'subscription';
-  if (classes.some(c => c.hasPartialAccess)) return 'partial';
+  if (classes.some((c: typeof classes[number]) => c.schoolAccess)) return 'school';
+  if (classes.some((c: typeof classes[number]) => c.subscriptionAccess)) return 'subscription';
+  if (classes.some((c: typeof classes[number]) => c.hasPartialAccess)) return 'partial';
   return 'individual';
 }

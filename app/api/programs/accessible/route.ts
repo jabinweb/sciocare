@@ -80,10 +80,10 @@ export async function GET(request: Request) {
 
     // Separate class-wide and subject-specific subscriptions
     const classSubscriptions = new Set(
-      subscriptions?.filter(s => s.classId && !s.subjectId).map(s => s.classId) || []
+      subscriptions?.filter((s: typeof subscriptions[number]) => s.classId && !s.subjectId).map((s: typeof subscriptions[number]) => s.classId) || []
     );
     const subjectSubscriptions = new Map(
-      subscriptions?.filter(s => s.subjectId).map(s => [s.subjectId, s.classId]) || []
+      subscriptions?.filter((s: typeof subscriptions[number]) => s.subjectId).map((s: typeof subscriptions[number]) => [s.subjectId, s.classId]) || []
     );
     const subscribedClassIds = classSubscriptions; // Keep for backward compatibility
     

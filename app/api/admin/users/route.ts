@@ -17,9 +17,9 @@ export async function GET() {
     });
 
     // Transform data to match expected format
-    const usersWithSubscriptions = users.map((user) => {
-      const activeSubscription = user.subscriptions.find(sub => sub.status === 'ACTIVE');
-      const completedPayments = user.payments.filter(payment => payment.status === 'COMPLETED');
+    const usersWithSubscriptions = users.map((user: typeof users[number]) => {
+      const activeSubscription = user.subscriptions.find((sub: typeof user.subscriptions[number]) => sub.status === 'ACTIVE');
+      const completedPayments = user.payments.filter((payment: typeof user.payments[number]) => payment.status === 'COMPLETED');
       
       return {
         uid: user.id,

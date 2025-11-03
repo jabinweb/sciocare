@@ -59,10 +59,10 @@ export async function POST(request: Request) {
     });
 
     if (existingSubscriptions.length > 0) {
-      const subscribedSubjectIds = existingSubscriptions.map(s => s.subjectId);
+      const subscribedSubjectIds = existingSubscriptions.map((s: typeof existingSubscriptions[number]) => s.subjectId);
       const subscribedSubjectNames = subjects
-        .filter(s => subscribedSubjectIds.includes(s.id))
-        .map(s => s.name)
+        .filter((s: typeof subjects[number]) => subscribedSubjectIds.includes(s.id))
+        .map((s: typeof subjects[number]) => s.name)
         .join(', ');
       
       return NextResponse.json({ 
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user has full class access for any of these subjects
-    const classIds = [...new Set(subjects.map(s => s.classId))];
+    const classIds = [...new Set(subjects.map((s: typeof subjects[number]) => s.classId))];
     const classSubscriptions = await prisma.subscription.findMany({
       where: {
         userId: userId,
@@ -85,11 +85,11 @@ export async function POST(request: Request) {
     });
 
     if (classSubscriptions.length > 0) {
-      const classIdsWithAccess = classSubscriptions.map(s => s.classId);
-      const subjectsWithClassAccess = subjects.filter(s => classIdsWithAccess.includes(s.classId));
+      const classIdsWithAccess = classSubscriptions.map((s: typeof classSubscriptions[number]) => s.classId);
+      const subjectsWithClassAccess = subjects.filter((s: typeof subjects[number]) => classIdsWithAccess.includes(s.classId));
       
       if (subjectsWithClassAccess.length > 0) {
-        const subjectNames = subjectsWithClassAccess.map(s => s.name).join(', ');
+        const subjectNames = subjectsWithClassAccess.map((s: typeof subjectsWithClassAccess[number]) => s.name).join(', ');
         return NextResponse.json({ 
           error: `You already have full class access which includes: ${subjectNames}` 
         }, { status: 409 });
@@ -97,8 +97,8 @@ export async function POST(request: Request) {
     }
 
     // Calculate total price from all subjects or use provided amount
-    const totalPrice = amount || subjects.reduce((sum, subject) => sum + (subject.price || 7500), 0);
-    const subjectNames = subjects.map(s => s.name).join(', ');
+    const totalPrice = amount || subjects.reduce((sum: number, subject: typeof subjects[number]) => sum + (subject.price || 7500), 0);
+    const subjectNames = subjects.map((s: typeof subjects[number]) => s.name).join(', ');
 
     // Create payment order using unified service
     const orderResult = await createPaymentOrder({
