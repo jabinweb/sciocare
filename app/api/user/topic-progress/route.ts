@@ -33,7 +33,7 @@ export async function GET() {
 
     // Convert to Map format expected by the hook
     const progressMap: Record<string, boolean> = {};
-    progress.forEach((item) => {
+    progress.forEach((item: typeof progress[number]) => {
       progressMap[item.topicId.toString()] = item.completed;
     });
 
