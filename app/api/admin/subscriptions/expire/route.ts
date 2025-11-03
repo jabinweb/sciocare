@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { addDays, isBefore } from 'date-fns';
-import { NotificationQueueType } from '@prisma/client';
 import { verifyAdminOrCron } from '@/lib/admin-auth';
 
 interface SubscriptionWithRelations {
@@ -156,7 +155,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-async function scheduleNotification(subscription: SubscriptionWithRelations, type: NotificationQueueType, daysUntilExpiry?: number) {
+async function scheduleNotification(subscription: SubscriptionWithRelations, type: string, daysUntilExpiry?: number) {
   try {
     // Skip notification if user has no email
     if (!subscription.user.email) {
@@ -168,7 +167,7 @@ async function scheduleNotification(subscription: SubscriptionWithRelations, typ
     await prisma.notificationQueue.create({
       data: {
         userId: subscription.userId,
-        type: type,
+        type: type as any, // eslint-disable-line @typescript-eslint/no-explicit-any
         data: {
           subscriptionId: subscription.id,
           className: subscription.class?.name,
