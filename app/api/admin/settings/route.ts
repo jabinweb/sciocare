@@ -101,9 +101,9 @@ export async function PUT(request: Request) {
     console.log(`[info] Starting settings update for ${Object.keys(updates).length} settings`);
     
     // Use a transaction to batch all operations for better performance
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: typeof prisma) => {
       // Use Promise.all to execute all upsert operations in parallel
-      const upsertPromises = Object.entries(updates).map(([key, value]) => {
+      const upsertPromises = Object.entries(updates).map(([key, value]: [string, string]) => {
         return tx.adminSettings.upsert({
           where: { key },
           update: {
