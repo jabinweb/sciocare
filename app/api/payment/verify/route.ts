@@ -101,7 +101,7 @@ export async function POST(req: Request) {
               select: { name: true, class: { select: { name: true } } }
             });
 
-            const subjectNames = subjects.map(s => s.name).join(', ');
+            const subjectNames = subjects.map((s: typeof subjects[number]) => s.name).join(', ');
             subscriptionDetails = {
               subjectName: subjectNames,
               className: subjects[0]?.class?.name || 'Unknown Class',
