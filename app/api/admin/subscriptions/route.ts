@@ -1,19 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { type Prisma } from '@prisma/client';
-
-// Typed payload for subscription queries that include relations
-type SubscriptionWithIncludes = Prisma.SubscriptionGetPayload<{
-  include: {
-    user: { select: { email: true; name: true } };
-    class: { select: { id: true; name: true } };
-    subject: { select: { id: true; name: true } };
-  };
-}>;
 
 export async function GET() {
   try {
-    const subscriptions: SubscriptionWithIncludes[] = await prisma.subscription.findMany({
+    const subscriptions = await prisma.subscription.findMany({
       include: {
         user: {
           select: {
@@ -111,7 +101,7 @@ export async function POST(request: Request) {
     const endDate = new Date();
     endDate.setFullYear(endDate.getFullYear() + 1);
     
-    const data: Prisma.SubscriptionCreateInput = {
+    const data = {
       user: { connect: { id: userId } },
       class: { connect: { id: classId } },
       amount,
@@ -120,10 +110,8 @@ export async function POST(request: Request) {
       currency: 'INR',
       startDate: new Date(),
       endDate: endDate,
+      ...(subjectId && { subject: { connect: { id: subjectId } } }),
     };
-    if (subjectId) {
-      data.subject = { connect: { id: subjectId } };
-    }
 
     const subscription = await prisma.subscription.create({ data });
     return NextResponse.json(subscription);
