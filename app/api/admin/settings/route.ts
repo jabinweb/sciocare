@@ -101,9 +101,10 @@ export async function PUT(request: Request) {
     console.log(`[info] Starting settings update for ${Object.keys(updates).length} settings`);
     
     // Use a transaction to batch all operations for better performance
-    await prisma.$transaction(async (tx: typeof prisma) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await prisma.$transaction(async (tx: any) => {
       // Use Promise.all to execute all upsert operations in parallel
-      const upsertPromises = Object.entries(updates).map(([key, value]: [string, string]) => {
+      const upsertPromises = Object.entries(updates).map(([key, value]: [string, unknown]) => {
         return tx.adminSettings.upsert({
           where: { key },
           update: {
