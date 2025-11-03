@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import BookDemo from '@/components/BookDemo';
+import { UserDropdown } from '@/components/UserDropdown';
 import { 
   Menu, 
   X, 
@@ -18,6 +20,8 @@ import {
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const pathname = usePathname();
+  const isHomePage = pathname === '/';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,7 +44,9 @@ export default function Header() {
     <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
       isScrolled 
         ? 'bg-white/95 backdrop-blur-md border-b border-gray-200' 
-        : 'bg-transparent backdrop-blur-md border-b border-white/10'
+        : isHomePage 
+          ? 'bg-transparent backdrop-blur-md border-b border-white/10'
+          : 'bg-white/90 backdrop-blur-md border-b border-gray-200'
     }`}>
       <div className="max-w-7xl mx-auto px-4 md:px-6">
         <div className="flex items-center justify-between h-16">
@@ -48,7 +54,7 @@ export default function Header() {
           <Link href="/" className="flex items-center space-x-3">
             <div className="w-28 md:w-32 h-8 relative">
               <Image
-                src={isScrolled ? "/logo.png" : "/sciocare_light.png"}
+                src={isScrolled || !isHomePage ? "/logo.png" : "/sciocare_light.png"}
                 alt="ScioCare Logo"
                 fill
                 className="object-contain"
@@ -65,8 +71,8 @@ export default function Header() {
                   key={item.name}
                   href={item.href}
                   className={`flex items-center space-x-2 font-medium transition-colors duration-300 ${
-                    isScrolled 
-                      ? 'text-gray-700 hover:text-blue-700' 
+                    isScrolled || !isHomePage
+                      ? 'text-gray-700 hover:text-blue-700'
                       : 'text-white/80 hover:text-white'
                   }`}
                 >
@@ -84,7 +90,7 @@ export default function Header() {
                 variant="outline" 
                 size="sm" 
                 className={`transition-colors duration-300 ${
-                  isScrolled
+                  isScrolled || !isHomePage
                     ? 'border-orange-200 hover:bg-orange-50 text-gray-700'
                     : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
                 }`}
@@ -97,7 +103,7 @@ export default function Header() {
               <Button 
                 size="sm" 
                 className={`font-semibold transition-colors duration-300 ${
-                  isScrolled
+                  isScrolled || !isHomePage
                     ? 'bg-blue-700 hover:bg-blue-800 text-white'
                     : 'bg-white text-slate-900 hover:bg-white/90'
                 }`}
@@ -106,6 +112,7 @@ export default function Header() {
                 Get Demo
               </Button>
             </BookDemo>
+            <UserDropdown />
           </div>
 
           {/* Mobile menu button */}
@@ -116,11 +123,11 @@ export default function Header() {
           >
             {isMenuOpen ? (
               <X className={`w-6 h-6 transition-colors duration-300 ${
-                isScrolled ? 'text-gray-700' : 'text-white'
+                isScrolled || !isHomePage ? 'text-gray-700' : 'text-white'
               }`} />
             ) : (
               <Menu className={`w-6 h-6 transition-colors duration-300 ${
-                isScrolled ? 'text-gray-700' : 'text-white'
+                isScrolled || !isHomePage ? 'text-gray-700' : 'text-white'
               }`} />
             )}
           </button>
@@ -129,8 +136,8 @@ export default function Header() {
         {/* Mobile Navigation */}
         {isMenuOpen && (
           <div className={`md:hidden pb-6 pt-4 backdrop-blur-sm transition-all duration-300 ${
-            isScrolled 
-              ? 'border-t border-gray-200 bg-white/95' 
+            isScrolled || !isHomePage
+              ? 'border-t border-gray-200 bg-white/95'
               : 'border-t border-white/10 bg-slate-900/95'
           }`}>
             {/* Mobile Navigation Links */}
@@ -142,8 +149,8 @@ export default function Header() {
                     key={item.name}
                     href={item.href}
                     className={`flex items-center space-x-3 font-medium py-3 px-4 rounded-lg transition-all duration-300 ${
-                      isScrolled 
-                        ? 'text-gray-700 hover:text-blue-700 hover:bg-blue-50' 
+                      isScrolled || !isHomePage
+                        ? 'text-gray-700 hover:text-blue-700 hover:bg-blue-50'
                         : 'text-white/90 hover:text-white hover:bg-white/10'
                     }`}
                     onClick={() => setIsMenuOpen(false)}
@@ -161,9 +168,9 @@ export default function Header() {
                 <Button 
                   variant="outline" 
                   className={`w-full py-3 text-base transition-colors duration-300 ${
-                    isScrolled
+                    isScrolled || !isHomePage
                       ? 'border-gray-300 hover:bg-gray-50 text-gray-700'
-                    : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
+                      : 'border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white hover:text-slate-900'
                   }`}
                   onClick={() => setIsMenuOpen(false)}
                 >
@@ -174,7 +181,7 @@ export default function Header() {
               <BookDemo>
                 <Button 
                   className={`w-full py-3 text-base font-semibold transition-colors duration-300 ${
-                    isScrolled
+                    isScrolled || !isHomePage
                       ? 'bg-blue-700 hover:bg-blue-800 text-white'
                       : 'bg-white text-slate-900 hover:bg-white/90'
                   }`}
@@ -183,6 +190,11 @@ export default function Header() {
                   Get Demo
                 </Button>
               </BookDemo>
+              
+              {/* Mobile User Dropdown */}
+              <div className="pt-3 border-t border-gray-200">
+                <UserDropdown />
+              </div>
             </div>
           </div>
         )}

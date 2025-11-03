@@ -47,7 +47,7 @@ export default function WhyChooseSection() {
             
             return (
               <Card key={index} className="group border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
-                <CardContent className="p-8 text-center">
+                <CardContent className="text-center">
                   <div className="relative w-16 h-16 bg-gradient-to-br from-blue-700 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300">
                     <IconComponent className="w-8 h-8 text-white" />
                     {/* <div className="absolute -top-2 -right-2 text-2xl">

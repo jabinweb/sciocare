@@ -18,12 +18,12 @@ export default function Footer() {
     // { name: 'Success Stories', href: '#testimonials' },
   ];
 
-  const socialLinks = [
-    { name: 'Facebook', icon: 'fab fa-facebook-f', href: '#' },
-    { name: 'Twitter', icon: 'fab fa-twitter', href: '#' },
-    { name: 'LinkedIn', icon: 'fab fa-linkedin-in', href: '#' },
-    { name: 'Instagram', icon: 'fab fa-instagram', href: '#' }
-  ];
+  // const socialLinks = [
+  //   { name: 'Facebook', icon: 'fab fa-facebook-f', href: '#' },
+  //   { name: 'Twitter', icon: 'fab fa-twitter', href: '#' },
+  //   { name: 'LinkedIn', icon: 'fab fa-linkedin-in', href: '#' },
+  //   { name: 'Instagram', icon: 'fab fa-instagram', href: '#' }
+  // ];
 
   return (
     <footer className="bg-gray-900 text-white">

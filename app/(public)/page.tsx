@@ -2,10 +2,8 @@ import {
   HeroSection,
   VideoSection,
   ProblemStatementSection,
-  CounterSection,
   ProgramsSection,
   WhyChooseSection,
-  SocialProofSection,
   BrochuresSection,
   FaqSection
 } from '@/components/landing';
