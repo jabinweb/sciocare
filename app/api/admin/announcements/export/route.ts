@@ -37,7 +37,7 @@ export async function GET() {
 
     const csvContent = [
       csvHeaders.join(','),
-      ...csvData.map(row => [
+      ...csvData.map((row: typeof csvData[0]) => [
         row.id,
         `"${row.title}"`,
         `"${row.content}"`,
