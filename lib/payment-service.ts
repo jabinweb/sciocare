@@ -1,5 +1,4 @@
 import { prisma } from '@/lib/prisma';
-import { PaymentGateway, PaymentStatus } from '@prisma/client';
 import Razorpay from 'razorpay';
 import { validateCashfreeConfig } from '@/lib/cashfree-config';
 import crypto from 'crypto';
@@ -10,11 +9,11 @@ interface CreatePaymentOptions {
   amount: number;
   currency?: string;
   description?: string;
-  gateway?: PaymentGateway;
+  gateway?: string;
 }
 
 interface PaymentGatewayConfig {
-  defaultGateway: PaymentGateway;
+  defaultGateway: string;
   siteUrl: string;
   razorpay: {
     enabled: boolean;
@@ -91,7 +90,7 @@ export const getPaymentConfig = async (): Promise<PaymentGatewayConfig> => {
     : settingsMap.payment_cashfree_secret_key;
 
   return {
-    defaultGateway: (settingsMap.payment_default_gateway as PaymentGateway) || PaymentGateway.RAZORPAY,
+    defaultGateway: (settingsMap.payment_default_gateway as string) || 'RAZORPAY',
     siteUrl: settingsMap.siteUrl || process.env.NEXTAUTH_URL || 'https://sciolabs.in',
     razorpay: {
       enabled: settingsMap.payment_razorpay_enabled === 'true',
@@ -145,10 +144,10 @@ export const createPaymentOrder = async (options: CreatePaymentOptions) => {
   const gateway = options.gateway || config.defaultGateway;
   
   // Check if the selected gateway is enabled
-  if (gateway === PaymentGateway.RAZORPAY && !config.razorpay.enabled) {
+  if (gateway === 'RAZORPAY' && !config.razorpay.enabled) {
     throw new Error('Razorpay is not enabled');
   }
-  if (gateway === PaymentGateway.CASHFREE && !config.cashfree.enabled) {
+  if (gateway === 'CASHFREE' && !config.cashfree.enabled) {
     throw new Error('Cashfree is not enabled');
   }
 
@@ -156,10 +155,11 @@ export const createPaymentOrder = async (options: CreatePaymentOptions) => {
   const payment = await prisma.payment.create({
     data: {
       userId: options.userId,
-      gateway,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      gateway: gateway as any,
       amount: options.amount,
       currency: options.currency || 'INR',
-      status: PaymentStatus.PENDING,
+      status: 'PENDING',
       description: options.description,
     },
   });
@@ -167,7 +167,7 @@ export const createPaymentOrder = async (options: CreatePaymentOptions) => {
   let orderData;
 
   try {
-    if (gateway === PaymentGateway.RAZORPAY) {
+    if (gateway === 'RAZORPAY') {
       orderData = await createRazorpayOrder(payment.id, options.amount, options.currency);
       
       // Update payment with Razorpay order ID
@@ -176,7 +176,7 @@ export const createPaymentOrder = async (options: CreatePaymentOptions) => {
         data: { razorpayOrderId: orderData.id },
       });
 
-    } else if (gateway === PaymentGateway.CASHFREE) {
+    } else if (gateway === 'CASHFREE') {
       orderData = await createCashfreeOrder(payment.id, options.amount, options.currency, options.userId);
       
       // Update payment with Cashfree order ID
@@ -197,7 +197,7 @@ export const createPaymentOrder = async (options: CreatePaymentOptions) => {
     await prisma.payment.update({
       where: { id: payment.id },
       data: { 
-        status: PaymentStatus.FAILED,
+        status: 'FAILED',
         failureReason: error instanceof Error ? error.message : 'Unknown error'
       },
     });
@@ -423,7 +423,7 @@ export const verifyRazorpayPayment = async (
     data: {
       razorpayPaymentId,
       razorpaySignature,
-      status: PaymentStatus.COMPLETED,
+      status: 'COMPLETED',
     },
   });
 
@@ -485,7 +485,7 @@ export const verifyCashfreePayment = async (paymentId: string, orderId: string) 
       where: { id: payment.id },
       data: {
         cashfreePaymentId: orderData.cf_order_id || `cf_payment_${Date.now()}`,
-        status: PaymentStatus.COMPLETED,
+        status: 'COMPLETED',
         paymentMethod: 'Online', // Cashfree doesn't provide specific method in order details
       },
     });
@@ -498,16 +498,16 @@ export const verifyCashfreePayment = async (paymentId: string, orderId: string) 
 };
 
 // Get available payment gateways
-export const getAvailableGateways = async (): Promise<PaymentGateway[]> => {
+export const getAvailableGateways = async (): Promise<string[]> => {
   const config = await getPaymentConfig();
-  const gateways: PaymentGateway[] = [];
+  const gateways: string[] = [];
 
   if (config.razorpay.enabled && config.razorpay.keyId && config.razorpay.keySecret) {
-    gateways.push(PaymentGateway.RAZORPAY);
+    gateways.push('RAZORPAY');
   }
 
   if (config.cashfree.enabled && validateCashfreeConfig(config.cashfree.appId, config.cashfree.secretKey)) {
-    gateways.push(PaymentGateway.CASHFREE);
+    gateways.push('CASHFREE');
   }
 
   return gateways;

@@ -1,9 +1,8 @@
 import { prisma } from './prisma';
-import { ActivityType } from '@prisma/client';
 
 interface ActivityLogData {
   userId: string;
-  action: ActivityType;
+  action: string;
   description: string;
   metadata?: Record<string, unknown>;
   ipAddress?: string;
@@ -16,7 +15,8 @@ export async function logActivity(data: ActivityLogData) {
     await prisma.userActivity.create({
       data: {
         userId: data.userId,
-        action: data.action,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        action: data.action as any,
         description: data.description,
         metadata: data.metadata ? JSON.parse(JSON.stringify(data.metadata)) : null,
         ipAddress: data.ipAddress,

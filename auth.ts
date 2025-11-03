@@ -3,7 +3,6 @@ import Nodemailer from "next-auth/providers/nodemailer"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import authConfig from "./authConfig"
-import { UserRole } from "@prisma/client"
 import { logLogin } from "@/lib/activity-logger"
 import type { Adapter } from "next-auth/adapters"
 
@@ -149,7 +148,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
               email: user.email,
               name: user.name || profile?.name || user.email.split('@')[0],
               image: user.image || profile?.picture,
-              role: UserRole.USER,
+              role: 'USER',
               isActive: true,
               lastLoginAt: new Date(),
             },
@@ -176,7 +175,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async session({ session, token }) {
       if (token && session.user) {
         session.user.id = token.sub || ""
-        session.user.role = token.role ? String(token.role) as typeof session.user.role : UserRole.USER
+        session.user.role = token.role ? String(token.role) as typeof session.user.role : 'USER'
       }
       return session
     },
