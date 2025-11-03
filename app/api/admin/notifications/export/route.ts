@@ -21,7 +21,7 @@ export async function GET() {
     });
 
     // Format for CSV
-    const csvData = notifications.map(notification => ({
+    const csvData = notifications.map((notification: typeof notifications[0]) => ({
       id: notification.id,
       title: notification.title,
       message: notification.message,
