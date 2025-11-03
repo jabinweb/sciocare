@@ -33,7 +33,7 @@ export async function GET() {
 
     const csvRows = [
       headers.join(','),
-      ...payments.map(payment => [
+      ...payments.map((payment: typeof payments[0]) => [
         payment.id,
         payment.user.email || '',
         payment.user.name || '',
