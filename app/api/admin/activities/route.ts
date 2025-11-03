@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { Prisma, ActivityType } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
     const where: Prisma.UserActivityWhereInput = {};
     
     if (action && action !== 'ALL') {
-      where.action = action as ActivityType;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      where.action = action as any;
     }
     
     if (userId) {
