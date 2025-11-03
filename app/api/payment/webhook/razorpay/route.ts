@@ -203,7 +203,7 @@ async function processSubscriptionCreation(metadata: Record<string, unknown>, pa
         }
       });
 
-      const existingSubjectIds = existingSubscriptions.map((s: typeof existingSubscriptions[number]) => s.subjectId).filter((id): id is string => id !== null);
+      const existingSubjectIds = existingSubscriptions.map((s: typeof existingSubscriptions[number]) => s.subjectId).filter((id: string | null): id is string => id !== null);
       const newSubjectIds = subjectIds.filter((id: string) => !existingSubjectIds.includes(id));
 
       if (newSubjectIds.length > 0) {
