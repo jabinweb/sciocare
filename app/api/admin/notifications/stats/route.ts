@@ -40,12 +40,12 @@ export async function GET() {
       })
     ]);
 
-    const typeStats = (byType || []).reduce((acc, item) => {
+    const typeStats = (byType || []).reduce((acc: Record<string, number>, item: { type: string; _count: { type: number } }) => {
       acc[item.type] = item._count.type;
       return acc;
     }, {} as Record<string, number>);
 
-    const priorityStats = (byPriority || []).reduce((acc, item) => {
+    const priorityStats = (byPriority || []).reduce((acc: Record<string, number>, item: { priority: string; _count: { priority: number } }) => {
       acc[item.priority] = item._count.priority;
       return acc;
     }, {} as Record<string, number>);
