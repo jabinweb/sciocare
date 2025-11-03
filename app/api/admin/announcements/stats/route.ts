@@ -48,7 +48,7 @@ export async function GET() {
       })
     ]);
 
-    const typeStats = (byType || []).reduce((acc, item) => {
+    const typeStats = (byType || []).reduce((acc: Record<string, number>, item: { type: string; _count: { type: number } }) => {
       acc[item.type] = item._count.type;
       return acc;
     }, {} as Record<string, number>);
