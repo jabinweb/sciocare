@@ -42,7 +42,7 @@ export async function GET() {
       })
     ]);
 
-    const actionStats = (activitiesByAction || []).reduce((acc, item) => {
+    const actionStats = (activitiesByAction || []).reduce((acc: Record<string, number>, item: { action: string; _count: { action: number } }) => {
       acc[item.action] = item._count.action;
       return acc;
     }, {} as Record<string, number>);
