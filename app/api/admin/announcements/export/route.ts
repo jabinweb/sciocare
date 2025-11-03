@@ -16,7 +16,7 @@ export async function GET() {
     });
 
     // Format for CSV
-    const csvData = announcements.map(announcement => ({
+    const csvData = announcements.map((announcement: typeof announcements[0]) => ({
       id: announcement.id,
       title: announcement.title,
       content: announcement.content,
