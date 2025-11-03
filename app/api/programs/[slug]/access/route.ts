@@ -92,13 +92,13 @@ export async function GET(
     });
 
     // Check for class-wide subscription
-    const classSubscription = subscriptions?.find((s) => 
+    const classSubscription = subscriptions?.find((s: typeof subscriptions[number]) => 
       s.classId === programData.id && !s.subjectId
     );
 
     // Check for subject-specific subscriptions
     const subjectSubscriptions = new Map(
-      subscriptions?.filter((s) => s.subjectId).map((s) => [s.subjectId, s]) || []
+      subscriptions?.filter((s: typeof subscriptions[number]) => s.subjectId).map((s: typeof subscriptions[number]) => [s.subjectId, s]) || []
     );
 
     // Check school access
