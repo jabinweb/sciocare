@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 import crypto from 'crypto';
-import { PaymentStatus } from '@prisma/client';
 import { getAcademicYearEndDate } from '@/lib/subscription-date-utils';
 
 // Webhook endpoint for Razorpay payment notifications
@@ -84,12 +83,12 @@ export async function POST(req: Request) {
       }
 
       // Update payment status if not already completed
-      if (payment.status !== PaymentStatus.COMPLETED) {
+      if (payment.status !== 'COMPLETED') {
         await prisma.payment.update({
           where: { id: payment.id },
           data: {
             razorpayPaymentId: paymentId,
-            status: PaymentStatus.COMPLETED,
+            status: 'COMPLETED',
             updatedAt: new Date()
           }
         });
@@ -131,12 +130,12 @@ export async function POST(req: Request) {
         where: { razorpayOrderId: orderId }
       });
 
-      if (payment && payment.status !== PaymentStatus.FAILED) {
+      if (payment && payment.status !== 'FAILED') {
         await prisma.payment.update({
           where: { id: payment.id },
           data: {
             razorpayPaymentId: paymentId,
-            status: PaymentStatus.FAILED,
+            status: 'FAILED',
             updatedAt: new Date()
           }
         });

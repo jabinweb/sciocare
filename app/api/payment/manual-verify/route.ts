@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
-import { PaymentStatus } from '@prisma/client';
 import { getAcademicYearEndDate } from '@/lib/subscription-date-utils';
 
 // Manual payment verification endpoint for failed automatic verifications
@@ -58,7 +57,7 @@ export async function POST(req: Request) {
     });
 
     // If payment is already completed and user doesn't want to force reprocess
-    if (payment.status === PaymentStatus.COMPLETED && !forceReprocess) {
+    if (payment.status === 'COMPLETED' && !forceReprocess) {
       // Check if subscription already exists
       const existingSubscription = await prisma.subscription.findFirst({
         where: {
@@ -95,7 +94,7 @@ export async function POST(req: Request) {
     }
 
     // Attempt to process subscription if metadata exists and payment is completed
-    if (payment.status === PaymentStatus.COMPLETED && payment.metadata) {
+    if (payment.status === 'COMPLETED' && payment.metadata) {
       try {
         const metadata = typeof payment.metadata === 'string' 
           ? JSON.parse(payment.metadata) 

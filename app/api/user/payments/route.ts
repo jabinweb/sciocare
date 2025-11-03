@@ -1,11 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PaymentStatus } from '@prisma/client';
-
-interface PaymentWhereClause {
-  userId: string;
-  status?: PaymentStatus;
-}
 
 export async function GET(request: NextRequest) {
   try {
@@ -23,12 +17,13 @@ export async function GET(request: NextRequest) {
     }
 
     // Build where clause
-    const whereClause: PaymentWhereClause = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const whereClause: any = {
       userId: userId
     };
 
     if (status && status !== 'all') {
-      whereClause.status = status.toUpperCase() as PaymentStatus;
+      whereClause.status = status.toUpperCase();
     }
 
     // Calculate pagination
