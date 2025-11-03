@@ -137,6 +137,7 @@ export async function POST(request: NextRequest) {
         result.errors.push(`Error processing subscription ${subscription.id}: ${error}`);
       }
     }
+    
 
     // Log the processing results
     console.log('Subscription expiry processing completed:', result);
@@ -162,7 +163,7 @@ async function scheduleNotification(subscription: SubscriptionWithRelations, typ
       console.log(`Skipping notification for user ${subscription.userId} - no email address`);
       return;
     }
-    
+
 
     // Create notification record for processing
     await prisma.notificationQueue.create({
