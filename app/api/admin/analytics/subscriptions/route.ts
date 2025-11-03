@@ -205,7 +205,7 @@ export async function GET(request: NextRequest) {
           dailyData
         },
         insights: {
-          topPerformers: topPerformers.map(item => ({
+          topPerformers: topPerformers.map((item: { classId: number | null; subjectId: string | null; _count: { id: number } }) => ({
             classId: item.classId,
             subjectId: item.subjectId,
             count: item._count.id
