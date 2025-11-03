@@ -1,10 +1,19 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { type Prisma } from '@prisma/client';
+
+// Typed payload for subscription queries that include relations
+type SubscriptionWithIncludes = Prisma.SubscriptionGetPayload<{
+  include: {
+    user: { select: { email: true; name: true } };
+    class: { select: { id: true; name: true } };
+    subject: { select: { id: true; name: true } };
+  };
+}>;
 
 export async function GET() {
   try {
-    const subscriptions = await prisma.subscription.findMany({
+    const subscriptions: SubscriptionWithIncludes[] = await prisma.subscription.findMany({
       include: {
         user: {
           select: {
