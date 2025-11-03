@@ -159,7 +159,7 @@ export async function POST(req: Request) {
               }
             });
 
-            const existingSubjectIds = existingSubscriptions.map(s => s.subjectId).filter((id): id is string => id !== null);
+            const existingSubjectIds = existingSubscriptions.map((s: typeof existingSubscriptions[number]) => s.subjectId).filter((id): id is string => id !== null);
             const newSubjectIds = subjectIds.filter((id: string) => !existingSubjectIds.includes(id));
 
             if (newSubjectIds.length > 0 || forceReprocess) {
