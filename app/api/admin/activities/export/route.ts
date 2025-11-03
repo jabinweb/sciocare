@@ -21,7 +21,7 @@ export async function GET() {
     });
 
     // Format for CSV
-    const csvData = activities.map(activity => ({
+    const csvData = activities.map((activity) => ({
       id: activity.id,
       action: activity.action,
       description: activity.description,
