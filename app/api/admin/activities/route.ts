@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,11 +19,11 @@ export async function GET(request: NextRequest) {
     
     const skip = (page - 1) * limit;
 
-    const where: Prisma.UserActivityWhereInput = {};
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const where: any = {};
     
     if (action && action !== 'ALL') {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      where.action = action as any;
+      where.action = action;
     }
     
     if (userId) {
