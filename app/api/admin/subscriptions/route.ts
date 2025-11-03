@@ -28,7 +28,7 @@ export async function GET() {
     });
 
     // Transform the data to match expected format
-    const transformedSubscriptions = subscriptions.map(sub => ({
+    const transformedSubscriptions = subscriptions.map((sub: typeof subscriptions[number]) => ({
       ...sub,
       amount: sub.amount || 0,
       paymentId: sub.id, // Use subscription ID as payment ID for now
