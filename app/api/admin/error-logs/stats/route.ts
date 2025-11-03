@@ -38,12 +38,12 @@ export async function GET() {
       })
     ]);
 
-    const levelStats = errorsByLevel.reduce((acc, item) => {
+    const levelStats = errorsByLevel.reduce((acc: Record<string, number>, item: { level: string; _count: { level: number } }) => {
       acc[item.level] = item._count.level;
       return acc;
     }, {} as Record<string, number>);
 
-    const sourceStats = errorsBySource.reduce((acc, item) => {
+    const sourceStats = errorsBySource.reduce((acc: Record<string, number>, item: { source: string; _count: { source: number } }) => {
       acc[item.source] = item._count.source;
       return acc;
     }, {} as Record<string, number>);
