@@ -21,7 +21,7 @@ export async function GET() {
       prisma.userActivity.findMany({
         distinct: ['userId'],
         select: { userId: true }
-      }).then(users => users.length),
+      }).then((users: { userId: string }[]) => users.length),
       prisma.userActivity.groupBy({
         by: ['action'],
         _count: { action: true },
@@ -48,14 +48,14 @@ export async function GET() {
     }, {} as Record<string, number>);
 
     // Get user details for top users
-    const topUserIds = topUsers.map(u => u.userId);
+    const topUserIds = topUsers.map((u: { userId: string }) => u.userId);
     const topUsersWithDetails = await prisma.user.findMany({
       where: { id: { in: topUserIds } },
       select: { id: true, name: true, email: true }
     });
 
-    const topUsersFormatted = topUsers.map(userStat => {
-      const user = topUsersWithDetails.find(u => u.id === userStat.userId);
+    const topUsersFormatted = topUsers.map((userStat: { userId: string; _count: { userId: number } }) => {
+      const user = topUsersWithDetails.find((u: { id: string }) => u.id === userStat.userId);
       return {
         userId: userStat.userId,
         userName: user?.name || user?.email || 'Unknown User',
