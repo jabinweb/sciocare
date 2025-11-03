@@ -24,7 +24,7 @@ export async function GET() {
 
     const csvRows = [
       headers.join(','),
-      ...errorLogs.map(log => [
+      ...errorLogs.map((log: typeof errorLogs[0]) => [
         log.id,
         log.level,
         log.source,
