@@ -85,13 +85,13 @@ export async function GET() {
 
     // Check access for each class
     const classesWithAccess = await Promise.all(
-      classes.map(async (cls) => {
+      classes.map(async (cls: typeof classes[number]) => {
         // Check if user has class-level access
         const classAccess = await checkUserAccess(userId, cls.id);
         
         // Check subject-level access for each subject
         const subjectsWithAccess = await Promise.all(
-          cls.subjects.map(async (subject) => {
+          cls.subjects.map(async (subject: typeof cls.subjects[number]) => {
             const subjectAccess = await checkUserAccess(userId, cls.id, subject.id);
             
             return {
