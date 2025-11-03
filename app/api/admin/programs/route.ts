@@ -29,7 +29,7 @@ export async function GET() {
     });
 
     // Transform the data to ensure price is properly formatted
-    const transformedPrograms = classes.map(cls => ({
+    const transformedPrograms = classes.map((cls: typeof classes[0]) => ({
       ...cls,
       classId: cls.id, // Add classId as the same as id for form compatibility
       price: cls.price ?? 29900, // Ensure price is set (in paisa); allow 0
