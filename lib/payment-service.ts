@@ -53,7 +53,7 @@ export const getPaymentConfig = async (): Promise<PaymentGatewayConfig> => {
     }
   });
 
-  const settingsMap = settings.reduce((acc, setting) => {
+  const settingsMap = settings.reduce((acc: Record<string, string>, setting: typeof settings[number]) => {
     acc[setting.key] = setting.value;
     return acc;
   }, {} as Record<string, string>);
