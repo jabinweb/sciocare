@@ -192,12 +192,12 @@ export async function GET(request: NextRequest) {
           arpu: Number(arpu.toFixed(2))
         },
         charts: {
-          subscriptionsByStatus: subscriptionsByStatus.map(item => ({
+          subscriptionsByStatus: subscriptionsByStatus.map((item: { status: string; _count: number }) => ({
             status: item.status,
             count: item._count,
             percentage: Number((item._count / totalSubscriptions * 100).toFixed(1))
           })),
-          subscriptionsByType: subscriptionsByType.map(item => ({
+          subscriptionsByType: subscriptionsByType.map((item: { planType: string; _count: number }) => ({
             type: item.planType,
             count: item._count,
             percentage: Number((item._count / totalSubscriptions * 100).toFixed(1))
