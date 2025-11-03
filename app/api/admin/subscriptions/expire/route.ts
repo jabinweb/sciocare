@@ -162,6 +162,7 @@ async function scheduleNotification(subscription: SubscriptionWithRelations, typ
       console.log(`Skipping notification for user ${subscription.userId} - no email address`);
       return;
     }
+    
 
     // Create notification record for processing
     await prisma.notificationQueue.create({
