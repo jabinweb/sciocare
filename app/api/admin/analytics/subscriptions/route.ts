@@ -202,7 +202,7 @@ export async function GET(request: NextRequest) {
             count: item._count,
             percentage: Number((item._count / totalSubscriptions * 100).toFixed(1))
           })),
-          dailyData
+          dailyData: dailyData
         },
         insights: {
           topPerformers: topPerformers.map((item: { classId: number | null; subjectId: string | null; _count: { id: number } }) => ({
