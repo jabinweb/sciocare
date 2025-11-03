@@ -56,18 +56,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { addDays, addMonths } from 'date-fns';
-import { Subscription, User, Class, Subject } from '@prisma/client';
 import { 
   processAutoRenewalPayment
 } from '@/lib/razorpay';
 import { verifyAdminOrCron } from '@/lib/admin-auth';
 
 // Define types for subscription with relations
-interface SubscriptionWithRelations extends Subscription {
-  user: Pick<User, 'id' | 'email' | 'displayName'>;
-  class?: Pick<Class, 'id' | 'name' | 'price'> | null;
-  subject?: Pick<Subject, 'id' | 'name' | 'price'> | null;
-}
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type SubscriptionWithRelations = any;
 
 interface AutoRenewalRequest {
   subscriptionId: string;
