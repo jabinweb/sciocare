@@ -166,7 +166,8 @@ export async function DELETE(request: Request) {
 
     // Comprehensive user deletion with proper cleanup
     // This handles all related data thanks to Prisma's cascade relationships
-    await prisma.$transaction(async (tx) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    await prisma.$transaction(async (tx: any) => {
       // 1. Delete user sessions (NextAuth sessions)
       await tx.session.deleteMany({
         where: { userId: studentId }
