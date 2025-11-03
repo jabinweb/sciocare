@@ -42,7 +42,7 @@ export async function getRazorpayConfig(): Promise<RazorpayConfig> {
     });
 
     // Convert to key-value object
-    const settingsObj = dbSettings.reduce((acc: Record<string, string>, setting) => {
+    const settingsObj = dbSettings.reduce((acc: Record<string, string>, setting: typeof dbSettings[number]) => {
       acc[setting.key] = setting.value;
       return acc;
     }, {});
