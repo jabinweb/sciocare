@@ -1,15 +1,11 @@
 import { prisma } from '@/lib/prisma';
-import type { Prisma } from '@prisma/client';
-
-type SubscriptionWithRelations = Prisma.SubscriptionGetPayload<{
-  include: { class: true; subject: true }
-}>;
 
 export interface UserAccess {
   hasClassAccess: boolean;
   hasSubjectAccess: boolean;
   accessType: 'none' | 'subject' | 'class' | 'premium';
-  subscription?: Partial<SubscriptionWithRelations>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  subscription?: any;
 }
 
 // Check if user has access to specific content
