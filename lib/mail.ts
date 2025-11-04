@@ -262,3 +262,112 @@ export function clearSmtpCache() {
   cacheTimestamp = 0;
   console.log('SMTP settings cache cleared');
 }
+
+/**
+ * Send password reset email
+ */
+export async function sendPasswordResetEmail(to: string, resetUrl: string) {
+  const html = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Password Reset</title>
+    </head>
+    <body style="margin: 0; padding: 0; font-family: Arial, sans-serif; background-color: #f4f4f4;">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f4f4f4; padding: 20px;">
+        <tr>
+          <td align="center">
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+              <!-- Header -->
+              <tr>
+                <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center;">
+                  <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">Password Reset Request</h1>
+                </td>
+              </tr>
+              
+              <!-- Content -->
+              <tr>
+                <td style="padding: 40px 30px;">
+                  <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">Hello,</p>
+                  
+                  <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                    We received a request to reset your password. Click the button below to create a new password:
+                  </p>
+                  
+                  <!-- Button -->
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin: 30px 0;">
+                    <tr>
+                      <td align="center">
+                        <a href="${resetUrl}" 
+                           style="display: inline-block; padding: 14px 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: #ffffff; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: 600; box-shadow: 0 4px 6px rgba(102, 126, 234, 0.3);">
+                          Reset Password
+                        </a>
+                      </td>
+                    </tr>
+                  </table>
+                  
+                  <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 20px 0 0;">
+                    Or copy and paste this link into your browser:
+                  </p>
+                  <p style="color: #667eea; font-size: 14px; word-break: break-all; margin: 10px 0 20px;">
+                    ${resetUrl}
+                  </p>
+                  
+                  <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 30px 0; border-radius: 4px;">
+                    <p style="color: #856404; font-size: 14px; line-height: 1.6; margin: 0;">
+                      <strong>⚠️ Security Notice:</strong> This link will expire in 1 hour. If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+                    </p>
+                  </div>
+                  
+                  <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 30px 0 0;">
+                    Best regards,<br>
+                    <strong>The ScioLabs Team</strong>
+                  </p>
+                </td>
+              </tr>
+              
+              <!-- Footer -->
+              <tr>
+                <td style="background-color: #f8f9fa; padding: 30px; text-align: center; border-top: 1px solid #e9ecef;">
+                  <p style="color: #6c757d; font-size: 12px; line-height: 1.5; margin: 0;">
+                    This is an automated email. Please do not reply to this message.
+                  </p>
+                  <p style="color: #6c757d; font-size: 12px; line-height: 1.5; margin: 10px 0 0;">
+                    © ${new Date().getFullYear()} ScioLabs. All rights reserved.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+    </html>
+  `;
+
+  const text = `
+Password Reset Request
+
+Hello,
+
+We received a request to reset your password. Click the link below to create a new password:
+
+${resetUrl}
+
+This link will expire in 1 hour.
+
+If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+
+Best regards,
+The ScioLabs Team
+  `;
+
+  return sendEmail({
+    to,
+    subject: 'Reset Your Password - ScioLabs',
+    html,
+    text,
+  });
+}

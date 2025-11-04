@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { createUserWithPassword } from '@/lib/auth-helpers';
 
-// Note: This bulk upload functionality has been simplified for NextAuth.js compatibility
-// Users must now sign in through OAuth providers (Google) before they can be managed
-// This endpoint now only updates existing user profiles, not create new auth accounts
+// Default password for all students created via bulk upload
+const DEFAULT_PASSWORD = 'Student@123';
 
 interface ProcessResult {
   success: boolean;
@@ -17,10 +17,9 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
-    const schoolId = formData.get('schoolId') as string;
 
-    if (!file || !schoolId) {
-      return NextResponse.json({ error: 'File and school ID are required' }, { status: 400 });
+    if (!file) {
+      return NextResponse.json({ error: 'File is required' }, { status: 400 });
     }
 
     // Read and parse CSV
@@ -32,7 +31,7 @@ export async function POST(request: Request) {
     }
 
     const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-    const requiredHeaders = ['name', 'email'];
+    const requiredHeaders = ['name', 'email', 'college_name', 'phone'];
     
     // Validate headers
     const missingHeaders = requiredHeaders.filter(h => !headers.includes(h));
@@ -61,10 +60,10 @@ export async function POST(request: Request) {
 
       try {
         // Validate required fields
-        if (!studentData.name || !studentData.email) {
+        if (!studentData.name || !studentData.email || !studentData.college_name || !studentData.phone) {
           result.errors.push({
             row: i + 1,
-            error: 'Name and email are required',
+            error: 'Name, email, college name, and phone are required',
             data: studentData
           });
           continue;
@@ -81,39 +80,51 @@ export async function POST(request: Request) {
           continue;
         }
 
-        // Check if user already exists in database (NextAuth.js manages auth, we only update profiles)
-        const existingUser = await prisma.user.findUnique({
-          where: { email: studentData.email.toLowerCase() },
-          select: { id: true }
-        });
-
-        if (!existingUser) {
+        // Validate phone number (basic validation)
+        const phoneRegex = /^\d{10}$/;
+        if (!phoneRegex.test(studentData.phone.replace(/\s+/g, ''))) {
           result.errors.push({
             row: i + 1,
-            error: 'User must sign in with Google OAuth first before profile can be updated',
+            error: 'Phone number must be 10 digits',
             data: studentData
           });
           continue;
         }
 
-        // Update existing user record with CSV data
-        await prisma.user.update({
-          where: { id: existingUser.id },
-          data: {
-            name: studentData.name,
-            schoolId: schoolId,
-            
-            // Update profile fields from CSV
-            grade: studentData.grade || null,
-            section: studentData.section || null,
-            rollNumber: studentData.roll_number || null,
-            phone: studentData.phone || null,
-            parentName: studentData.parent_name || null,
-            parentEmail: studentData.parent_email || null,
-          }
+        // Check if user already exists
+        const existingUser = await prisma.user.findUnique({
+          where: { email: studentData.email.toLowerCase() },
+          select: { id: true, password: true }
         });
-        
-        result.updated++;
+
+        if (existingUser) {
+          // Update existing user
+          await prisma.user.update({
+            where: { id: existingUser.id },
+            data: {
+              name: studentData.name,
+              collegeName: studentData.college_name,
+              phone: studentData.phone,
+              role: 'USER',
+              isActive: true,
+            }
+          });
+          
+          result.updated++;
+        } else {
+          // Create new user with default password
+          await createUserWithPassword({
+            email: studentData.email.toLowerCase(),
+            name: studentData.name,
+            password: DEFAULT_PASSWORD,
+            collegeName: studentData.college_name,
+            phone: studentData.phone,
+            role: 'USER',
+            isActive: true,
+          });
+          
+          result.created++;
+        }
 
       } catch (error) {
         result.errors.push({
@@ -122,24 +133,6 @@ export async function POST(request: Request) {
           data: studentData
         });
       }
-    }
-
-    // Update school student count
-    try {
-      const schoolUsers = await prisma.user.findMany({
-        where: {
-          schoolId: schoolId,
-          role: 'USER'
-        },
-        select: { id: true }
-      });
-
-      await prisma.school.update({
-        where: { id: schoolId },
-        data: { studentCount: schoolUsers.length }
-      });
-    } catch (error) {
-      console.error('Error updating school student count:', error);
     }
 
     // Determine overall success

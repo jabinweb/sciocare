@@ -12,20 +12,15 @@ import { Upload, Download, CheckCircle, XCircle, AlertCircle } from 'lucide-reac
 interface BulkUploadProps {
   isOpen: boolean;
   onClose: () => void;
-  schoolId: string;
-  schoolName: string;
   onComplete: () => void;
 }
 
 interface StudentData {
   name: string;
   email: string;
-  grade: string;
-  section: string;
-  errors: Array<{ row: number; error: string; data: StudentData }>;
+  college_name: string;
   phone: string;
-  parent_name: string;
-  parent_email: string;
+  errors: Array<{ row: number; error: string; data: StudentData }>;
 }
 
 interface UploadResult {
@@ -36,17 +31,17 @@ interface UploadResult {
   errors: Array<{ row: number; error: string; data: StudentData }>;
 }
 
-export function BulkStudentUpload({ isOpen, onClose, schoolId, schoolName, onComplete }: BulkUploadProps) {
+export function BulkStudentUpload({ isOpen, onClose, onComplete }: BulkUploadProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [result, setResult] = useState<UploadResult | null>(null);
 
   const downloadTemplate = () => {
-    const csvContent = `name,email,grade,section,roll_number,phone,parent_name,parent_email
-John Doe,john.doe@example.com,5,A,001,9495212484,John Sr,john.sr@example.com
-Jane Smith,jane.smith@example.com,5,A,002,9495212485,Jane Sr,jane.sr@example.com
-Mike Johnson,mike.johnson@example.com,5,B,003,9495212486,Mike Sr,mike.sr@example.com`;
+    const csvContent = `name,email,college_name,phone
+John Doe,john.doe@example.com,MIT College,9876543210
+Jane Smith,jane.smith@example.com,Stanford University,9876543211
+Mike Johnson,mike.johnson@example.com,Harvard College,9876543212`;
 
     const blob = new Blob([csvContent], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -77,7 +72,6 @@ Mike Johnson,mike.johnson@example.com,5,B,003,9495212486,Mike Sr,mike.sr@example
     try {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('schoolId', schoolId);
 
       const response = await fetch('/api/admin/students/bulk-upload', {
         method: 'POST',
@@ -121,11 +115,8 @@ Mike Johnson,mike.johnson@example.com,5,B,003,9495212486,Mike Sr,mike.sr@example
           data: {
             name: '',
             email: '',
-            grade: '',
-            section: '',
+            college_name: '',
             phone: '',
-            parent_name: '',
-            parent_email: '',
             errors: []
           }
         }]
@@ -152,7 +143,7 @@ Mike Johnson,mike.johnson@example.com,5,B,003,9495212486,Mike Sr,mike.sr@example
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Upload className="h-5 w-5" />
-            Bulk Student Upload - {schoolName}
+            Bulk Student Upload
           </DialogTitle>
         </DialogHeader>
 
@@ -160,7 +151,7 @@ Mike Johnson,mike.johnson@example.com,5,B,003,9495212486,Mike Sr,mike.sr@example
           {/* Instructions */}
           <Alert variant="default">
             <AlertDescription>
-              Upload a CSV file with student information. Make sure to follow the template format for successful import.
+              Upload a CSV file with student information (Name, Email, College Name, Phone). All students will be created with default password: <strong>Student@123</strong> which they can change in their profile.
             </AlertDescription>
           </Alert>
 

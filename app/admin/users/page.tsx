@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Trash2, RefreshCw, AlertCircle, UserCheck, Plus, Edit, UserX, Search } from 'lucide-react';
+import { Trash2, RefreshCw, AlertCircle, UserCheck, Plus, Edit, UserX, Search, Upload } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { BulkStudentUpload } from '@/components/admin/BulkStudentUpload';
 
 interface Subscription {
   id: string;
@@ -63,6 +64,7 @@ export default function UsersPage() {
     isActive: true,
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
 
   // Enhanced admin check
   const isAdmin = user && userRole === 'ADMIN';
@@ -295,6 +297,10 @@ export default function UsersPage() {
             <Button onClick={refreshData} variant="outline" disabled={dataLoading}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
+            </Button>
+            <Button onClick={() => setBulkUploadOpen(true)} variant="secondary">
+              <Upload className="h-4 w-4 mr-2" />
+              Bulk Upload
             </Button>
             <Button onClick={() => setFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
@@ -562,6 +568,13 @@ export default function UsersPage() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Bulk Student Upload Dialog */}
+        <BulkStudentUpload
+          isOpen={bulkUploadOpen}
+          onClose={() => setBulkUploadOpen(false)}
+          onComplete={refreshData}
+        />
       </div>
     </div>
   );

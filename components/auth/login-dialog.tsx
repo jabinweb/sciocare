@@ -15,6 +15,7 @@ import { useRouter } from 'next/navigation';
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface LoginDialogProps {
   defaultOpen?: boolean;
@@ -23,16 +24,16 @@ interface LoginDialogProps {
 }
 
 // Custom SignIn content component for dialog use
-function SignInContent({ callbackUrl = '/dashboard' }: { callbackUrl?: string }) {
+function SignInContent({ callbackUrl = '/dashboard', onNavigateAway }: { callbackUrl?: string; onNavigateAway?: () => void }) {
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleGoogleSignIn = async () => {
     try {
       setIsLoading(true);
-  await signIn('google', { callbackUrl });
+      await signIn('google', { callbackUrl });
     } catch (error: unknown) {
       console.error('Google Sign-in Error:', error);
       setError('Failed to sign in with Google');
@@ -41,54 +42,32 @@ function SignInContent({ callbackUrl = '/dashboard' }: { callbackUrl?: string })
     }
   };
 
-  const handleEmailSignIn = async (e: React.FormEvent) => {
+  const handleCredentialsSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setIsLoading(true);
       setError(null);
       
-      const result = await signIn('nodemailer', { 
+      const result = await signIn('credentials', { 
         email,
+        password,
         callbackUrl,
         redirect: false
       });
       
       if (result?.error) {
-        setError('Failed to send sign-in email. Please try again.');
-      } else {
-        setEmailSent(true);
-        setError(null);
+        setError('Invalid email or password. Please try again.');
+      } else if (result?.ok) {
+        // Successful sign-in, redirect will happen automatically
+        window.location.href = callbackUrl;
       }
     } catch (error: unknown) {
-      console.error('Email Sign-in Error:', error);
-      setError('Failed to send sign-in email');
+      console.error('Credentials Sign-in Error:', error);
+      setError('Failed to sign in. Please try again.');
     } finally {
       setIsLoading(false);
     }
   };
-
-  if (emailSent) {
-    return (
-      <div className="text-center space-y-4">
-        <p className="text-muted-foreground">
-          We&apos;ve sent a sign-in link to <strong>{email}</strong>
-        </p>
-        <p className="text-sm text-muted-foreground">
-          Click the link in your email to sign in. You can close this window.
-        </p>
-        <Button 
-          variant="outline" 
-          onClick={() => {
-            setEmailSent(false);
-            setEmail('');
-          }}
-          className="w-full"
-        >
-          Try Different Email
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-4">
@@ -118,7 +97,7 @@ function SignInContent({ callbackUrl = '/dashboard' }: { callbackUrl?: string })
         </div>
       </div>
 
-      <form onSubmit={handleEmailSignIn} className="space-y-4">
+      <form onSubmit={handleCredentialsSignIn} className="space-y-4">
         <div>
           <Input
             type="email"
@@ -129,15 +108,35 @@ function SignInContent({ callbackUrl = '/dashboard' }: { callbackUrl?: string })
           />
         </div>
         
+        <div>
+          <Input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+
+        <div className="flex justify-end">
+          <Link 
+            href="/auth/forgot-password" 
+            className="text-sm text-blue-600 hover:underline"
+            onClick={onNavigateAway}
+          >
+            Forgot Password?
+          </Link>
+        </div>
+        
         {error && <p className="text-red-500 text-sm">{error}</p>}
         
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
-          Send Sign-in Link
+          Sign in
         </Button>
         
         <p className="text-xs text-gray-600 text-center">
-          We&apos;ll send you a secure link to sign in without a password
+          Sign in with your email and password
         </p>
       </form>
     </div>
@@ -200,7 +199,7 @@ export function LoginDialog({ defaultOpen = false, onClose, callbackUrl = '/dash
         
         <div className="space-y-4">
           {/* Custom SignIn implementation without Card wrapper */}
-          <SignInContent callbackUrl={callbackUrl} />
+          <SignInContent callbackUrl={callbackUrl} onNavigateAway={() => setOpen(false)} />
         </div>
       </DialogContent>
     </Dialog>

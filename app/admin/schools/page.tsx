@@ -315,8 +315,6 @@ export default function SchoolsPage() {
           <BulkStudentUpload
             isOpen={bulkUploadOpen}
             onClose={closeBulkUpload}
-            schoolId={selectedSchoolForUpload.id}
-            schoolName={selectedSchoolForUpload.name}
             onComplete={handleUploadComplete}
           />
         )}

@@ -96,6 +96,7 @@ model User {
   name              String?
   email             String?             @unique
   emailVerified     DateTime?           @map("email_verified")
+  password          String?
   image             String?
   displayName       String?             @map("display_name")
   role              UserRole            @default(USER)
@@ -104,6 +105,7 @@ model User {
   created_at        DateTime            @default(now()) @map("created_at")
   updatedAt         DateTime            @updatedAt @map("updated_at")
   schoolId          String?             @map("school_id")
+  collegeName       String?             @map("college_name")
   grade             String?             @map("grade")
   section           String?             @map("section")
   rollNumber        String?             @map("roll_number")

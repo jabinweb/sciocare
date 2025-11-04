@@ -1,8 +1,38 @@
 import { NextAuthConfig } from "next-auth"
 import Google from "next-auth/providers/google"
+import Credentials from 'next-auth/providers/credentials'
+import bcrypt from 'bcryptjs'
+import { prisma } from '@/lib/prisma'
 
 export default {
   providers: [
+    // Credentials provider for email + password auth
+    Credentials({
+      id: 'credentials',
+      name: 'Credentials',
+      credentials: {
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' }
+      },
+      async authorize(credentials) {
+        const email = credentials?.email?.toString() || ''
+        const password = credentials?.password?.toString() || ''
+
+        if (!email || !password) return null
+
+  const user = await prisma.user.findUnique({ where: { email } })
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userPassword = (user as any)?.password as string | undefined
+  if (!user || !userPassword) return null
+
+  const valid = await bcrypt.compare(password, userPassword)
+        if (!valid) return null
+
+        // return a subset of the user object for the session
+        return { id: user.id, name: user.name || undefined, email: user.email || undefined, role: user.role }
+      }
+    }),
+
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,

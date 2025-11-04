@@ -16,6 +16,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { LoadingScreen } from '@/components/ui/loading-screen';
+import { ChangePasswordForm } from '@/components/dashboard/ChangePasswordForm';
 import { 
   Calendar,
   Mail,
@@ -332,6 +333,11 @@ export default function ProfilePage() {
               )}
             </CardContent>
           </Card>
+        </div>
+
+        {/* Password Change Section */}
+        <div className="mb-8">
+          <ChangePasswordForm />
         </div>
       </div>
     </div>
