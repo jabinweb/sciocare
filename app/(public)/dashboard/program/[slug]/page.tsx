@@ -7,7 +7,6 @@ import { ArrowLeft, Settings } from 'lucide-react';
 import { useProgramPageData } from '@/hooks/useProgramPageData';
 import type { DbTopic } from '@/hooks/useProgramData';
 import { ContentPlayer } from '@/components/learning/ContentPlayer';
-import { useSession } from 'next-auth/react';
 import { ProgramSubscriptionManager } from '@/components/dashboard/ProgramSubscriptionManager';
 import { ProgramPageSkeleton } from '@/components/dashboard/dashboard-class-skeleton';
 import { UnitContent } from '@/components/learning/UnitContent';
@@ -38,13 +37,10 @@ export default function ProgramPage() {
   const params = useParams();
   const router = useRouter();
   const slug = params.slug as string;
-  const { data: session } = useSession();
-  const user = session?.user;
   const [selectedUnit, setSelectedUnit] = useState<string>('');
   const [selectedTopic, setSelectedTopic] = useState<DbTopic & { completed: boolean } | null>(null);
   const [isPlayerOpen, setIsPlayerOpen] = useState(false);
   const [showSubscriptionManager, setShowSubscriptionManager] = useState(false);
-  const [topicRatings, setTopicRatings] = useState<Record<string, { userRating: number; hasRated: boolean }>>({});
   
   // Use unified hook that handles both class data and access verification
   const { 
@@ -57,33 +53,6 @@ export default function ProgramPage() {
     loading, 
     error 
   } = useProgramPageData(slug);
-
-  // Fetch topic difficulty ratings for the class
-  useEffect(() => {
-    const fetchTopicRatings = async () => {
-      if (!currentProgram?.id) return;
-
-      try {
-        const response = await fetch(`/api/user/topic-ratings?classId=${currentProgram.id}`);
-        if (response.ok) {
-          const data = await response.json();
-          // Convert array to object with topicId as key
-          const ratingsMap = data.ratings.reduce((acc: Record<string, { userRating: number; hasRated: boolean }>, rating: { topicId: string; userRating: number; hasRated: boolean }) => {
-            acc[rating.topicId] = {
-              userRating: rating.userRating,
-              hasRated: rating.hasRated
-            };
-            return acc;
-          }, {});
-          setTopicRatings(ratingsMap);
-        }
-      } catch (error) {
-        console.error('Error fetching topic ratings:', error);
-      }
-    };
-
-    fetchTopicRatings();
-  }, [currentProgram?.id]);
 
   useEffect(() => {
     // Auto-select first unlocked unit
@@ -256,48 +225,6 @@ export default function ProgramPage() {
     return allTopics.length > 0 ? Math.round((completedCount / allTopics.length) * 100) : 0;
   };
 
-  const handleDifficultyRate = async (topicId: string, rating: number) => {
-    if (!user?.id) return;
-    
-    try {
-      // Save the difficulty rating to the backend
-      const response = await fetch('/api/user/topic-ratings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          userId: user.id,
-          topicId,
-          rating,
-          classId: currentProgram.id
-        }),
-      });
-
-      if (response.ok) {
-        console.log(`Difficulty rating saved: Topic ${topicId} rated ${rating} stars`);
-        
-        // Refresh topic ratings to show updated rating
-        const ratingsResponse = await fetch(`/api/user/topic-ratings?classId=${currentProgram.id}`);
-        if (ratingsResponse.ok) {
-          const data = await ratingsResponse.json();
-          const ratingsMap = data.ratings.reduce((acc: Record<string, { userRating: number; hasRated: boolean }>, ratingData: { topicId: string; userRating: number; hasRated: boolean }) => {
-            acc[ratingData.topicId] = {
-              userRating: ratingData.userRating,
-              hasRated: ratingData.hasRated
-            };
-            return acc;
-          }, {});
-          setTopicRatings(ratingsMap);
-        }
-      } else {
-        console.error('Failed to save difficulty rating');
-      }
-    } catch (error) {
-      console.error('Error saving difficulty rating:', error);
-    }
-  };
-
   const selectedUnitData = currentProgram.units.find(s => s.id === selectedUnit);
 
   return (
@@ -345,7 +272,7 @@ export default function ProgramPage() {
                 <div className="text-2xl font-bold text-blue-600">
                   {currentProgram.units.reduce((acc, s) => acc + s.chapters.length, 0)}
                 </div>
-                <div className="text-xs text-muted-foreground">Chapters</div>
+                <div className="text-xs text-muted-foreground">Lessons</div>
               </div>
               {currentProgram.price !== 0 && (
                 <Button
@@ -438,7 +365,6 @@ export default function ProgramPage() {
               .filter(([, completed]) => completed)
               .map(([topicId]) => topicId)
           )}
-          topicRatings={topicRatings}
           useAccordion={true}
           showUpgradeButton={false}
           onUnitSelect={(unitId) => {
@@ -479,7 +405,6 @@ export default function ProgramPage() {
         onComplete={handleTopicComplete}
         onIncomplete={handleTopicIncomplete}
         onNext={handleNextTopic}
-        onDifficultyRate={handleDifficultyRate}
         isCompleted={selectedTopic ? (userProgress.get(selectedTopic.id) || false) : false}
       />
     </div>

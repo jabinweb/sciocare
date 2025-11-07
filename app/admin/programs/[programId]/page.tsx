@@ -142,7 +142,7 @@ export default function ProgramDetailPage() {
   };
 
   const handleDeleteUnit = async (unitId: string) => {
-    if (!confirm('Delete this unit and all its chapters and topics?')) return;
+    if (!confirm('Delete this unit and all its lessons and topics?')) return;
     const response = await fetch(`/api/admin/units?id=${unitId}`, { method: 'DELETE' });
     if (response.ok) fetchUnits();
   };
@@ -201,7 +201,7 @@ export default function ProgramDetailPage() {
                       onClick={() => goToChapters(subject.id)}
                     >
                       <Layers className="h-4 w-4 mr-2" />
-                      Manage Chapters
+                      Manage Lessons
                     </Button>
                     <div className="flex gap-2">
                       <Button

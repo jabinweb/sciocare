@@ -5,13 +5,6 @@ import { useSession } from 'next-auth/react';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  SelectValue,
-} from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -22,9 +15,7 @@ import {
   Mail,
   Phone,
   User,
-  School,
-  Hash,
-  GraduationCap
+  School
 } from 'lucide-react';
 
 interface UserProfile {
@@ -39,11 +30,11 @@ interface UserProfile {
   parentName: string | null;
   parentEmail: string | null;
   joinDate: string;
+  collegeName: string | null;
   school: {
     id: string;
     name: string;
   } | null;
-  city?: string; // Add optional city to user profile shape
 }
 
 export default function ProfilePage() {
@@ -56,29 +47,12 @@ export default function ProfilePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    email: '',
-    classId: '',
     phone: '',
-    schoolName: '',
-    city: ''
+    collegeName: ''
   });
-
-  const [classOptions, setClassOptions] = useState<Array<{ id: string | number; name: string }>>([]);
 
   // Fetch user profile data
   useEffect(() => {
-    const fetchClasses = async () => {
-      try {
-        const res = await fetch('/api/admin/programs');
-        if (!res.ok) return;
-        const data = await res.json();
-        type ClassData = { id: string | number; name: string };
-        setClassOptions(Array.isArray(data) ? data.map((d: ClassData) => ({ id: d.id, name: d.name })) : []);
-      } catch (err) {
-        console.error('Error fetching classes:', err);
-      }
-    };
-
     const fetchUserProfile = async () => {
       if (!user?.id) return;
 
@@ -89,11 +63,8 @@ export default function ProfilePage() {
           setUserProfile(profile);
           setFormData({
             name: profile.name || '',
-            email: profile.email || '',
-            classId: profile.grade || '',
             phone: profile.phone || '',
-            schoolName: profile.school?.name || '',
-            city: profile.city || ''
+            collegeName: profile.collegeName || ''
           });
         }
       } catch (error) {
@@ -101,7 +72,6 @@ export default function ProfilePage() {
       }
     };
 
-    fetchClasses();
     fetchUserProfile();
   }, [user]);
 
@@ -147,197 +117,189 @@ export default function ProfilePage() {
     if (userProfile) {
       setFormData({
         name: userProfile.name || '',
-        email: userProfile.email || '',
-        classId: userProfile.grade || '',
         phone: userProfile.phone || '',
-        schoolName: userProfile.school?.name || '',
-        city: userProfile.city || ''
+        collegeName: userProfile.collegeName || ''
       });
     }
     setIsEditing(false);
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-8">
-          <Card className="shadow-xl border-0 bg-white/70 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-t-lg">
-              <div className="flex items-center gap-4">
-                <Avatar className="h-16 w-16 border-4 border-white/20">
-                  <AvatarImage src={user.image || ''} alt={displayName} />
-                  <AvatarFallback className="bg-white/20 text-white text-lg font-bold">
-                    {initials}
-                  </AvatarFallback>
-                </Avatar>
-                <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-gray-200">{displayName}</h2>
-                  <p className="text-gray-300">{user.email}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <Calendar className="h-4 w-4 text-gray-300" />
-                    <span className="text-sm text-gray-300">Joined {joinDate}</span>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8">
+      <div className="container mx-auto px-4">
+        <div className="max-w-4xl mx-auto">
+          {/* Page Header */}
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">My Profile</h1>
+            <p className="text-gray-600">Manage your account information</p>
+          </div>
+
+          {/* Profile Card */}
+          <Card className="shadow-lg border-0 mb-6 overflow-hidden p-0">
+            <CardHeader className="bg-gradient-to-r from-blue-600 to-purple-600 text-white pb-10 pt-8">
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-4">
+                  <Avatar className="h-20 w-20 border-4 border-white shadow-lg">
+                    <AvatarImage src={user.image || ''} alt={displayName} />
+                    <AvatarFallback className="bg-white/20 text-white text-2xl font-bold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <h2 className="text-2xl font-bold mb-1">{displayName}</h2>
+                    <p className="text-blue-100 flex items-center gap-2">
+                      <Mail className="h-4 w-4" />
+                      {user.email}
+                    </p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Calendar className="h-4 w-4" />
+                      <span className="text-sm text-blue-100">Member since {joinDate}</span>
+                    </div>
                   </div>
                 </div>
 
-                <div className="text-right space-x-2">
+                <div className="flex items-center gap-2">
                   {/* Display user role from NextAuth session */}
                   {user?.role && (
-                    <Badge variant="secondary" className="mb-2">
+                    <Badge variant="secondary" className="bg-white/20 text-white border-white/30 hover:bg-white/30">
                       {user.role}
                     </Badge>
                   )}
-                  <Button 
-                    variant={isEditing ? "secondary" : "default"}
-                    onClick={() => setIsEditing(!isEditing)}
-                    disabled={isLoading}
-                  >
-                    {isEditing ? 'Cancel' : 'Edit Profile'}
-                  </Button>
                 </div>
               </div>
             </CardHeader>
-            <CardContent className="p-8">
+            
+            <CardContent className="p-0 -mt-12">
+              <div className="bg-white rounded-t-3xl shadow-xl">
+                {/* Action Buttons */}
+                <div className="px-8 pt-8 pb-4 flex justify-end border-b">
+                  {isEditing ? (
+                    <div className="flex gap-3">
+                      <Button onClick={handleSave} disabled={isLoading} className="bg-blue-600 hover:bg-blue-700">
+                        {isLoading ? 'Saving...' : 'Save Changes'}
+                      </Button>
+                      <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
+                        Cancel
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button 
+                      onClick={() => setIsEditing(true)}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      Edit Profile
+                    </Button>
+                  )}
+                </div>
+
+                {/* Profile Content */}
+                <div className="p-8">
               {isEditing ? (
                 <div className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="name" className="text-gray-700 font-medium">Full Name</Label>
+                      <Label htmlFor="name" className="text-gray-700 font-medium flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Full Name
+                      </Label>
                       <Input
                         id="name"
                         value={formData.name}
                         onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        className="h-11 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        placeholder="Enter your full name"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email" className="text-gray-700 font-medium">Email</Label>
-                      <Input
-                        id="email"
-                        type="email"
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-
-                    <div className="space-y-2 md:col-span-2">
-                      <Label htmlFor="classId" className="text-gray-700 font-medium">Class</Label>
-                      <Select
-                        value={formData.classId}
-                        onValueChange={(val) => setFormData({ ...formData, classId: val })}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select class" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {classOptions.map((opt) => (
-                            <SelectItem key={opt.id} value={String(opt.id)}>{opt.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="phone" className="text-gray-700 font-medium">Phone Number</Label>
+                      <Label htmlFor="phone" className="text-gray-700 font-medium flex items-center gap-2">
+                        <Phone className="h-4 w-4" />
+                        Phone Number
+                      </Label>
                       <Input
                         id="phone"
                         value={formData.phone}
                         onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        className="h-11 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        placeholder="Enter your phone number"
                       />
                     </div>
 
-                    <div className="space-y-2">
-                      <Label htmlFor="schoolName" className="text-gray-700 font-medium">School Name</Label>
+                    <div className="space-y-2 md:col-span-2">
+                      <Label htmlFor="collegeName" className="text-gray-700 font-medium flex items-center gap-2">
+                        <School className="h-4 w-4" />
+                        College Name
+                      </Label>
                       <Input
-                        id="schoolName"
-                        value={formData.schoolName}
-                        onChange={(e) => setFormData({ ...formData, schoolName: e.target.value })}
-                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
+                        id="collegeName"
+                        value={formData.collegeName}
+                        onChange={(e) => setFormData({ ...formData, collegeName: e.target.value })}
+                        className="h-11 border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                        placeholder="Enter your college name"
                       />
                     </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="city" className="text-gray-700 font-medium">City</Label>
-                      <Input
-                        id="city"
-                        value={formData.city}
-                        onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                        className="border-gray-200 focus:border-blue-500 focus:ring-blue-500"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 pt-4">
-                    <Button onClick={handleSave} disabled={isLoading}>
-                      {isLoading ? 'Saving...' : 'Save Changes'}
-                    </Button>
-                    <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
-                      Cancel
-                    </Button>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <User className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Full Name</p>
-                        <p className="font-medium">{userProfile?.name || 'Not set'}</p>
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="flex items-start gap-4 p-5 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
+                      <div className="p-2.5 bg-blue-600 rounded-lg">
+                        <User className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-600 mb-1">Full Name</p>
+                        <p className="font-semibold text-gray-900 truncate">{userProfile?.name || 'Not set'}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <Mail className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Email</p>
-                        <p className="font-medium">{userProfile?.email || 'Not set'}</p>
+                    <div className="flex items-start gap-4 p-5 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
+                      <div className="p-2.5 bg-purple-600 rounded-lg">
+                        <Mail className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-600 mb-1">Email</p>
+                        <p className="font-semibold text-gray-900 truncate">{userProfile?.email || 'Not set'}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <GraduationCap className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Class</p>
-                        <p className="font-medium">{userProfile?.grade || 'Not set'}</p>
+                    <div className="flex items-start gap-4 p-5 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
+                      <div className="p-2.5 bg-green-600 rounded-lg">
+                        <Phone className="h-5 w-5 text-white" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-600 mb-1">Phone Number</p>
+                        <p className="font-semibold text-gray-900 truncate">{userProfile?.phone || 'Not set'}</p>
                       </div>
                     </div>
 
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <Phone className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">Phone Number</p>
-                        <p className="font-medium">{userProfile?.phone || 'Not set'}</p>
+                    <div className="flex items-start gap-4 p-5 bg-white rounded-xl border border-gray-200 hover:shadow-md transition-shadow">
+                      <div className="p-2.5 bg-orange-600 rounded-lg">
+                        <School className="h-5 w-5 text-white" />
                       </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <School className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">School</p>
-                        <p className="font-medium">{userProfile?.school?.name || userProfile?.school?.name || 'Not set'}</p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                      <Hash className="h-5 w-5 text-gray-500" />
-                      <div>
-                        <p className="text-sm text-gray-500">City</p>
-                        <p className="font-medium">{userProfile?.city || 'Not set'}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-600 mb-1">College</p>
+                        <p className="font-semibold text-gray-900 truncate">{userProfile?.collegeName || userProfile?.school?.name || 'Not set'}</p>
                       </div>
                     </div>
                   </div>
                 </div>
               )}
+                </div>
+              </div>
             </CardContent>
           </Card>
-        </div>
 
-        {/* Password Change Section */}
-        <div className="mb-8">
-          <ChangePasswordForm />
+          {/* Password Change Section */}
+          <Card className="shadow-lg border-0 overflow-hidden p-0">
+            <CardHeader className="bg-gradient-to-r from-slate-700 to-slate-800 text-white pb-10 pt-8">
+              <h3 className="text-xl font-bold">Security Settings</h3>
+              <p className="text-slate-300 text-sm">Change your password</p>
+            </CardHeader>
+            <CardContent className="p-8">
+              <ChangePasswordForm />
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

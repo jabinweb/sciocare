@@ -25,6 +25,7 @@ export async function GET() {
         parentName: true,
         parentEmail: true,
         created_at: true,
+        collegeName: true,
         school: {
           select: {
             id: true,
@@ -59,26 +60,16 @@ export async function PUT(request: Request) {
 
     const {
       name,
-      displayName,
-      grade,
-      section,
-      rollNumber,
       phone,
-      parentName,
-      parentEmail
+      collegeName
     } = body;
 
     const updatedUser = await prisma.user.update({
       where: { id: session.user.id },
       data: {
         name,
-        displayName,
-        grade,
-        section,
-        rollNumber,
         phone,
-        parentName,
-        parentEmail,
+        collegeName,
         updatedAt: new Date()
       },
       select: {
@@ -93,6 +84,7 @@ export async function PUT(request: Request) {
         parentName: true,
         parentEmail: true,
         created_at: true,
+        collegeName: true,
         school: {
           select: {
             id: true,

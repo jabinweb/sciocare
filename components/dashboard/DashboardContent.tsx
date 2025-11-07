@@ -202,7 +202,7 @@ export function DashboardContent() {
               <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-2xl p-6 text-white">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-green-100 text-sm">Total Subjects</p>
+                    <p className="text-green-100 text-sm">Total Units</p>
                     <p className="text-3xl font-bold text-gray-100">{programs.reduce((acc, cls) => acc + (cls.subjects?.length || 0), 0)}</p>
                   </div>
                   <Users className="w-10 h-10 text-green-200" />

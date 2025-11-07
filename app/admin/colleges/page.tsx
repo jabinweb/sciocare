@@ -37,13 +37,13 @@ interface SchoolFormData {
   isActive: boolean;
 }
 
-export default function SchoolsPage() {
+export default function CollegesPage() {
   const { data: session, status } = useSession();
   const user = session?.user;
   // Get actual role from session
   const userRole = user?.role; // Get actual role from session
   const authLoading = status === 'loading';
-  const [schools, setSchools] = useState<SchoolData[]>([]);
+  const [colleges, setColleges] = useState<SchoolData[]>([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
   const [editingSchool, setEditingSchool] = useState<SchoolFormData | null>(null);
@@ -60,19 +60,19 @@ export default function SchoolsPage() {
     }
 
     if (isAdmin) {
-      fetchSchools();
+      fetchColleges();
     }
   }, [isAdmin, isLoadingAuth, user, userRole]);
 
-  const fetchSchools = async () => {
+  const fetchColleges = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/admin/schools');
+      const response = await fetch('/api/admin/colleges');
       const data = await response.json();
-      setSchools(Array.isArray(data) ? data : []);
+      setColleges(Array.isArray(data) ? data : []);
     } catch (error) {
-      console.error('Error fetching schools:', error);
-      setSchools([]);
+      console.error('Error fetching colleges:', error);
+      setColleges([]);
     } finally {
       setLoading(false);
     }
@@ -80,7 +80,7 @@ export default function SchoolsPage() {
 
   const handleCreateSchool = async (formData: SchoolFormData) => {
     try {
-      const response = await fetch('/api/admin/schools', {
+      const response = await fetch('/api/admin/colleges', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
@@ -90,51 +90,51 @@ export default function SchoolsPage() {
 
       if (!response.ok) {
         // Show the specific error message from the server
-        throw new Error(responseData.error || `HTTP ${response.status}: Failed to create school`);
+        throw new Error(responseData.error || `HTTP ${response.status}: Failed to create college`);
       }
 
-      fetchSchools();
+      fetchColleges();
     } catch (error) {
-      console.error('Error creating school:', error);
+      console.error('Error creating college:', error);
       // Re-throw with a user-friendly message
-      throw new Error(error instanceof Error ? error.message : 'Failed to create school');
+      throw new Error(error instanceof Error ? error.message : 'Failed to create college');
     }
   };
 
   const handleUpdateSchool = async (formData: SchoolFormData) => {
     if (!formData.id) {
-      throw new Error('School ID is required for update');
+      throw new Error('College ID is required for update');
     }
 
-    const response = await fetch('/api/admin/schools', {
+    const response = await fetch('/api/admin/colleges', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData),
     });
 
     if (response.ok) {
-      fetchSchools();
+      fetchColleges();
     } else {
       const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to update school');
+      throw new Error(errorData.error || 'Failed to update college');
     }
   };
 
   const handleDeleteSchool = async (schoolId: string) => {
-    if (!confirm('Are you sure you want to delete this school? This will also affect all associated users.')) {
+    if (!confirm('Are you sure you want to delete this college? This will also affect all associated users.')) {
       return;
     }
 
     try {
-      const response = await fetch(`/api/admin/schools?id=${schoolId}`, {
+      const response = await fetch(`/api/admin/colleges?id=${schoolId}`, {
         method: 'DELETE',
       });
 
       if (response.ok) {
-        fetchSchools();
+        fetchColleges();
       }
     } catch (error) {
-      console.error('Error deleting school:', error);
+      console.error('Error deleting college:', error);
     }
   };
 
@@ -170,7 +170,7 @@ export default function SchoolsPage() {
   };
 
   const handleUploadComplete = () => {
-    fetchSchools(); // Refresh schools to update student counts
+    fetchColleges(); // Refresh colleges to update student counts
   };
 
   if (isLoadingAuth) {
@@ -198,17 +198,17 @@ export default function SchoolsPage() {
       <div className="max-w-6xl mx-auto">
         <div className="mb-6 flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold mb-2">School Management</h1>
-            <p className="text-muted-foreground">Manage schools and their information</p>
+            <h1 className="text-3xl font-bold mb-2">College Management</h1>
+            <p className="text-muted-foreground">Manage colleges and their information</p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={fetchSchools} variant="outline" disabled={loading}>
+            <Button onClick={fetchColleges} variant="outline" disabled={loading}>
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
             <Button onClick={() => setFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add School
+              Add College
             </Button>
           </div>
         </div>
@@ -219,7 +219,7 @@ export default function SchoolsPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {schools.map((school) => (
+            {colleges.map((school) => (
               <Card key={school.id} className="hover:shadow-lg transition-shadow">
                 <CardHeader>
                   <div className="flex items-center justify-between">
@@ -291,14 +291,14 @@ export default function SchoolsPage() {
           </div>
         )}
 
-        {schools.length === 0 && !loading && (
+        {colleges.length === 0 && !loading && (
           <div className="text-center py-8">
             <School className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-600 mb-2">No Schools Found</h3>
-            <p className="text-muted-foreground mb-4">Create your first school to get started.</p>
+            <h3 className="text-lg font-medium text-gray-600 mb-2">No Colleges Found</h3>
+            <p className="text-muted-foreground mb-4">Create your first college to get started.</p>
             <Button onClick={() => setFormOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
-              Add School
+              Add College
             </Button>
           </div>
         )}

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { ExternalLink, Play, FileText, Monitor, Star } from 'lucide-react';
+import { ExternalLink, Play, FileText, Monitor } from 'lucide-react';
 import { type DbTopic } from '@/hooks/useProgramData';
 
 interface TopicContent {
@@ -24,7 +24,6 @@ interface ContentPlayerProps {
   onIncomplete?: () => void; // New prop for marking as incomplete
   onNext?: () => void;
   isCompleted?: boolean;
-  onDifficultyRate?: (topicId: string, rating: number) => void;
   isDemo?: boolean; // Flag to indicate this is demo mode
   demoContent?: TopicContent; // Pre-loaded demo content
   isDemoLimitReached?: boolean; // Flag to indicate demo user has reached access limit
@@ -38,16 +37,12 @@ export function ContentPlayer({
   onIncomplete, // New prop
   onNext, 
   isCompleted = false, 
-  onDifficultyRate,
   isDemo = false,
   demoContent,
   isDemoLimitReached = false
 }: ContentPlayerProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [hasCompleted, setHasCompleted] = useState(false);
-  const [showRating, setShowRating] = useState(false);
-  const [difficultyRating, setDifficultyRating] = useState<number>(0);
-  const [hasRated, setHasRated] = useState(false);
   const [topicContent, setTopicContent] = useState<TopicContent | null>(null);
   const [contentLoading, setContentLoading] = useState(false);
 
@@ -92,9 +87,6 @@ export function ContentPlayer({
   // Only reset state when topic actually changes (by ID), not when completion status changes
   useEffect(() => {
     setHasCompleted(isCompleted);
-    setShowRating(false);
-    setDifficultyRating(0);
-    setHasRated(isCompleted); // If already completed, mark as rated
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [topic?.id]); // Intentionally only depend on topic ID to avoid resetting on completion changes
 
@@ -156,15 +148,6 @@ export function ContentPlayer({
       console.log('Completing topic:', topic?.name);
       setHasCompleted(true);
       onComplete();
-      // Show rating dialog after completion, but only if not already rated
-      if (!hasRated) {
-        console.log('Showing rating dialog...');
-        // Use setTimeout to ensure the completion state is set first
-        setTimeout(() => {
-          setShowRating(true);
-          console.log('Rating dialog should be visible now');
-        }, 100);
-      }
     }
   };
 
@@ -173,18 +156,6 @@ export function ContentPlayer({
       console.log('Marking topic as incomplete:', topic?.name);
       setHasCompleted(false);
       onIncomplete();
-    }
-  };
-
-  const handleDifficultyRate = (rating: number) => {
-    console.log('Rating selected:', rating);
-    setDifficultyRating(rating);
-    setHasRated(true);
-    setShowRating(false);
-    
-    // Call the optional callback to save rating
-    if (onDifficultyRate && topic) {
-      onDifficultyRate(topic.id, rating);
     }
   };
 
@@ -451,63 +422,6 @@ export function ContentPlayer({
             )}
           </div>
         </div>
-
-        {/* Difficulty Rating Overlay */}
-        {showRating && !hasRated && (
-          <div 
-            className="absolute inset-0 bg-black/70 flex items-center justify-center z-50 p-4"
-            onClick={(e) => e.stopPropagation()} // Prevent accidental closing
-          >
-            <div 
-              className="bg-white rounded-2xl p-4 sm:p-8 max-w-sm sm:max-w-md mx-4 w-full text-center shadow-2xl"
-              onClick={(e) => e.stopPropagation()} // Prevent event bubbling
-            >
-              <div className="mb-4 sm:mb-6">
-                <h3 className="text-lg sm:text-2xl font-bold text-gray-900 mb-2">How was this topic?</h3>
-                <p className="text-sm sm:text-base text-gray-600">Rate the difficulty level for your personal tracking</p>
-              </div>
-              
-              <div className="flex justify-center gap-1 sm:gap-2 mb-4 sm:mb-6">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                  <button
-                    key={rating}
-                    onClick={() => handleDifficultyRate(rating)}
-                    className="group transition-all duration-200 hover:scale-110 p-1"
-                    title={`${rating} star${rating > 1 ? 's' : ''} - ${
-                      rating === 1 ? 'Very Easy' :
-                      rating === 2 ? 'Easy' :
-                      rating === 3 ? 'Medium' :
-                      rating === 4 ? 'Hard' : 'Very Hard'
-                    }`}
-                  >
-                    <Star 
-                      className={`h-8 w-8 sm:h-10 sm:w-10 transition-colors duration-200 ${
-                        difficultyRating >= rating 
-                          ? 'text-yellow-400 fill-yellow-400' 
-                          : 'text-gray-300 hover:text-yellow-300'
-                      }`} 
-                    />
-                  </button>
-                ))}
-              </div>
-              
-              <div className="text-xs sm:text-sm text-gray-500 mb-4 sm:mb-6">
-                <div className="flex justify-between text-xs">
-                  <span>Very Easy</span>
-                  <span>Very Hard</span>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={() => setShowRating(false)}
-                variant="outline"
-                className="w-full sm:w-auto px-6 py-2 text-sm"
-              >
-                Skip
-              </Button>
-            </div>
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );

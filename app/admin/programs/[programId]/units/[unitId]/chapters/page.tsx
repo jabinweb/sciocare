@@ -73,7 +73,7 @@ export default function ChaptersPage() {
   };
 
   const handleDeleteChapter = async (chapterId: string) => {
-    if (!confirm('Delete this chapter and all its topics?')) return;
+    if (!confirm('Delete this lesson and all its topics?')) return;
     const response = await fetch(`/api/admin/chapters?id=${chapterId}`, { method: 'DELETE' });
     if (response.ok) fetchChapters();
   };
@@ -91,13 +91,13 @@ export default function ChaptersPage() {
               <ArrowLeft className="h-4 w-4" />
             </Button>
             <div>
-              <h1 className="text-3xl font-bold mb-2">Chapters</h1>
-              <p className="text-muted-foreground">Manage chapters for this unit</p>
+              <h1 className="text-3xl font-bold mb-2">Lessons</h1>
+              <p className="text-muted-foreground">Manage lessons for this unit</p>
             </div>
           </div>
           <Button onClick={() => setFormOpen(true)}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Chapter
+            Add Lesson
           </Button>
         </div>
 

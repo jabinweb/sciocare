@@ -24,9 +24,9 @@ interface TopicFormData {
   type: string;
   duration: string;
   description?: string;
-  difficulty: string;
   orderIndex: number;
   chapterId: string;
+  pdfUrl?: string;
   content?: TopicContentData;
 }
 
@@ -45,7 +45,6 @@ export function TopicForm({ isOpen, onClose, onSubmit, initialData, mode, chapte
     type: 'video',
     duration: '',
     description: '',
-    difficulty: 'BEGINNER',
     orderIndex: 0,
     chapterId,
     content: {
@@ -111,7 +110,6 @@ export function TopicForm({ isOpen, onClose, onSubmit, initialData, mode, chapte
         type: 'video',
         duration: '',
         description: '',
-        difficulty: 'BEGINNER',
         orderIndex: 0,
         chapterId,
         content: {
@@ -201,17 +199,6 @@ export function TopicForm({ isOpen, onClose, onSubmit, initialData, mode, chapte
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="difficulty">Difficulty Level</Label>
-              <Select value={formData.difficulty} onValueChange={(value) => updateFormData('difficulty', value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="BEGINNER">Beginner</SelectItem>
-                  <SelectItem value="INTERMEDIATE">Intermediate</SelectItem>
-                  <SelectItem value="ADVANCED">Advanced</SelectItem>
-                </SelectContent>
-              </Select>
             </div>
 
             <div>

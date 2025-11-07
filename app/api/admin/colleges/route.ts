@@ -3,14 +3,14 @@ import { prisma } from '@/lib/prisma';
 
 export async function GET() {
   try {
-    const schools = await prisma.school.findMany({
+    const colleges = await prisma.school.findMany({
       orderBy: { created_at: 'desc' }
     });
 
-    return NextResponse.json(schools || []);
+    return NextResponse.json(colleges || []);
   } catch (error) {
-    console.error('Error fetching schools:', error);
-    return NextResponse.json({ error: 'Failed to fetch schools' }, { status: 500 });
+    console.error('Error fetching colleges:', error);
+    return NextResponse.json({ error: 'Failed to fetch colleges' }, { status: 500 });
   }
 }
 
@@ -32,7 +32,7 @@ export async function POST(request: Request) {
     }
 
     // Don't include ID - let the database generate it automatically
-    const newSchool = await prisma.school.create({
+    const newCollege = await prisma.school.create({
       data: {
         name: name.trim(),
         email: email.trim().toLowerCase(),
@@ -46,19 +46,19 @@ export async function POST(request: Request) {
       }
     });
 
-    return NextResponse.json({ success: true, school: newSchool });
+    return NextResponse.json({ success: true, college: newCollege });
   } catch (error) {
-    console.error('Error creating school:', error);
+    console.error('Error creating college:', error);
     
     // Handle Prisma-specific errors
     if (error instanceof Error && error.message.includes('Unique constraint')) {
       return NextResponse.json({ 
-        error: 'A school with this email already exists'
+        error: 'A college with this email already exists'
       }, { status: 409 });
     }
     
     return NextResponse.json({ 
-      error: 'Failed to create school', 
+      error: 'Failed to create college', 
       details: error instanceof Error ? error.message : 'Unknown error'
     }, { status: 500 });
   }
@@ -80,7 +80,7 @@ export async function PUT(request: Request) {
     } = await request.json();
     
     if (!id) {
-      return NextResponse.json({ error: 'School ID is required' }, { status: 400 });
+      return NextResponse.json({ error: 'College ID is required' }, { status: 400 });
     }
 
     const updateData: Record<string, unknown> = {};
@@ -102,27 +102,27 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error updating school:', error);
-    return NextResponse.json({ error: 'Failed to update school' }, { status: 500 });
+    console.error('Error updating college:', error);
+    return NextResponse.json({ error: 'Failed to update college' }, { status: 500 });
   }
 }
 
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const schoolId = searchParams.get('id');
+    const collegeId = searchParams.get('id');
     
-    if (!schoolId) {
-      return NextResponse.json({ error: 'School ID is required' }, { status: 400 });
+    if (!collegeId) {
+      return NextResponse.json({ error: 'College ID is required' }, { status: 400 });
     }
 
     await prisma.school.delete({
-      where: { id: schoolId }
+      where: { id: collegeId }
     });
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error('Error deleting school:', error);
-    return NextResponse.json({ error: 'Failed to delete school' }, { status: 500 });
+    console.error('Error deleting college:', error);
+    return NextResponse.json({ error: 'Failed to delete college' }, { status: 500 });
   }
 }

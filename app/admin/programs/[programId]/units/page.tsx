@@ -125,7 +125,7 @@ export default function UnitsPage() {
   };
 
   const handleDeleteUnit = async (subjectId: string) => {
-    if (!confirm('Are you sure you want to delete this unit? This will also delete all chapters and topics.')) {
+    if (!confirm('Are you sure you want to delete this unit? This will also delete all lessons and topics.')) {
       return;
     }
 

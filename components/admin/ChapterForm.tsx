@@ -74,13 +74,13 @@ export function ChapterForm({ isOpen, onClose, onSubmit, initialData, mode, subj
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>
-            {mode === 'create' ? 'Create New Chapter' : 'Edit Chapter'}
+            {mode === 'create' ? 'Create New Lesson' : 'Edit Lesson'}
           </DialogTitle>
         </DialogHeader>
         
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="name">Chapter Name</Label>
+            <Label htmlFor="name">Lesson Name</Label>
             <Input
               id="name"
               value={formData.name}
@@ -106,7 +106,7 @@ export function ChapterForm({ isOpen, onClose, onSubmit, initialData, mode, subj
               Cancel
             </Button>
             <Button type="submit" disabled={isLoading}>
-              {isLoading ? 'Saving...' : mode === 'edit' ? 'Update Chapter' : 'Create Chapter'}
+              {isLoading ? 'Saving...' : mode === 'edit' ? 'Update Lesson' : 'Create Lesson'}
             </Button>
           </div>
         </form>

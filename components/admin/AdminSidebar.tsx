@@ -25,7 +25,7 @@ import {
 
 const navigation = [
   { name: 'Dashboard', href: '/admin', icon: LayoutDashboard },
-  { name: 'Schools', href: '/admin/schools', icon: School },
+  { name: 'Colleges', href: '/admin/colleges', icon: School },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Programs', href: '/admin/programs', icon: GraduationCap },
   { name: 'Subscriptions', href: '/admin/subscriptions', icon: CreditCard },

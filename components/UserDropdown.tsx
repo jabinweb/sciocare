@@ -17,10 +17,8 @@ import { LoginDialog } from '@/components/auth/login-dialog';
 import { 
   User, 
   CreditCard, 
-  Settings, 
   LogOut, 
   School,
-  Bell,
   Receipt,
   Home
 } from "lucide-react";
@@ -118,13 +116,13 @@ export const UserDropdown = () => {
           <span>Payment History</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem 
+        {/* <DropdownMenuItem 
           onClick={() => handleNavigation('/dashboard/notifications')}
           className="cursor-pointer"
         >
           <Bell className="mr-2 h-4 w-4" />
           <span>Notifications</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         {/* Admin Panel access for admin users only */}
         {user?.role === 'ADMIN' && (
@@ -137,13 +135,13 @@ export const UserDropdown = () => {
           </DropdownMenuItem>
         )}
         
-        <DropdownMenuItem 
+        {/* <DropdownMenuItem 
           onClick={() => handleNavigation('/dashboard/settings')}
           className="cursor-pointer"
         >
           <Settings className="mr-2 h-4 w-4" />
           <span>Settings</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
         
         <DropdownMenuSeparator />
         

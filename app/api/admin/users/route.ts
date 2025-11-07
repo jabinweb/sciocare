@@ -23,13 +23,15 @@ export async function GET() {
       
       return {
         uid: user.id,
-        email: user.email,
-        displayName: user.name,
-        photoUrl: user.image,
+        email: user.email || '',
+        displayName: user.name || user.displayName || user.email?.split('@')[0] || 'User',
+        photoUrl: user.image || null,
+        collegeName: user.collegeName || null,
+        phone: user.phone || null,
         creationTime: user.created_at,
         lastSignInTime: user.updatedAt, // Using updatedAt as proxy for last login
         role: user.role || 'USER',
-        isActive: true, // NextAuth users are active by default
+        isActive: user.isActive !== undefined ? user.isActive : true,
         subscription: activeSubscription ? {
           id: activeSubscription.id,
           status: activeSubscription.status,
@@ -45,7 +47,10 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json(usersWithSubscriptions);
+    // Filter out any invalid entries
+    const validUsers = usersWithSubscriptions.filter(u => u && u.uid && u.email);
+
+    return NextResponse.json(validUsers);
   } catch (error) {
     console.error('Error fetching users:', error);
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
@@ -111,15 +116,25 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { userId, displayName, role } = await request.json();
+    const { userId, displayName, role, isActive, collegeName, phone } = await request.json();
     
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
     }
 
-    const updateData: { name?: string; role?: 'USER' | 'ADMIN' } = {};
+    const updateData: { 
+      name?: string; 
+      role?: 'USER' | 'ADMIN' | 'TEACHER' | 'MODERATOR'; 
+      isActive?: boolean;
+      collegeName?: string;
+      phone?: string;
+    } = {};
+    
     if (displayName !== undefined) updateData.name = displayName;
     if (role !== undefined) updateData.role = role;
+    if (isActive !== undefined) updateData.isActive = isActive;
+    if (collegeName !== undefined) updateData.collegeName = collegeName;
+    if (phone !== undefined) updateData.phone = phone;
 
     // Update user in database
     await prisma.user.update({

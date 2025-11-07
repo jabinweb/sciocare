@@ -115,7 +115,7 @@ export default function ProgramsPage() {
   };
 
   const handleDeleteProgram = async (classId: number) => {
-    if (!confirm('Are you sure you want to delete this program? This will also delete all units, chapters, and topics.')) {
+    if (!confirm('Are you sure you want to delete this program? This will also delete all units, lessons, and topics.')) {
       return;
     }
 
