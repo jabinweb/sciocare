@@ -31,8 +31,6 @@ interface UnitFormData {
   isLocked: boolean;
   orderIndex: number;
   programId: number;
-  price?: number; // Price in paisa
-  currency?: string;
 }
 
 interface ProgramData {

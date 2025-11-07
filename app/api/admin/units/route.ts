@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { name, icon, color, isLocked, orderIndex, programId, classId, price, currency } = await request.json();
+    const { name, icon, color, isLocked, orderIndex, programId, classId } = await request.json();
     
     // Accept either programId (from frontend) or classId (legacy)
     const finalClassId = programId || classId;
@@ -57,8 +57,6 @@ export async function POST(request: Request) {
         isLocked: isLocked ?? false,
         orderIndex,
         classId: parseInt(finalClassId),
-        price: price || 29900, // Default ₹299 in paisa
-        currency: currency || 'INR'
       }
     });
 
@@ -71,7 +69,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, name, icon, color, isLocked, orderIndex, price, currency } = await request.json();
+    const { id, name, icon, color, isLocked, orderIndex } = await request.json();
     
     const updatedSubject = await prisma.subject.update({
       where: { id },
@@ -81,8 +79,6 @@ export async function PUT(request: Request) {
         color,
         isLocked,
         orderIndex,
-        ...(price !== undefined && { price }),
-        ...(currency !== undefined && { currency })
       }
     });
 

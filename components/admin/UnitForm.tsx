@@ -16,8 +16,6 @@ interface UnitFormData {
   isLocked: boolean;
   orderIndex: number;
   programId: number;
-  price?: number; // Price in paisa
-  currency?: string;
 }
 
 interface UnitFormProps {
@@ -48,8 +46,6 @@ export function UnitForm({ isOpen, onClose, onSubmit, initialData, mode, program
     isLocked: false,
     orderIndex: 0,
     programId,
-    price: 29900, // Default ₹299
-    currency: 'INR',
   });
   const [loading, setLoading] = useState(false);
 
@@ -66,8 +62,6 @@ export function UnitForm({ isOpen, onClose, onSubmit, initialData, mode, program
           isLocked: initialData.isLocked || false,
           orderIndex: initialData.orderIndex || 0,
           programId: initialData.programId || programId,
-          price: initialData.price || 29900,
-          currency: initialData.currency || 'INR',
         });
       } else {
         // Reset to default values for create mode
@@ -78,8 +72,6 @@ export function UnitForm({ isOpen, onClose, onSubmit, initialData, mode, program
           isLocked: false,
           orderIndex: 0,
           programId,
-          price: 29900, // Default ₹299
-          currency: 'INR',
         });
       }
     }
@@ -160,42 +152,6 @@ export function UnitForm({ isOpen, onClose, onSubmit, initialData, mode, program
               onChange={(e) => updateFormData('orderIndex', parseInt(e.target.value) || 0)}
               required
             />
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="price">Price (₹)</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                min="0"
-                value={formData.price ? (formData.price / 100).toFixed(2) : ''}
-                onChange={(e) => {
-                  const rupees = parseFloat(e.target.value) || 0;
-                  const paisa = Math.round(rupees * 100);
-                  updateFormData('price', paisa);
-                }}
-                placeholder="299.00"
-                required
-              />
-              <div className="text-xs text-gray-500 mt-1">
-                Enter price in rupees (e.g., 299 for ₹299)
-              </div>
-            </div>
-            <div>
-              <Label htmlFor="currency">Currency</Label>
-              <Select value={formData.currency || 'INR'} onValueChange={(value) => updateFormData('currency', value)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="INR">INR (₹)</SelectItem>
-                  <SelectItem value="USD">USD ($)</SelectItem>
-                  <SelectItem value="EUR">EUR (€)</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <div className="flex items-center space-x-2">
