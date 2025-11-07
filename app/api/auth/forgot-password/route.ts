@@ -24,8 +24,13 @@ export async function POST(req: NextRequest) {
       });
     }
 
+    // Get the base URL from the request
+    const host = req.headers.get('host') || 'localhost:3000';
+    const protocol = req.headers.get('x-forwarded-proto') || (host.includes('localhost') ? 'http' : 'https');
+    const baseUrl = `${protocol}://${host}`;
+    
     // Send reset email
-    const resetUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/auth/reset-password?token=${token}`;
+    const resetUrl = `${baseUrl}/auth/reset-password?token=${token}`;
     
     await sendPasswordResetEmail(email, resetUrl);
 
