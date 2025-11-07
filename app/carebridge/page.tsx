@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowRight, Play, CheckCircle, LogIn, Globe, Palette, Heart, MapPin, BookOpen, Type } from 'lucide-react';
+import { ArrowRight, Play, LogIn, Globe, Palette, Heart, MapPin, BookOpen, Type } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -103,45 +103,8 @@ function CustomHeader() {
   );
 }
 
-// Get Started Dialog Component
-function GetStartedDialog({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={onClose}>
-      <div className="bg-white rounded-lg p-8 max-w-md w-full mx-4" onClick={(e) => e.stopPropagation()}>
-        <h3 className="text-2xl font-bold mb-4">Get Started with ScioCare!</h3>
-        <p className="text-gray-600 mb-6">Ready to make revision fun? Let&apos;s begin!</p>
-        
-        <div className="space-y-3">
-          <Link href="/auth/signin" className="w-full">
-            <Button className="w-full bg-brand-blue hover:bg-brand-blue-dark">
-              Sign Up Now
-            </Button>
-          </Link>
-          
-          <Link href="#games" className="w-full">
-            <Button variant="outline" className="w-full" onClick={onClose}>
-              Try Sample Games First
-            </Button>
-          </Link>
-        </div>
-        
-        <button
-          onClick={onClose}
-          className="mt-4 w-full text-sm text-gray-500 hover:text-gray-700"
-        >
-          Maybe Later
-        </button>
-      </div>
-    </div>
-  );
-}
-
 // Hero Section Component
 function Hero() {
-  const [getStartedOpen, setGetStartedOpen] = useState(false);
-
   return (
     <section id="hero" className="relative min-h-[100svh] flex items-center justify-center overflow-hidden pt-16">
       {/* Video Background */}
@@ -166,66 +129,42 @@ function Hero() {
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10 py-20">
         <div className="max-w-4xl mx-auto text-center">
-          {/* New Badge */}
+          {/* Hero Title */}
           <div className="space-y-4 sm:space-y-6 mb-8 sm:mb-12 animate-fade-in">
-            <div className="inline-block scale-90 sm:scale-100">
-              <div className="inline-flex items-center rounded-full border border-white/30 bg-white/5 backdrop-blur-sm p-1 pr-3 sm:pr-4">
-                <span className="bg-brand-blue text-white rounded-full px-2 sm:px-3 py-0.5 text-xs sm:text-sm font-medium mr-1.5 sm:mr-2">
-                  New
-                </span>
-                <span className="text-white/90 text-xs sm:text-sm">Interactive Learning Games Added!</span>
-              </div>
-            </div>
-
-            {/* Hero Title */}
             <h1 className="display mb-6 text-4xl md:text-6xl text-white md:!leading-[5rem] leading-[3rem] font-bold">
-              Fun-Fueled Revisions with{' '}
-              <span className="bg-gradient-to-r from-brand-blue to-brand-orange bg-clip-text">
-                ScioCare!
-              </span>{' '}
-              {/* <span className="inline-block animate-bounce">🚀</span> */}
+              The Language of Care, made simple!
             </h1>
             
             {/* Description */}
-            <p className="lead max-w-2xl mx-auto mb-8 text-white/90 text-lg">
-              Play curriculum‑aligned games, compete with peers, and climb leaderboards—make your revisions fun and rewarding.
+            <p className="lead max-w-3xl mx-auto mb-8 text-white/90 text-lg">
+              Learn the English you&apos;ll actually use in hospitals—practice real clinical conversations, patient interactions, and professional communication with confidence.
             </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4 mb-12 sm:mb-16 animate-fade-in">
-            <Button
-              size="lg"
-              className="bg-brand-blue hover:bg-brand-blue-dark text-white text-lg h-12 px-8 rounded-full"
-              onClick={() => setGetStartedOpen(true)}
-            >
-              Get Started <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="border-white/30 bg-white/5 backdrop-blur-sm text-white hover:bg-white/10 text-lg h-12 px-8 rounded-full"
-            >
-              <Link href="#games">
-              <Play className="mr-2 h-4 w-4" /> Play Now
-              </Link>
-            </Button>
+          {/* CTA Button */}
+          <div className="flex justify-center px-4 mb-12 sm:mb-16 animate-fade-in">
+            <Link href="/auth/signin">
+              <Button
+                size="lg"
+                className="bg-brand-blue hover:bg-brand-blue-dark text-white text-lg h-12 px-8 rounded-full"
+              >
+                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </Link>
           </div>
-          <GetStartedDialog open={getStartedOpen} onClose={() => setGetStartedOpen(false)} />
           
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto px-4 animate-fade-in">
             {[
-              { number: '40+', label: 'Game Formats' },
-              { number: '1000+', label: 'Curriculum-Aligned Activities' },
-              { number: '100+', label: 'HOTS Challenges' }
+              { number: 'IELTS & OET', label: 'Aligned' },
+              { number: '150+', label: 'Revision games' },
+              { number: '300+', label: 'Learning Videos' }
             ].map((stat, index) => (
               <Card key={index} className="bg-white/5 backdrop-blur-sm border-white/10 overflow-hidden group">
                 <CardContent className="p-4 relative">
                   <div className="absolute inset-0 bg-gradient-to-br from-brand-blue/10 to-brand-orange/10 translate-y-full transform transition-transform duration-300 group-hover:translate-y-0" />
                   <div className="relative">
-                    <div className="text-3xl font-bold text-white mb-1">
+                    <div className="text-2xl font-bold text-white mb-1">
                       {stat.number}
                     </div>
                     <div className="text-sm text-white/80">{stat.label}</div>
@@ -250,27 +189,27 @@ interface ProblemItem {
 
 const problemItems: ProblemItem[] = [
   {
-    id: 'rote',
-    description: ' Rote learning and worksheets often feel like a burden, not true learning.',
+    id: 'general',
+    description: 'First-year English courses are often too general and don&apos;t fully prepare students for real hospital communication.',
     emoji: '📚',
     bgColor: 'bg-blue-50',
   },
   {
-    id: 'memory',
-    description: 'Children quickly forget concepts, leading to short-term cramming without lasting memory.',
-    emoji: '⏳',
+    id: 'speaking',
+    description: 'Students may know the theory of the language, but often struggle to speak confidently with patients and staff.',
+    emoji: '😕',
     bgColor: 'bg-orange-50',
   },
   {
-    id: 'motivation',
-    description: 'Parents constantly struggle to keep children attentive, focused, and truly motivated.',
-    emoji: '😕',
+    id: 'writing',
+    description: 'Writing reports, notes, and handovers may feel difficult without medical-specific language practice.',
+    emoji: '✍️',
     bgColor: 'bg-yellow-50',
   },
   {
-    id: 'results',
-    description: 'Despite hours of study, exam results often fail to reflect effort.',
-    emoji: '🎯',
+    id: 'opportunities',
+    description: 'Many capable students miss global opportunities—not because they lack skill, but because of English.',
+    emoji: '�',
     bgColor: 'bg-purple-50',
   },
 ];
@@ -322,13 +261,13 @@ function RevisionProblems() {
           transition={{ duration: 0.6 }}
         >
           <div className="inline-flex items-center gap-2 px-3 md:px-4 py-2 bg-red-50 rounded-full border border-red-100 mb-4 md:mb-6">
-            <span className="text-lg md:text-xl">😣</span>
-            <span className="text-xs md:text-sm font-medium text-red-700">The Problem</span>
+            <span className="text-lg md:text-xl">�</span>
+            <span className="text-xs md:text-sm font-medium text-red-700">The Challenge</span>
           </div>
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 md:mb-6 tracking-tight text-gray-900 px-4">
             <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text">
-              Why does revision feel hard?
+              Is English Becoming a Barrier?
             </span>
           </h2>
         </motion.div>
@@ -448,24 +387,34 @@ function RevisionProblems() {
 function CareBridgePromise() {
   const promises = [
     {
+      icon: '�',
+      title: 'IELTS & OET Aligned',
+      description: 'Builds the communication skills needed for professional and global healthcare settings.'
+    },
+    {
       icon: '🎮',
-      title: 'Gamified Learning',
-      description: 'Transform boring revision into exciting game-based challenges'
+      title: 'Learn the Play Way',
+      description: 'Gamified revision activities make practice engaging, memorable, and stress-free.'
     },
     {
-      icon: '🏆',
-      title: 'Compete & Win',
-      description: 'Climb leaderboards and earn rewards as you master concepts'
+      icon: '📚',
+      title: 'Self-Paced Learning Portal',
+      description: 'Access lessons anytime—review, practice, and improve at your own pace.'
     },
     {
-      icon: '🎯',
-      title: 'Curriculum-Aligned',
-      description: 'Every game is perfectly aligned with your school syllabus'
+      icon: '💬',
+      title: 'Skill-Focused Training',
+      description: 'Step-by-step practice to speak confidently and write clearly in clinical contexts.'
     },
     {
-      icon: '📈',
-      title: 'Track Progress',
-      description: 'See your improvement in real-time with detailed analytics'
+      icon: '�',
+      title: 'Workbook-First Design',
+      description: 'A structured workbook with QR-linked video lessons to guide and track progress.'
+    },
+    {
+      icon: '🏥',
+      title: 'Healthcare-Focused Curriculum',
+      description: 'Covers exactly the language used in wards, handovers, patient care, and documentation.'
     }
   ];
 
@@ -480,16 +429,16 @@ function CareBridgePromise() {
           
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 tracking-tight">
             <span className="bg-gradient-to-r from-brand-blue to-brand-orange bg-clip-text">
-              The ScioCare Promise
+              The CareBridge Promise
             </span>
           </h2>
           
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            We believe revision should be engaging, not exhausting. Here&apos;s how we make it happen.
+            We understand that English can feel overwhelming in clinical settings. That&apos;s why CareBridge English makes communication simple, practical, and confidence-building—so students feel ready for real hospital life.
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {promises.map((promise, index) => (
             <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
               <CardContent className="p-6">
@@ -646,7 +595,7 @@ function TryGamesSection() {
           </h2>
           
           <p className="text-base md:text-lg lg:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            Jump in and explore! Play a few sample games to see how ScioCare works — quick, fun, and easy.
+            CareBridge revision is built on games. Jump in and explore! Play a few sample games to check your English levels — quick, fun, and easy.
           </p>
         </div>
 
@@ -722,134 +671,44 @@ function TryGamesSection() {
   );
 }
 
-// Pricing Section
-function PricingSection() {
+// Start Your Journey Section
+function StartJourneySection() {
   return (
     <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200">Pricing</Badge>
+          <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200">Start Your Journey</Badge>
           <h2 className="font-heading text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            Affordable & Flexible Plans
+            Begin Your Learning Journey
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Choose the plan that best fits your institution&apos;s needs. All prices inclusive of 18% GST.
+            CareBridge English is currently offered through partnered institutions. If your college would like to make this program available to your students, you can get in touch with us. Sign up through the interest form to schedule a demo or curriculum walkthrough.
           </p>
 
-          {/* Already a student section */}
-          <div className="bg-white rounded-2xl shadow-md p-6 max-w-md mx-auto mb-12">
-            <p className="text-gray-700 mb-4 font-medium">Already a student?</p>
-            <Link href="/dashboard">
-              <Button className="" >
-                Access Your Dashboard
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-          {/* Self-Learning Model */}
-          <Card className="border-2 hover:border-blue-300 hover:shadow-2xl transition-all relative">
-            <CardContent className="p-8">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Self-Learning Model</h3>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-bold text-blue-700">₹1,799</span>
-                  <span className="text-gray-600">/student/year</span>
-                </div>
-                <p className="text-gray-600">Perfect for independent learners</p>
-              </div>
-
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Workbook-first lessons for healthcare-specific English</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">QR-coded video support for every lesson</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Clinical English practice: Listening, Speaking, Reading, Writing</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Gamified self-practice tools</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">One-year platform access + digital certificate</span>
-                </div>
-              </div>
-
-              <BookDemo>
-                <Button className="w-full bg-blue-700 hover:bg-blue-800">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-2" />
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto">
+            {/* Already a Student */}
+            <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full">
+              <p className="text-gray-700 mb-4 font-medium">Are you already a <br/>Student?</p>
+              <Link href="/auth/signin">
+                <Button className="w-full text-white group relative justify-center" style={{ backgroundColor: '#2d5296' }}>
+                  <span className="group-hover:mr-6 transition-all duration-200">Sign In</span>
+                  <LogIn className="absolute right-4 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 </Button>
-              </BookDemo>
-            </CardContent>
-          </Card>
-
-          {/* Classroom Model */}
-          <Card className="border-2 border-blue-500 hover:border-blue-600 hover:shadow-2xl transition-all relative">
-            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-              <Badge className="bg-blue-700 text-white hover:bg-blue-800 px-4 py-1">Most Popular</Badge>
+              </Link>
             </div>
-            
-            <CardContent className="p-8">
-              <div className="mb-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">Classroom Model</h3>
-                <div className="flex items-baseline gap-2 mb-4">
-                  <span className="text-5xl font-bold text-blue-700">₹2,399</span>
-                  <span className="text-gray-600">/student/year</span>
-                </div>
-                <p className="text-gray-600">Complete institutional support</p>
-              </div>
 
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 font-semibold">Everything in Self-Learning Model, plus:</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Facilitator training and support</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Dedicated WhatsApp group for daily support from team</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Question papers & evaluation support for each unit</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Group activities & gamified classroom revision</span>
-                </div>
-                <div className="flex items-start gap-3">
-                  <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700">Access to digital revision portal with personalized tracking</span>
-                </div>
-              </div>
-
+            {/* I'm Interested */}
+            <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full">
+              <p className="text-gray-700 mb-4 font-medium">Want to bring this to your<br />institution?</p>
               <BookDemo>
-                <Button className="w-full bg-blue-700 hover:bg-blue-800">
-                  Get Started
-                  <ArrowRight className="w-4 h-4 ml-2" />
+                <Button className="w-full text-white group relative justify-center" style={{ backgroundColor: '#f99f1b' }}>
+                  <span className="group-hover:mr-6 transition-all duration-200">I&apos;m Interested</span>
+                  <ArrowRight className="absolute right-4 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
                 </Button>
               </BookDemo>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="text-center mt-8">
-          <p className="text-gray-600">
-            Need a custom plan for your institution? <Link href="mailto:info@sciolabs.in" className="text-blue-700 font-semibold hover:underline">Contact us</Link>
-          </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -860,20 +719,20 @@ function PricingSection() {
 function FAQSection() {
   const faqs = [
     {
-      question: 'What is ScioCare?',
-      answer: 'ScioCare is a comprehensive healthcare English learning program designed specifically for nursing students. It combines workbook-based lessons with video support and gamified practice tools to help you master clinical English communication.'
+      question: 'What is CareBridge English?',
+      answer: 'CareBridge English is a comprehensive healthcare English learning program designed specifically for nursing students. It combines workbook-based lessons with video support and gamified practice tools to help you master clinical English communication.'
     },
     {
-      question: 'How does it work?',
+      question: 'How does the program work?',
       answer: 'The program follows a workbook-first approach with QR-coded video support. Students work through structured lessons covering Listening, Speaking, Reading, and Writing skills, then practice using gamified tools on our digital platform.'
     },
     {
-      question: 'What is the difference between Self-Learning and Classroom models?',
-      answer: 'The Self-Learning Model provides workbooks, video access, and gamified practice tools for independent study. The Classroom Model adds facilitator training, daily WhatsApp support, evaluation materials, and group activities for institutional implementation.'
+      question: 'Is the program IELTS & OET aligned?',
+      answer: 'Yes! CareBridge English builds the communication skills needed for professional and global healthcare settings, including IELTS and OET exam preparation.'
     },
     {
       question: 'How long do I have access to the platform?',
-      answer: 'All plans include one year of platform access from the date of enrollment. You can access the digital revision portal and practice games throughout this period.'
+      answer: 'All students get one year of platform access from the date of enrollment. You can access the digital revision portal and practice games throughout this period.'
     },
     {
       question: 'Will I receive a certificate?',
@@ -898,27 +757,48 @@ function FAQSection() {
           </h2>
           
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Find answers to common questions about ScioCare
+            Find answers to common questions about CareBridge English
           </p>
         </div>
 
-        <div className="max-w-3xl mx-auto">
-          <Accordion type="single" collapsible className="space-y-4">
-            {faqs.map((faq, index) => (
-              <AccordionItem 
-                key={index} 
-                value={`item-${index}`}
-                className="border-2 border-gray-200 rounded-lg px-6 hover:border-blue-300 transition-colors bg-white !border-b-2"
-              >
-                <AccordionTrigger className="text-left hover:no-underline py-5">
-                  <span className="text-lg font-semibold text-gray-900 pr-4">{faq.question}</span>
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600 pb-5 pt-2">
-                  {faq.answer}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+        <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
+          <div className="space-y-4">
+            <Accordion type="single" collapsible>
+              {faqs.slice(0, 3).map((faq, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`item-${index}`}
+                  className="border-2 border-gray-200 rounded-lg px-6 hover:border-blue-300 transition-colors bg-white !border-b-2 mb-4"
+                >
+                  <AccordionTrigger className="text-left hover:no-underline py-5">
+                    <span className="text-lg font-semibold text-gray-900 pr-4">{faq.question}</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-5 pt-2">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+          
+          <div className="space-y-4">
+            <Accordion type="single" collapsible>
+              {faqs.slice(3).map((faq, index) => (
+                <AccordionItem 
+                  key={index + 3} 
+                  value={`item-${index + 3}`}
+                  className="border-2 border-gray-200 rounded-lg px-6 hover:border-blue-300 transition-colors bg-white !border-b-2 mb-4"
+                >
+                  <AccordionTrigger className="text-left hover:no-underline py-5">
+                    <span className="text-lg font-semibold text-gray-900 pr-4">{faq.question}</span>
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600 pb-5 pt-2">
+                    {faq.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
         </div>
       </div>
     </section>
@@ -934,7 +814,7 @@ export default function CareBridgePage() {
       <RevisionProblems />
       <CareBridgePromise />
       <TryGamesSection />
-      <PricingSection />
+      <StartJourneySection />
       <FAQSection />
       <Footer />
     </div>
