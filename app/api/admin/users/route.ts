@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import bcrypt from 'bcryptjs';
 
 export async function GET() {
   try {
@@ -80,20 +81,34 @@ export async function DELETE(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { email, displayName, role } = await request.json();
+    const { email, displayName, password, role, isActive, collegeName, phone } = await request.json();
     
-    if (!email || !displayName) {
-      return NextResponse.json({ error: 'Email and display name are required' }, { status: 400 });
+    if (!email || !displayName || !password) {
+      return NextResponse.json({ error: 'Email, display name, and password are required' }, { status: 400 });
     }
 
+    // Check if user already exists
+    const existingUser = await prisma.user.findUnique({
+      where: { email }
+    });
+
+    if (existingUser) {
+      return NextResponse.json({ error: 'User with this email already exists' }, { status: 400 });
+    }
+
+    // Hash the password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
     // Create user record in database
-    // Note: With NextAuth, users are typically created during OAuth flow
-    // This endpoint creates a user manually for admin purposes
     const user = await prisma.user.create({
       data: {
         email: email,
         name: displayName,
+        password: hashedPassword,
         role: role || 'USER',
+        isActive: isActive !== undefined ? isActive : true,
+        collegeName: collegeName || null,
+        phone: phone || null,
         emailVerified: new Date(), // Mark as verified for admin-created users
       }
     });
@@ -105,7 +120,7 @@ export async function POST(request: Request) {
         email: user.email,
         displayName: user.name,
         role: user.role,
-        isActive: true,
+        isActive: user.isActive,
       }
     });
   } catch (error) {
