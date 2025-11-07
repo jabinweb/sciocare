@@ -143,7 +143,7 @@ function Hero() {
 
           {/* CTA Button */}
           <div className="flex justify-center px-4 mb-12 sm:mb-16 animate-fade-in">
-            <Link href="/auth/signin">
+            <Link href="/auth/login">
               <Button
                 size="lg"
                 className="bg-brand-blue hover:bg-brand-blue-dark text-white text-lg h-12 px-8 rounded-full"
@@ -690,7 +690,7 @@ function StartJourneySection() {
             {/* Already a Student */}
             <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full">
               <p className="text-gray-700 mb-4 font-medium">Are you already a <br/>Student?</p>
-              <Link href="/auth/signin">
+              <Link href="/auth/login">
                 <Button className="w-full text-white group relative justify-center" style={{ backgroundColor: '#2d5296' }}>
                   <span className="group-hover:mr-6 transition-all duration-200">Sign In</span>
                   <LogIn className="absolute right-4 h-4 w-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
