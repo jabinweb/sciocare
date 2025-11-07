@@ -44,7 +44,6 @@ interface UnitContentProps {
   selectedUnit: string | null;
   selectedUnitData: BaseUnit | null;
   completedTopics?: Set<string>;
-  topicRatings?: Record<string, { userRating: number; hasRated: boolean }>;
   useAccordion?: boolean;
   showUpgradeButton?: boolean;
   showFreeBadge?: boolean;
@@ -79,7 +78,6 @@ export const UnitContent: React.FC<UnitContentProps> = ({
   selectedUnit,
   selectedUnitData,
   completedTopics = new Set(),
-  topicRatings = {},
   useAccordion = false,
   showUpgradeButton = false,
   showFreeBadge = false,
@@ -267,8 +265,6 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                             .map((topic: BaseTopic) => {
                               const isCompleted = topic.completed || completedTopics.has(topic.id);
                               const isDisabled = chapter.isLocked || false;
-                              // Get rating for this topic
-                              const topicRating = topicRatings[topic.id];
                               // Convert topic for TopicItem - use converter or create default Topic structure
                               const topicForItem: Topic = convertTopicForItem 
                                 ? convertTopicForItem(topic)
@@ -289,8 +285,6 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                                   topic={topicForItem}
                                   isCompleted={isCompleted}
                                   isDisabled={isDisabled}
-                                  userRating={topicRating?.userRating}
-                                  hasRated={topicRating?.hasRated}
                                   onClick={() => onTopicClick(topic, chapterIndex)}
                                   onLockedClick={onLockedClick}
                                 />
