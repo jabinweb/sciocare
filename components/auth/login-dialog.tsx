@@ -71,7 +71,7 @@ function SignInContent({ callbackUrl = '/dashboard', onNavigateAway }: { callbac
 
   return (
     <div className="space-y-4">
-      <Button 
+      {/* <Button 
         onClick={handleGoogleSignIn}
         disabled={isLoading}
         className="w-full bg-white text-gray-800 border hover:bg-gray-50"
@@ -86,14 +86,14 @@ function SignInContent({ callbackUrl = '/dashboard', onNavigateAway }: { callbac
           />
         </div>
         Sign in with Google
-      </Button>
+      </Button> */}
       
       <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-gray-300" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+          <span className="px-2 bg-white text-gray-500">Continue with email</span>
         </div>
       </div>
 

@@ -102,7 +102,7 @@ export function SignIn({
       <CardContent className="space-y-4">
         {showGoogleAuth && (
           <>
-            <Button 
+            {/* <Button 
               onClick={handleGoogleSignIn}
               disabled={isLoading}
               className="w-full bg-white text-gray-800 border hover:bg-gray-50"
@@ -117,7 +117,7 @@ export function SignIn({
                 />
               </div>
               Sign in with Google
-            </Button>
+            </Button> */}
             
             {showEmailAuth && (
               <div className="relative my-6">
@@ -125,7 +125,7 @@ export function SignIn({
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with email</span>
+                  <span className="px-2 bg-white text-gray-500">Continue with email</span>
                 </div>
               </div>
             )}
