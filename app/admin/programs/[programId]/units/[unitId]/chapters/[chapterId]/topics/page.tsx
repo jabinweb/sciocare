@@ -35,7 +35,6 @@ interface TopicFormData {
   name: string;
   type: string;
   duration: string;
-  difficulty: string;
   orderIndex: number;
   chapterId: string;
   content?: TopicContentData;
@@ -219,10 +218,7 @@ export default function TopicsPage() {
           isOpen={formOpen}
           onClose={() => { setFormOpen(false); setEditingTopic(null); }}
           onSubmit={editingTopic ? handleUpdateTopic : handleCreateTopic}
-          initialData={editingTopic ? {
-            ...editingTopic,
-            difficulty: editingTopic.difficulty || 'BEGINNER'
-          } : undefined}
+          initialData={editingTopic || undefined}
           mode={editingTopic ? 'edit' : 'create'}
           chapterId={chapterId}
         />
