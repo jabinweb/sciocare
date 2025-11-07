@@ -395,7 +395,7 @@ export const ProgramCard: React.FC<ProgramCardProps> = ({
               <Clock className={`${iconSize} text-purple-600`} />
             </div>
             <div>
-              <div className="text-xs text-gray-500 font-medium">Chapters</div>
+              <div className="text-xs text-gray-500 font-medium">Lessons</div>
               <div className="text-sm font-bold text-gray-900">{chapterCount}</div>
             </div>
           </div>
