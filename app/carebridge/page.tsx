@@ -77,7 +77,7 @@ function CustomHeader() {
             <p className="text-gray-600 mb-6">Choose how you&apos;d like to sign in</p>
             
             <div className="space-y-3">
-              <Link href="/auth/signin" className="w-full">
+              <Link href="/auth/login" className="w-full">
                 <Button className="w-full bg-brand-blue hover:bg-brand-blue-dark">
                   Sign In to Your Account
                 </Button>

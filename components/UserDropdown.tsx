@@ -33,7 +33,7 @@ export const UserDropdown = () => {
     // Show a simple Login button that opens the login dialog
     return (
       <div>
-        <LoginDialog  callbackUrl='/' />
+        <LoginDialog  callbackUrl='/dashboard' />
       </div>
     );
   }
