@@ -22,6 +22,7 @@ export async function GET(
         name: true,
         slug: true,
         description: true,
+        logo: true,
         isActive: true,
         currency: true,
         price: true,

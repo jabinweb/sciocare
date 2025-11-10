@@ -26,6 +26,7 @@ interface Program {
 interface ProgramFormData {
   id?: string;
   name: string;
+  logo?: string;
   description: string;
   isActive: boolean;
   price?: string; // Keep as string for form handling
@@ -78,6 +79,7 @@ export default function ProgramsPage() {
         name: formData.name,
         description: formData.description,
         isActive: formData.isActive,
+        logo: formData.logo,
         price: formData.price
       }),
     });
@@ -102,6 +104,7 @@ export default function ProgramsPage() {
         name: formData.name,
         description: formData.description,
         isActive: formData.isActive,
+        logo: formData.logo,
         price: formData.price ? parseInt(formData.price) : undefined // Handle price conversion
       }),
     });

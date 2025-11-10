@@ -44,7 +44,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { name, description, isActive, price } = await request.json();
+    const { name, description, isActive, price, logo } = await request.json();
     
     if (!name || !description) {
       return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
@@ -66,6 +66,7 @@ export async function POST(request: Request) {
         name,
         slug,
         description,
+        logo: logo || null,
         isActive: isActive !== undefined ? isActive : true,
         price: pricePaisa,
         currency: 'INR',
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, name, description, isActive, price } = await request.json();
+    const { id, name, description, isActive, price, logo } = await request.json();
     
     if (!id) {
       return NextResponse.json({ error: 'Program ID is required' }, { status: 400 });
@@ -97,6 +98,7 @@ export async function PUT(request: Request) {
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (logo !== undefined) updateData.logo = logo || null;
     if (price !== undefined && price !== null) {
       const numeric = typeof price === 'number' ? price : parseInt(String(price));
       if (!Number.isNaN(numeric)) {

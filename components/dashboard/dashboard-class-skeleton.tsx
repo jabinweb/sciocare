@@ -1,7 +1,39 @@
 import { Skeleton } from "@/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import Image from "next/image"
 
-export function ProgramPageSkeleton() {
+interface ProgramPageSkeletonProps {
+  programLogo?: string;
+  programName?: string;
+}
+
+export function ProgramPageSkeleton({ programLogo, programName }: ProgramPageSkeletonProps = {}) {
+  // If we have a logo, show centered loading screen with logo
+  if (programLogo && programLogo !== '') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="mb-6 flex justify-center">
+            <div className="w-32 h-32 rounded-3xl overflow-hidden bg-white border-2 shadow-lg flex items-center justify-center animate-pulse">
+              <Image
+                src={programLogo}
+                alt={programName || "Program logo"}
+                width={128}
+                height={128}
+                className="object-contain p-4"
+              />
+            </div>
+          </div>
+          {programName && (
+            <h2 className="text-2xl font-bold text-gray-800 mb-2">{programName}</h2>
+          )}
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback to full skeleton if no logo
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       <div className="max-w-7xl mx-auto px-6 py-8">

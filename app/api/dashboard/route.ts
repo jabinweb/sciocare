@@ -56,7 +56,17 @@ export async function GET() {
     // Get all classes with their subjects and chapters (excluding content for security)
     const classes = await prisma.class.findMany({
       where: { isActive: true },
-      include: {
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        logo: true,
+        isActive: true,
+        price: true,
+        currency: true,
+        created_at: true,
+        updatedAt: true,
         subjects: {
           include: {
             chapters: {

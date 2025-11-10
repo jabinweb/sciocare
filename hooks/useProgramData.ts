@@ -56,6 +56,7 @@ export interface Program {
   name: string;
   slug?: string; // Add slug field
   description: string;
+  logo?: string; // Add logo field
   isActive: boolean;
   price: number;
   units: Unit[];

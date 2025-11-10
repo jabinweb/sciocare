@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Settings } from 'lucide-react';
 import { useProgramPageData } from '@/hooks/useProgramPageData';
@@ -62,8 +63,12 @@ export default function ProgramPage() {
     }
   }, [currentProgram]);
 
-  if (loading) {
-    return <ProgramPageSkeleton />;
+  if (loading || !currentProgram) {
+    // Use currentProgram data if available, even during loading
+    return <ProgramPageSkeleton 
+      programLogo={currentProgram?.logo} 
+      programName={currentProgram?.name} 
+    />;
   }
 
   if (error || !currentProgram) {
@@ -242,6 +247,20 @@ export default function ProgramPage() {
             >
               <ArrowLeft className="h-4 w-4" />
             </Button>
+            
+            {/* Program Logo */}
+            {currentProgram.logo && (
+              <div className="w-16 h-16 rounded-2xl overflow-hidden bg-white border-2 shadow-sm flex items-center justify-center flex-shrink-0">
+                <Image
+                  src={currentProgram.logo}
+                  alt={currentProgram.name}
+                  width={64}
+                  height={64}
+                  className="object-contain p-2"
+                />
+              </div>
+            )}
+            
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
                 <h1 className="text-2xl md:text-3xl font-bold">{currentProgram.name}</h1>
