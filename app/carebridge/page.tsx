@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { ArrowRight, Play, LogIn, Globe, Palette, Heart, MapPin, BookOpen, Type } from 'lucide-react';
+import { ArrowRight, Play, LogIn, Globe, Palette, Heart, MapPin, BookOpen, Type, Download, FileText } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -156,9 +156,9 @@ function Hero() {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 max-w-3xl mx-auto px-4 animate-fade-in">
             {[
-              { number: 'IELTS & OET', label: 'Aligned' },
-              { number: '150+', label: 'Revision games' },
-              { number: '300+', label: 'Learning Videos' }
+              { number: '400+', label: 'Learning Videos' },
+              { number: '200+', label: 'Revision Games' },
+              { number: 'IELTS & OET', label: 'Aligned' }
             ].map((stat, index) => (
               <Card key={index} className="bg-white/5 backdrop-blur-sm border-white/10 overflow-hidden group">
                 <CardContent className="p-4 relative">
@@ -190,27 +190,27 @@ interface ProblemItem {
 const problemItems: ProblemItem[] = [
   {
     id: 'general',
-    description: 'First-year English courses are often too general and don&apos;t fully prepare students for real hospital communication.',
+    description: 'First-year English courses are often too general and don\'t prepare students for real hospital communication.',
     emoji: '📚',
-    bgColor: 'bg-blue-50',
+    bgColor: 'bg-blue-100',
   },
   {
     id: 'speaking',
-    description: 'Students may know the theory of the language, but often struggle to speak confidently with patients and staff.',
+    description: 'Students learn the theory but struggle to speak confidently with patients and staff.',
     emoji: '😕',
-    bgColor: 'bg-orange-50',
+    bgColor: 'bg-orange-100',
   },
   {
     id: 'writing',
-    description: 'Writing reports, notes, and handovers may feel difficult without medical-specific language practice.',
+    description: 'Writing reports, notes, and handovers is difficult without medical-focused language practice.',
     emoji: '✍️',
-    bgColor: 'bg-yellow-50',
+    bgColor: 'bg-yellow-100',
   },
   {
     id: 'opportunities',
-    description: 'Many capable students miss global opportunities—not because they lack skill, but because of English.',
-    emoji: '�',
-    bgColor: 'bg-purple-50',
+    description: 'Many capable students miss global opportunities—not because of skill, but because of English.',
+    emoji: '🌍',
+    bgColor: 'bg-purple-100',
   },
 ];
 
@@ -251,7 +251,7 @@ function RevisionProblems() {
   };
 
   return (
-    <section className="py-12 md:py-20 bg-white relative overflow-hidden">
+    <section className="py-12 md:py-20 bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 md:px-6 relative">
         {/* Header */}
         <motion.div 
@@ -343,7 +343,7 @@ function RevisionProblems() {
               {/* Image positioned to overflow blob */}
               <div className="absolute -inset-16 z-20">
                 <Image
-                  src="/thinking-nurse.png"
+                  src="https://sprints.sciolabs.in/_next/image?url=%2F5.png&w=1200&q=95"
                   alt="Stressed student struggling with traditional revision methods"
                   width={600}
                   height={400}
@@ -387,42 +387,54 @@ function RevisionProblems() {
 function CareBridgePromise() {
   const promises = [
     {
-      icon: '�',
+      icon: <Globe className="w-12 h-12" />,
       title: 'IELTS & OET Aligned',
-      description: 'Builds the communication skills needed for professional and global healthcare settings.'
+      description: 'Builds the communication skills needed for professional and global healthcare settings.',
+      bgColor: 'bg-blue-50',
+      iconColor: 'text-blue-600'
     },
     {
       icon: '🎮',
       title: 'Learn the Play Way',
-      description: 'Gamified revision activities make practice engaging, memorable, and stress-free.'
+      description: 'Gamified revision activities make practice engaging, memorable, and stress-free.',
+      bgColor: 'bg-purple-50',
+      iconColor: 'text-purple-600'
     },
     {
       icon: '📚',
       title: 'Self-Paced Learning Portal',
-      description: 'Access lessons anytime—review, practice, and improve at your own pace.'
+      description: 'Access lessons anytime—review, practice, and improve at your own pace.',
+      bgColor: 'bg-green-50',
+      iconColor: 'text-green-600'
     },
     {
       icon: '💬',
       title: 'Skill-Focused Training',
-      description: 'Step-by-step practice to speak confidently and write clearly in clinical contexts.'
+      description: 'Step-by-step practice to speak confidently and write clearly in clinical contexts.',
+      bgColor: 'bg-orange-50',
+      iconColor: 'text-orange-600'
     },
     {
-      icon: '�',
+      icon: <FileText className="w-12 h-12" />,
       title: 'Workbook-First Design',
-      description: 'A structured workbook with QR-linked video lessons to guide and track progress.'
+      description: 'A structured workbook with QR-linked video lessons to guide and track progress.',
+      bgColor: 'bg-indigo-50',
+      iconColor: 'text-indigo-600'
     },
     {
       icon: '🏥',
       title: 'Healthcare-Focused Curriculum',
-      description: 'Covers exactly the language used in wards, handovers, patient care, and documentation.'
+      description: 'Covers exactly the language used in wards, handovers, patient care, and documentation.',
+      bgColor: 'bg-red-50',
+      iconColor: 'text-red-600'
     }
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-brand-blue/5 to-brand-orange/5">
+    <section className="py-20 bg-gradient-to-br from-blue-50 via-white to-orange-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm mb-6">
             <span className="text-2xl">✨</span>
             <span className="text-sm font-medium text-gray-600">The Solution</span>
           </div>
@@ -440,9 +452,15 @@ function CareBridgePromise() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {promises.map((promise, index) => (
-            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1">
+            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 bg-white">
               <CardContent className="p-6">
-                <div className="text-5xl mb-4">{promise.icon}</div>
+                <div className={`w-16 h-16 rounded-2xl ${promise.bgColor} flex items-center justify-center mb-4`}>
+                  {typeof promise.icon === 'string' ? (
+                    <span className="text-4xl">{promise.icon}</span>
+                  ) : (
+                    <div className={promise.iconColor}>{promise.icon}</div>
+                  )}
+                </div>
                 <h3 className="text-xl font-bold mb-2">{promise.title}</h3>
                 <p className="text-gray-600">{promise.description}</p>
               </CardContent>
@@ -576,13 +594,13 @@ const getDifficultyColor = (difficulty: string) => {
 // Try Games Section
 function TryGamesSection() {
   return (
-    <section id="games" className="py-24 bg-gradient-to-b from-slate-50/50 to-white relative overflow-hidden">
+    <section id="games" className="py-24 bg-gradient-to-b from-green-50 via-teal-50 to-cyan-50 relative overflow-hidden">
       <div className="absolute inset-0 bg-grid-pattern opacity-5" />
       <div className="absolute top-20 left-10 w-32 h-32 bg-brand-blue/20 rounded-full blur-3xl opacity-30" />
       <div className="absolute bottom-20 right-10 w-40 h-40 bg-brand-orange/20 rounded-full blur-3xl opacity-30" />
       
       <div className="max-w-7xl mx-auto px-6 relative">
-        <div className="text-center mb-16">
+        <div className="text-center">
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 mb-6">
             <Play className="w-4 h-4 text-brand-blue" />
             <span className="text-sm font-medium text-gray-600">Interactive Learning</span>
@@ -603,8 +621,8 @@ function TryGamesSection() {
           <Tabs defaultValue="countries" className="w-full">
             {gamesData.map((game) => (
               <TabsContent key={game.id} value={game.id} className="mt-8">
-                <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm overflow-hidden">
-                  <CardHeader className={`bg-gradient-to-r ${game.color} text-white relative overflow-hidden`}>
+                <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-sm overflow-hidden gap-0">
+                  <CardHeader className={`bg-gradient-to-r ${game.color} text-white relative overflow-hidden pt-8`}>
                     <div className="absolute inset-0 bg-white/10 bg-grid-pattern" />
                     
                     <div className="relative">
@@ -674,7 +692,7 @@ function TryGamesSection() {
 // Start Your Journey Section
 function StartJourneySection() {
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 to-indigo-50">
+    <section className="py-20 bg-gradient-to-br from-indigo-50 via-blue-50 to-cyan-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200">Start Your Journey</Badge>
@@ -685,10 +703,35 @@ function StartJourneySection() {
             CareBridge English is currently offered through partnered institutions. If your college would like to make this program available to your students, you can get in touch with us. Sign up through the interest form to schedule a demo or curriculum walkthrough.
           </p>
 
+          {/* Brochure Download Section */}
+          <div className="mb-12">
+            <div className="inline-flex flex-col items-center gap-4 bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-brand-blue to-brand-orange flex items-center justify-center">
+                  <Download className="w-6 h-6 text-white" />
+                </div>
+                <div className="text-left">
+                  <p className="text-lg font-semibold text-gray-900">Explore our curriculum</p>
+                  <p className="text-sm text-gray-600">Download our brochure for more details</p>
+                </div>
+              </div>
+              <a href="/CareBridge_Brochure.pdf" download className="w-full sm:w-auto">
+                <Button 
+                  size="lg"
+                  className="w-full sm:w-auto text-white group shadow-md hover:shadow-lg transition-all" 
+                  style={{ backgroundColor: '#2d5296' }}
+                >
+                  <Download className="w-4 h-4 mr-2 group-hover:animate-bounce" />
+                  Download Brochure
+                </Button>
+              </a>
+            </div>
+          </div>
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-2xl mx-auto">
             {/* Already a Student */}
-            <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full">
+            <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full border border-gray-100">
               <p className="text-gray-700 mb-4 font-medium">Are you already a <br/>Student?</p>
               <Link href="/auth/login">
                 <Button className="w-full text-white group relative justify-center" style={{ backgroundColor: '#2d5296' }}>
@@ -699,7 +742,7 @@ function StartJourneySection() {
             </div>
 
             {/* I'm Interested */}
-            <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full">
+            <div className="bg-white rounded-2xl shadow-md p-6 flex-1 w-full border border-gray-100">
               <p className="text-gray-700 mb-4 font-medium">Want to bring this to your<br />institution?</p>
               <BookDemo>
                 <Button className="w-full text-white group relative justify-center" style={{ backgroundColor: '#f99f1b' }}>
@@ -745,7 +788,7 @@ function FAQSection() {
   ];
 
   return (
-    <section className="py-20 bg-gradient-to-br from-blue-50 to-white">
+    <section className="py-20 bg-blue-100">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-blue-100 text-blue-700 hover:bg-blue-200">FAQs</Badge>
