@@ -141,16 +141,27 @@ function Hero() {
             </p>
           </div>
 
-          {/* CTA Button */}
-          <div className="flex justify-center px-4 mb-12 sm:mb-16 animate-fade-in">
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row justify-center gap-4 px-4 mb-12 sm:mb-16 animate-fade-in">
             <Link href="/auth/login">
               <Button
                 size="lg"
-                className="bg-brand-blue hover:bg-brand-blue-dark text-white text-lg h-12 px-8 rounded-full"
+                className="bg-white text-gray-900 hover:bg-gray-100 text-base h-12 px-8 rounded-full font-medium transition-all group"
               >
-                Get Started <ArrowRight className="ml-2 h-5 w-5" />
+                Get Started 
+                <ArrowRight className="opacity-0 scale-0 -mr-6 group-hover:opacity-100 group-hover:scale-100 group-hover:mr-0 group-hover:ml-2 h-4 w-4 transition-all duration-300" />
               </Button>
             </Link>
+            <a href="#games">
+              <Button
+                size="lg"
+                variant="outline"
+                className="bg-white/5 backdrop-blur-sm text-white border-2 border-white/30 hover:bg-white/80 hover:text-gray-900 hover:border-white text-base h-12 px-8 rounded-full font-medium transition-all group"
+              >
+                <Play className="opacity-0 scale-0 -ml-6 group-hover:opacity-100 group-hover:scale-100 group-hover:ml-0 group-hover:mr-2 h-4 w-4 fill-current transition-all duration-300" />
+                Try Now
+              </Button>
+            </a>
           </div>
           
           {/* Stats */}
