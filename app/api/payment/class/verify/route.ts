@@ -5,11 +5,11 @@ import { sendEmail } from '@/lib/mail';
 import { generateEmailContent } from '@/lib/email';
 import { notifyAdminNewSubscription } from '@/lib/admin-notifications';
 import { logPaymentCompleted, logPaymentFailed, logSubscriptionCreated } from '@/lib/activity-logger';
-import { getAcademicYearEndDate } from '@/lib/subscription-date-utils';
+import { getAcademicYearEndDate, calculateEndDate } from '@/lib/subscription-date-utils';
 
 export async function POST(req: Request) {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, userId, classId } = await req.json();
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, userId, classId, durationMonths, planId, planName } = await req.json();
 
     // Fetch payment settings
     const settings = await prisma.adminSettings.findMany({
@@ -68,15 +68,25 @@ export async function POST(req: Request) {
       }
 
       // Create class-specific subscription using Prisma
-      const endDate = getAcademicYearEndDate(); // Academic year ends March 31st
+      // Use duration-based end date if provided, otherwise use academic year end
+      let endDate: Date;
+      if (durationMonths && [3, 6, 12].includes(durationMonths)) {
+        endDate = calculateEndDate(durationMonths);
+      } else {
+        endDate = getAcademicYearEndDate(); // Academic year ends March 31st
+      }
+      
+      const subscriptionPlanName = planName || `${classData.name} Access`;
+      const subscriptionPlanType = planId || 'class_access';
+      
       try {
         const subscription = await prisma.subscription.create({
           data: {
             userId,
             classId: parseInt(classId),
             status: 'ACTIVE',
-            planType: 'class_access',
-            planName: `${classData.name} Access`,
+            planType: subscriptionPlanType,
+            planName: subscriptionPlanName,
             amount: classData.price,
             currency: 'INR',
             startDate: new Date(),

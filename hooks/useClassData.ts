@@ -138,7 +138,8 @@ export function useClassData(classId?: string) {
       try {
         setLoading(true);
         
-        const response = await fetch(`/api/classes/${classId}`);
+        // Use programs API which supports both numeric IDs and slugs
+        const response = await fetch(`/api/programs/${classId}`);
         const data = await response.json();
 
         if (!response.ok) {

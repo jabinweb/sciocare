@@ -61,3 +61,14 @@ export function getDaysUntilExpiry(endDate: Date): number {
   const timeDiff = endDate.getTime() - now.getTime();
   return Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
 }
+
+/**
+ * Calculate end date based on duration in months from today
+ * @param durationMonths - Number of months for the subscription
+ * @returns Date object set to the end date
+ */
+export function calculateEndDate(durationMonths: number): Date {
+  const endDate = new Date();
+  endDate.setMonth(endDate.getMonth() + durationMonths);
+  return endDate;
+}

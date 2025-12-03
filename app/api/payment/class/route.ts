@@ -4,7 +4,7 @@ import { createPaymentOrder, getPaymentConfig } from '@/lib/payment-service';
 
 export async function POST(req: Request) {
   try {
-    const { classId, userId } = await req.json();
+    const { classId, userId, planId, durationMonths } = await req.json();
 
     if (!classId || !userId) {
       return NextResponse.json({ error: 'Class ID and User ID are required' }, { status: 400 });
@@ -16,6 +16,7 @@ export async function POST(req: Request) {
       select: {
         id: true,
         name: true,
+        slug: true,
         price: true,
         currency: true
       }
@@ -23,6 +24,44 @@ export async function POST(req: Request) {
 
     if (!classData) {
       return NextResponse.json({ error: 'Class not found' }, { status: 404 });
+    }
+
+    // Determine price and duration based on plan or direct values
+    let finalPrice = classData.price || 0;
+    let finalDurationMonths = 12; // Default to 12 months
+    let planName = `${classData.name} Access`;
+
+    // Check if using a pricing plan from database
+    if (planId) {
+      const plan = await prisma.pricingPlan.findUnique({
+        where: { id: planId }
+      });
+      if (plan) {
+        finalPrice = plan.price;
+        finalDurationMonths = plan.durationMonths;
+        planName = plan.name;
+      }
+    } else if (durationMonths && [3, 6, 12].includes(durationMonths)) {
+      // Try to find a pricing plan for this class and duration
+      const plan = await prisma.pricingPlan.findFirst({
+        where: {
+          classId: classId,
+          durationMonths: durationMonths,
+          isActive: true
+        }
+      });
+      
+      if (plan) {
+        finalPrice = plan.price;
+        finalDurationMonths = plan.durationMonths;
+        planName = plan.name;
+      } else {
+        // Fallback: Custom duration pricing (proportional)
+        finalDurationMonths = durationMonths;
+        const basePrice = classData.price || 99900; // Default ₹999 for 12 months
+        finalPrice = Math.round((basePrice / 12) * durationMonths);
+        planName = `${classData.name} - ${durationMonths} Month Access`;
+      }
     }
 
     // Check if user already has a FULL CLASS subscription (not individual subjects)
@@ -61,9 +100,9 @@ export async function POST(req: Request) {
     // Create payment order using unified service
     const orderResult = await createPaymentOrder({
       userId: userId,
-      amount: classData.price || 0,
+      amount: finalPrice,
       currency: classData.currency || 'INR',
-      description: `${classData.name} - Class Subscription`
+      description: planName
     });
 
     if (!orderResult) {
@@ -71,6 +110,16 @@ export async function POST(req: Request) {
         error: 'Payment order creation failed' 
       }, { status: 500 });
     }
+
+    // Metadata to pass to verification
+    const metadata = {
+      classId,
+      userId,
+      planId: planId || null,
+      durationMonths: finalDurationMonths,
+      planName,
+      price: finalPrice
+    };
 
     // Format response based on gateway
     if (orderResult.gateway === 'RAZORPAY') {
@@ -81,7 +130,8 @@ export async function POST(req: Request) {
         keyId: orderResult.orderData.key_id || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
         classId: classId,
         className: classData.name,
-        gateway: orderResult.gateway
+        gateway: orderResult.gateway,
+        metadata // Include metadata for frontend to pass to verify
       });
     } else if (orderResult.gateway === 'CASHFREE') {
       // For Cashfree, we might have different response structures
@@ -128,8 +178,14 @@ export async function POST(req: Request) {
       
       return NextResponse.json(cashfreeResponse);
     }
+    
+    // If no gateway matched, return error
+    return NextResponse.json({ 
+      error: 'No valid payment gateway configured' 
+    }, { status: 500 });
   } catch (error) {
     console.error('Class payment creation error:', error);
-    return NextResponse.json({ error: 'Payment creation failed' }, { status: 500 });
+    const errorMessage = error instanceof Error ? error.message : 'Payment creation failed';
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }

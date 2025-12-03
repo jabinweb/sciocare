@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Edit, Trash2, ArrowLeft, Layers } from 'lucide-react';
+import { Plus, Edit, Trash2, ArrowLeft, Layers, DollarSign } from 'lucide-react';
 import { UnitForm } from '@/components/admin/UnitForm';
 
 interface Unit {
@@ -165,10 +165,16 @@ export default function ProgramDetailPage() {
               <p className="text-muted-foreground">Manage units for this program</p>
             </div>
           </div>
-          <Button onClick={() => setFormOpen(true)}>
-            <Plus className="h-4 w-4 mr-2" />
-            Add Unit
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => router.push(`/admin/programs/${programSlug || programId}/pricing`)}>
+              <DollarSign className="h-4 w-4 mr-2" />
+              Manage Pricing
+            </Button>
+            <Button onClick={() => setFormOpen(true)}>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Unit
+            </Button>
+          </div>
         </div>
 
         {loading ? (

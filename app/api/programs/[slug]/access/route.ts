@@ -83,10 +83,12 @@ export async function GET(
         }
       },
       select: {
+        id: true,
         classId: true,
         subjectId: true,
         planType: true,
         status: true,
+        startDate: true,
         endDate: true
       }
     });
@@ -145,6 +147,14 @@ export async function GET(
         currentSubjects: Array.from(subjectSubscriptions.keys()),
         classPrice: programData.price,
         potentialSavings: (subjectSubscriptions.size * Math.ceil(programData.price / programData.subjects.length)) - programData.price
+      } : null,
+      // Include subscription details if user has a class subscription
+      subscriptionDetails: classSubscription ? {
+        id: classSubscription.id,
+        planType: classSubscription.planType,
+        startDate: classSubscription.startDate,
+        endDate: classSubscription.endDate,
+        status: classSubscription.status
       } : null
     });
 

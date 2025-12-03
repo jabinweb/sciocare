@@ -21,6 +21,7 @@ model Class {
   price         Int?           @default(29900)
   subjects      Subject[]
   subscriptions Subscription[]
+  pricingPlans  PricingPlan[]
 
   @@map("classes")
 }
@@ -275,6 +276,28 @@ model ContentPage {
   updatedAt       DateTime        @updatedAt @map("updated_at")
 
   @@map("content_pages")
+}
+
+model PricingPlan {
+  id             String   @id @default(cuid())
+  classId        Int
+  name           String   // "3 Months", "6 Months", "12 Months"
+  durationMonths Int      // 3, 6, 12
+  price          Int      // Price in paise (e.g., 39900 = ₹399)
+  originalPrice  Int?     // Original price for showing discounts
+  discount       Int?     // Discount percentage
+  currency       String   @default("INR")
+  isActive       Boolean  @default(true)
+  isPopular      Boolean  @default(false) // Mark as "Best Value" etc
+  features       String[] @default([])
+  sortOrder      Int      @default(0)
+  created_at     DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  class          Class    @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, durationMonths])
+  @@index([classId, isActive])
+  @@map("pricing_plans")
 }
 
 model UserActivity {

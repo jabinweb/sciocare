@@ -22,6 +22,9 @@ interface RazorpayOptions {
   theme: {
     color: string;
   };
+  modal?: {
+    ondismiss?: () => void;
+  };
 }
 
 interface ServerOrderData {

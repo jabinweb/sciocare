@@ -314,32 +314,32 @@ export default function ProgramPage() {
           </p>
         </div>
 
-        {/* Subscription Management Panel */}
-        {showSubscriptionManager && currentProgram.price !== 0 && (
-          <div className="mb-6">
-            <ProgramSubscriptionManager 
-              classId={currentProgram.id}
-              onSubscribe={async (type, options) => {
-                console.log('Subscription request:', type, options);
-                
-                try {
-                  // Handle different subscription types
-                  if (type === 'class' || type === 'upgrade') {
-                    // Redirect to class payment page for both full class and upgrade
-                    router.push(`/payment/class/${currentProgram.id}`);
-                  } else if (type === 'unit' && options?.unitId) {
-                    // Redirect to unit payment page
-                    router.push(`/payment/unit/${options.unitId}`);
-                  } else {
-                    // General subscription - could be a modal or redirect
-                    router.push('/dashboard/subscriptions');
-                  }
-                } catch (error) {
-                  console.error('Subscription handling error:', error);
+        {/* Subscription Management Dialog */}
+        {currentProgram.price !== 0 && (
+          <ProgramSubscriptionManager 
+            classId={currentProgram.id}
+            open={showSubscriptionManager}
+            onClose={() => setShowSubscriptionManager(false)}
+            onSubscribe={async (type, options) => {
+              console.log('Subscription request:', type, options);
+              
+              try {
+                // Handle different subscription types
+                if (type === 'class' || type === 'upgrade') {
+                  // Redirect to class payment page for both full class and upgrade
+                  router.push(`/payment/class/${currentProgram.id}`);
+                } else if (type === 'unit' && options?.unitId) {
+                  // Redirect to unit payment page
+                  router.push(`/payment/unit/${options.unitId}`);
+                } else {
+                  // General subscription - could be a modal or redirect
+                  router.push('/dashboard/subscriptions');
                 }
-              }}
-            />
-          </div>
+              } catch (error) {
+                console.error('Subscription handling error:', error);
+              }
+            }}
+          />
         )}
 
         <UnitContent

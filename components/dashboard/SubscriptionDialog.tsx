@@ -27,11 +27,11 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { CheckCircle, Star, Zap, BookOpen, LogIn } from 'lucide-react';
+import { CheckCircle, Star, BookOpen, LogIn } from 'lucide-react';
 import { useSession } from 'next-auth/react';
 import { signIn } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { loadRazorpay } from '@/lib/razorpay';
 
 interface RazorpayResponse {
   razorpay_payment_id: string;
@@ -45,28 +45,8 @@ interface PaymentError {
   description?: string;
 }
 
-interface RazorpayOptions {
-  key: string;
-  amount: number;
-  currency: string;
-  name: string;
-  description: string;
-  order_id: string;
-  handler: (response: RazorpayResponse) => void;
-  prefill: {
-    name: string;
-    email: string;
-  };
-  theme: {
-    color: string;
-  };
-}
-
 declare global {
   interface Window {
-    Razorpay: new (options: RazorpayOptions) => {
-      open: () => void;
-    };
     Cashfree: {
       checkout: (options: { paymentSessionId: string; redirectTarget: string }) => Promise<{
         error?: { message: string };
@@ -83,7 +63,7 @@ declare global {
   }
 }
 
-interface Subject {
+interface Unit {
   id: string;
   name: string;
   icon: string;
@@ -102,17 +82,18 @@ interface Subject {
 interface ClassData {
   id: number;
   name: string;
+  slug?: string;
   description: string;
   price: number;
   currency?: string; // Currency (INR, USD, etc.)
-  subjects: Subject[];
+  subjects: Unit[];
 }
 
 interface SubscriptionDialogProps {
   open: boolean;
   onClose: () => void;
   classData: ClassData;
-  onSubscribe: (type: 'class' | 'subject', options: { classId?: number; subjectId?: string; amount: number }) => void;
+  onSubscribe: (type: 'program', options: { classId?: number; amount: number }) => void;
   disableAutoRedirect?: boolean; // Optional prop to disable automatic redirection
 }
 
@@ -126,48 +107,96 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
   const { data: session } = useSession();
   const router = useRouter();
   const user = session?.user;
-  const [selectedSubjects, setSelectedSubjects] = useState<Set<string>>(new Set());
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState<{
     show: boolean;
-    type: 'class' | 'subject';
+    type: 'program';
     details?: {
       classId?: string;
       subjectId?: string;
       amount?: number;
       subscriptionName?: string;
     };
-  }>({ show: false, type: 'class' });
+  }>({ show: false, type: 'program' });
   
-  // Check if user has class subscription (all subjects subscribed via class_subscription)
-  const hasClassSubscription = classData.subjects.every(subject => 
+  // Check if user has program subscription (all subjects subscribed via class_subscription)
+  const hasProgramSubscription = classData.subjects.every(subject => 
     subject.isSubscribed && subject.subscriptionType === 'class_subscription'
   );
   
-  // Check if user has any subject subscriptions (for upgrade scenario)
-  const hasSubjectSubscriptions = classData.subjects.some(subject => 
-    subject.isSubscribed && subject.subscriptionType === 'subject_subscription'
-  );
+  // Pricing plans from database
+  interface PricingPlan {
+    id: string;
+    name: string;
+    durationMonths: number;
+    price: number;
+    originalPrice: number | null;
+    discount: number | null;
+    isPopular: boolean;
+    features: string[];
+  }
   
-  // Check if this is an upgrade scenario (has some subject subscriptions but not full class)
-  const isUpgradeScenario = hasSubjectSubscriptions && !hasClassSubscription;
+  const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
+  const [isPricingLoading, setIsPricingLoading] = useState(true);
   
-  // Get unsubscribed subjects for individual subscription tab
-  const unsubscribedSubjects = classData.subjects.filter(subject => !subject.isSubscribed);
-  const subscribedSubjects = classData.subjects.filter(subject => subject.isSubscribed);
+  // Check if this program has custom pricing plans
+  const hasCustomPricing = pricingPlans.length > 0;
   
-  // Set default tab based on subscription status
-  const [subscriptionType, setSubscriptionType] = useState<'class' | 'subjects'>(
-    hasClassSubscription || unsubscribedSubjects.length < classData.subjects.length ? 'subjects' : 'class'
-  );
+  // Duration selection for programs with custom pricing
+  const [selectedDuration, setSelectedDuration] = useState<number>(6); // Default to 6 months
+  
+  // Fetch pricing plans from database
+  useEffect(() => {
+    const fetchPricing = async () => {
+      if (!classData.id) return;
+      
+      try {
+        setIsPricingLoading(true);
+        const res = await fetch(`/api/programs/pricing?classId=${classData.id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.hasCustomPricing && data.plans.length > 0) {
+            setPricingPlans(data.plans);
+            // Set default to popular plan or middle option
+            const popularPlan = data.plans.find((p: PricingPlan) => p.isPopular);
+            if (popularPlan) {
+              setSelectedDuration(popularPlan.durationMonths);
+            } else if (data.plans.length > 0) {
+              // Default to middle plan if exists
+              const middleIndex = Math.floor(data.plans.length / 2);
+              setSelectedDuration(data.plans[middleIndex].durationMonths);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching pricing:', error);
+      } finally {
+        setIsPricingLoading(false);
+      }
+    };
+    
+    if (open) {
+      fetchPricing();
+    }
+  }, [classData.id, open]);
+  
+  // Get price for selected duration from database plans
+  const getSelectedPlanPrice = () => {
+    if (!hasCustomPricing) {
+      return classData.price; // Return default class price
+    }
+    const plan = pricingPlans.find(p => p.durationMonths === selectedDuration);
+    return plan?.price || classData.price;
+  };
   
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isRazorpayOpen, setIsRazorpayOpen] = useState(false);
   
   // Auto-close dialog after successful payment
   useEffect(() => {
     if (paymentSuccess.show) {
       const timer = setTimeout(() => {
-        setPaymentSuccess({ show: false, type: 'class' });
+        setPaymentSuccess({ show: false, type: 'program' });
         // Only auto-close if not handled by parent (dashboard will handle its own closing)
         if (disableAutoRedirect) {
           // Let parent handle closing timing
@@ -198,28 +227,10 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
     });
   };
 
-  const classPrice = classData.price / 100; // Convert from paisa to rupees
-  
-  // Calculate total price for selected subjects using their individual prices
-  const selectedSubjectsPrice = Array.from(selectedSubjects).reduce((total, subjectId) => {
-    const subject = classData.subjects.find(s => s.id === subjectId);
-    const subjectPriceInRupees = (subject?.price || 7500) / 100; // Default to ₹75 if not set
-    return total + subjectPriceInRupees;
-  }, 0);
-
-  const handleSubjectToggle = (subjectId: string) => {
-    // Only allow toggling unsubscribed subjects
-    const subject = classData.subjects.find(s => s.id === subjectId);
-    if (subject?.isSubscribed) return;
-    
-    const newSelected = new Set(selectedSubjects);
-    if (newSelected.has(subjectId)) {
-      newSelected.delete(subjectId);
-    } else {
-      newSelected.add(subjectId);
-    }
-    setSelectedSubjects(newSelected);
-  };
+  // Calculate price based on whether we have custom pricing plans
+  const classPrice = hasCustomPricing 
+    ? getSelectedPlanPrice() / 100 
+    : classData.price / 100; // Convert from paisa to rupees
 
   // Helper function to handle payment errors gracefully
   const handlePaymentError = (error: PaymentError | Error | unknown, context: string) => {
@@ -281,15 +292,26 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
     
     setIsProcessing(true);
     
+    // Price is calculated in the API based on duration
+    
     try {
-      // Call the existing class payment API
+      // Call the existing class payment API with duration for custom pricing
+      const requestBody: Record<string, unknown> = {
+        classId: classData.id,
+        userId: user.id
+      };
+      
+      // Add duration for programs with custom pricing plans
+      if (hasCustomPricing) {
+        requestBody.durationMonths = selectedDuration;
+        requestBody.planName = `${classData.name} - ${selectedDuration} Month Access`;
+        requestBody.amount = getSelectedPlanPrice(); // Pass the exact price from plan
+      }
+      
       const response = await fetch('/api/payment/class', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          classId: classData.id,
-          userId: user.id
-        })
+        body: JSON.stringify(requestBody)
       });
       
       const orderData = await response.json();
@@ -371,7 +393,7 @@ Would you like to refresh the page now?`;
             // Show success message instead of immediate redirect
             setPaymentSuccess({
               show: true,
-              type: 'class',
+              type: 'program',
               details: {
                 classId: classData.id.toString(),
                 amount: classData.price,
@@ -380,7 +402,7 @@ Would you like to refresh the page now?`;
             });
             
             // Call onSubscribe immediately to update parent state
-            onSubscribe('class', { classId: classData.id, amount: classData.price });
+            onSubscribe('program', { classId: classData.id, amount: classData.price });
             
             // Handle redirect after success message is shown (if not disabled)
             if (!disableAutoRedirect) {
@@ -397,7 +419,11 @@ Would you like to refresh the page now?`;
       } else {
         // Handle Razorpay payment (default)
         if (!window.Razorpay) {
-          throw new Error('Payment system not available. Please refresh the page and try again.');
+          // Load Razorpay script dynamically
+          const loaded = await loadRazorpay();
+          if (!loaded || !window.Razorpay) {
+            throw new Error('Payment system not available. Please refresh the page and try again.');
+          }
         }
         
         // Initialize Razorpay payment
@@ -423,7 +449,11 @@ Would you like to refresh the page now?`;
               metadata: {
                 type: 'class_subscription',
                 classId: classData.id,
-                userId: user.id
+                userId: user.id,
+                ...(hasCustomPricing && {
+                  durationMonths: selectedDuration,
+                  planName: `${classData.name} - ${selectedDuration} Month Access`
+                })
               }
             })
           });
@@ -435,15 +465,17 @@ Would you like to refresh the page now?`;
             // Show success message instead of immediate redirect
             setPaymentSuccess({
               show: true,
-              type: 'class',
+              type: 'program',
               details: {
                 classId: classData.id.toString(),
-                amount: classData.price,
-                subscriptionName: `${classData.name} - Full Access`
+                amount: getSelectedPlanPrice(),
+                subscriptionName: hasCustomPricing 
+                  ? `${classData.name} - ${selectedDuration} Month Access`
+                  : `${classData.name} - Full Access`
               }
             });
             
-            onSubscribe('class', { classId: classData.id, amount: classData.price });
+            onSubscribe('program', { classId: classData.id, amount: getSelectedPlanPrice() });
             
             // Delayed redirect with success message
             if (!disableAutoRedirect) {
@@ -453,18 +485,27 @@ Would you like to refresh the page now?`;
             }
           } else {
             setIsProcessingPayment(false);
+            setIsRazorpayOpen(false);
           }
         },
         prefill: {
           name: user.name || user.email?.split('@')[0] || '',
           email: user.email || ''
         },
-        theme: { color: '#3B82F6' }
+        theme: { color: '#3B82F6' },
+        modal: {
+          ondismiss: () => {
+            setIsRazorpayOpen(false);
+            setIsProcessing(false);
+          }
+        }
       });
       
+      setIsRazorpayOpen(true);
       razorpay.open();
       } // Close else block for Razorpay payment
     } catch (error) {
+      setIsRazorpayOpen(false);
       console.error('Payment error:', error);
       
       // Handle specific error cases
@@ -510,211 +551,26 @@ Would you like to refresh the page now?`;
     }
   };
 
-  const handleSubjectSubscribe = async () => {
-    // Check if user is logged in first
-    if (!user) {
-      handleLoginRequired();
-      return;
-    }
-    if (selectedSubjects.size === 0) return;
-    setIsProcessing(true);
-
-    // Gather all selected subjects and sum their prices
-    const selectedSubjectIds = Array.from(selectedSubjects);
-    const selectedSubjectObjs = classData.subjects.filter(s => selectedSubjectIds.includes(s.id));
-    const totalAmount = selectedSubjectObjs.reduce((sum, s) => sum + (s.price || 7500), 0); // in paisa
-    const subjectNames = selectedSubjectObjs.map(s => s.name).join(', ');
-
-    console.log('[Debug] Subject subscription details:', {
-      selectedSubjectIds,
-      selectedSubjectObjs: selectedSubjectObjs.map(s => ({ id: s.id, name: s.name, price: s.price })),
-      totalAmount,
-      subjectNames
-    });
-
-    try {
-      // Call the payment API for multiple subjects (update backend if needed)
-      const response = await fetch('/api/payment/subject', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subjectIds: selectedSubjectIds,
-          userId: user.id,
-          amount: totalAmount // total in paisa
-        })
-      });
-
-      const orderData = await response.json();
-      if (!response.ok) throw new Error(orderData.error);
-
-      // Handle different payment gateways
-      if (orderData.gateway === 'CASHFREE') {
-        // Handle Cashfree payment using JS SDK
-        if (!window.Cashfree) {
-          // Initialize Cashfree SDK if not loaded
-          const { load } = await import('@cashfreepayments/cashfree-js');
-          window.Cashfree = await load({
-            mode: orderData.environment === 'production' ? 'production' : 'sandbox'
-          });
-        }
-
-        const checkoutOptions = {
-          paymentSessionId: orderData.payment_session_id,
-          redirectTarget: "_modal",
-        };
-
-        const result = await window.Cashfree.checkout(checkoutOptions);
-
-        if (result.error) {
-          handlePaymentError(result.error, 'Cashfree subject subscription error or user cancelled');
-          return; // Exit gracefully instead of throwing
-        }
-
-        if (result.paymentDetails) {
-          setIsProcessingPayment(true);
-
-          // Payment successful, verify on backend
-          const verifyResponse = await fetch('/api/payment/verify', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              paymentId: orderData.orderId,
-              orderId: orderData.orderId,
-              gateway: 'CASHFREE',
-              paymentDetails: result.paymentDetails,
-              metadata: {
-                type: 'subject_subscription',
-                subjectIds: selectedSubjectIds,
-                userId: user.id
-              }
-            })
-          });
-
-          if (verifyResponse.ok) {
-            setIsProcessingPayment(false);
-            setPaymentSuccess({
-              show: true,
-              type: 'subject',
-              details: {
-                classId: classData.id.toString(),
-                subjectId: selectedSubjectIds.join(','),
-                amount: totalAmount,
-                subscriptionName: `${subjectNames} - Subject Access`
-              }
-            });
-            // Call onSubscribe immediately to update parent state
-            onSubscribe('subject', { classId: classData.id, subjectId: selectedSubjectIds.join(','), amount: totalAmount });
-            // Handle redirect after success message is shown (if not disabled)
-            if (!disableAutoRedirect) {
-              setTimeout(() => {
-                router.push(`/dashboard/class/${classData.id}`);
-              }, 3500);
-            }
-          } else {
-            setIsProcessingPayment(false);
-            throw new Error('Payment verification failed');
-          }
-        } else {
-          // Handle unexpected Cashfree result (no paymentDetails or error)
-          handlePaymentError(new Error('Payment completed but no payment details received'), 'Cashfree unexpected result');
-        }
-      } else {
-        // Handle Razorpay payment (default)
-        if (!window.Razorpay) {
-          throw new Error('Payment system not available. Please refresh the page and try again.');
-        }
-
-        // Initialize Razorpay payment
-        const razorpay = new window.Razorpay({
-          key: orderData.keyId,
-          amount: orderData.amount,
-          currency: orderData.currency,
-          name: 'Scio Labs',
-          description: `${subjectNames} - Subject Access`,
-          order_id: orderData.orderId,
-          handler: async (paymentResponse: RazorpayResponse) => {
-            setIsProcessingPayment(true);
-            // Verify payment using unified verification
-            const verifyResponse = await fetch('/api/payment/verify', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                paymentId: orderData.orderId,
-                razorpay_payment_id: paymentResponse.razorpay_payment_id,
-                razorpay_order_id: paymentResponse.razorpay_order_id,
-                razorpay_signature: paymentResponse.razorpay_signature,
-                metadata: {
-                  type: 'subject_subscription',
-                  subjectIds: selectedSubjectIds,
-                  userId: user.id
-                }
-              })
-            });
-            if (verifyResponse.ok) {
-              setIsProcessingPayment(false);
-              setPaymentSuccess({
-                show: true,
-                type: 'subject',
-                details: {
-                  classId: classData.id.toString(),
-                  subjectId: selectedSubjectIds.join(','),
-                  amount: totalAmount,
-                  subscriptionName: `${subjectNames} - Subject Access`
-                }
-              });
-              onSubscribe('subject', { classId: classData.id, subjectId: selectedSubjectIds.join(','), amount: totalAmount });
-              if (!disableAutoRedirect) {
-                setTimeout(() => {
-                  router.push(`/dashboard/class/${classData.id}`);
-                }, 3500);
-              }
-            } else {
-              setIsProcessingPayment(false);
-            }
-          },
-          prefill: {
-            name: user.name || user.email?.split('@')[0] || '',
-            email: user.email || ''
-          },
-          theme: { color: '#8B5CF6' }
-        });
-        razorpay.open();
-      }
-    } catch (error) {
-      console.error('Subject payment error:', error);
-      let context = 'subject subscription';
-      if (error instanceof Error) {
-        if (error.message.includes('Network error') || error.message.includes('fetch failed')) {
-          context = 'Network connection issue. Please check your internet connection and try again.';
-        } else if (error.message.includes('timeout')) {
-          context = 'Request timed out. Please check your connection and try again.';
-        } else if (error.message.includes('credentials not configured')) {
-          context = 'Payment gateway configuration issue. Please contact support.';
-        } else if (error.message.includes('DNS resolution')) {
-          context = 'Unable to connect to payment service. Please check your internet connection.';
-        } else if (error.message.includes('Invalid Cashfree')) {
-          context = 'Payment gateway configuration error. Please contact support.';
-        }
-      }
-      handlePaymentError(error, context);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
-
   const totalTopics = classData.subjects.reduce((acc, subject) => 
     acc + subject.chapters.reduce((chAcc, chapter) => chAcc + chapter.topics.length, 0), 0
   );
 
+  // Completely unmount dialog when Razorpay modal is open
+  if (isRazorpayOpen) {
+    return null;
+  }
+
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+      <DialogContent className="!fixed !inset-0 !translate-x-0 !translate-y-0 !max-w-none !w-screen !h-screen !m-0 !rounded-none overflow-y-auto">
+        <DialogHeader className="sticky top-0 bg-white z-10 pb-4 border-b">
           <DialogTitle className="flex items-center gap-2 text-xl">
             <BookOpen className="h-6 w-6 text-blue-600" />
             Subscribe to {classData.name}
           </DialogTitle>
         </DialogHeader>
+
+        <div className="max-w-4xl mx-auto w-full py-4">
 
         {/* Payment Success Message */}
         {paymentSuccess.show && (
@@ -733,7 +589,7 @@ Would you like to refresh the page now?`;
                 variant="ghost"
                 size="sm"
                 onClick={() => {
-                  setPaymentSuccess({ show: false, type: 'class' });
+                  setPaymentSuccess({ show: false, type: 'program' });
                   onClose();
                 }}
                 className="text-green-600 hover:text-green-700 hover:bg-green-100"
@@ -780,27 +636,15 @@ Would you like to refresh the page now?`;
         {/* Main subscription content - hide when showing success message */}
         {!paymentSuccess.show && (
         <>
-        <Tabs value={subscriptionType} onValueChange={(value) => setSubscriptionType(value as 'class' | 'subjects')} className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="class" className="flex items-center gap-2">
-              <Star className="h-4 w-4" />
-              Full Class Access
-            </TabsTrigger>
-            <TabsTrigger value="subjects" className="flex items-center gap-2">
-              <Zap className="h-4 w-4" />
-              Individual Subjects
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="class" className="space-y-4">
-            {hasClassSubscription ? (
-              // User already has class subscription
+        <div className="space-y-4">
+            {hasProgramSubscription ? (
+              // User already has program subscription
               <Card className="border-green-200 bg-green-50">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <CheckCircle className="h-5 w-5 text-green-600" />
-                      Class Access Active
+                      Program Access Active
                     </span>
                     <Badge className="bg-green-600 text-white">Subscribed</Badge>
                   </CardTitle>
@@ -808,7 +652,7 @@ Would you like to refresh the page now?`;
                 <CardContent className="space-y-4">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-green-700">You have full access!</div>
-                    <div className="text-sm text-green-600">Enjoy all subjects in this class</div>
+                    <div className="text-sm text-green-600">Enjoy all content in this program</div>
                   </div>
                   
                   <div className="space-y-2">
@@ -835,35 +679,81 @@ Would you like to refresh the page now?`;
                 </CardContent>
               </Card>
             ) : (
-              // User doesn't have class subscription - show subscription option
+              // User doesn't have program subscription - show subscription option
               <Card className="border-blue-200 bg-blue-50">
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <span className="flex items-center gap-2">
                       <Star className="h-5 w-5 text-blue-600" />
-                      {isUpgradeScenario ? 'Upgrade to Full Access' : 'Complete Class Access'}
+                      Complete Program Access
                     </span>
-                    <Badge className="bg-blue-600 text-white">
-                      {isUpgradeScenario ? 'Upgrade' : 'Best Value'}
-                    </Badge>
+                    <Badge className="bg-blue-600 text-white">Best Value</Badge>
                   </CardTitle>
-                  {isUpgradeScenario && (
-                    <div className="text-sm text-blue-600 bg-blue-100 rounded-lg p-3">
-                      <div className="flex items-center gap-2">
-                        <Zap className="h-4 w-4" />
-                        <span>
-                          You have {subscribedSubjects.length} of {classData.subjects.length} subjects. 
-                          Upgrade to get full access to all subjects!
-                        </span>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {/* Duration Selection for programs with custom pricing */}
+                  {hasCustomPricing && !isPricingLoading && (
+                    <div className="space-y-3">
+                      <div className="text-sm font-medium text-gray-700">Choose your plan duration:</div>
+                      <div className="grid grid-cols-3 gap-2">
+                        {pricingPlans.map((plan) => {
+                          const price = plan.price / 100;
+                          const isSelected = selectedDuration === plan.durationMonths;
+                          const monthlyPrice = Math.round(price / plan.durationMonths);
+                          return (
+                            <button
+                              key={plan.id}
+                              onClick={() => setSelectedDuration(plan.durationMonths)}
+                              className={`p-3 rounded-lg border-2 transition-all ${
+                                isSelected 
+                                  ? 'border-blue-500 bg-blue-50 shadow-md' 
+                                  : 'border-gray-200 hover:border-blue-200'
+                              }`}
+                            >
+                              <div className={`text-lg font-bold ${isSelected ? 'text-blue-700' : 'text-gray-700'}`}>
+                                {plan.durationMonths} Mo
+                              </div>
+                              <div className={`text-xl font-bold ${isSelected ? 'text-blue-600' : 'text-gray-900'}`}>
+                                ₹{price}
+                              </div>
+                              <div className="text-xs text-gray-500">
+                                ₹{monthlyPrice}/mo
+                              </div>
+                              {plan.isPopular && (
+                                <div className="text-xs text-green-600 font-medium mt-1">
+                                  Best Value
+                                </div>
+                              )}
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   )}
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center">
-                    <div className="text-3xl font-bold text-blue-700">₹{classPrice}</div>
-                    <div className="text-sm text-blue-600">One-time payment</div>
-                  </div>
+                  
+                  {/* Price display for programs without custom pricing */}
+                  {!hasCustomPricing && !isPricingLoading && (
+                    <div className="text-center">
+                      <div className="text-3xl font-bold text-blue-700">₹{classPrice}</div>
+                      <div className="text-sm text-blue-600">One-time payment</div>
+                    </div>
+                  )}
+                  
+                  {/* Selected plan summary for programs with custom pricing */}
+                  {hasCustomPricing && !isPricingLoading && (
+                    <div className="text-center p-3 bg-blue-100 rounded-lg">
+                      <div className="text-2xl font-bold text-blue-700">₹{classPrice}</div>
+                      <div className="text-sm text-blue-600">{selectedDuration} month access</div>
+                    </div>
+                  )}
+                  
+                  {/* Loading state */}
+                  {isPricingLoading && (
+                    <div className="text-center py-4">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                      <p className="text-sm text-gray-500 mt-2">Loading pricing...</p>
+                    </div>
+                  )}
                   
                   <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm">
@@ -889,7 +779,7 @@ Would you like to refresh the page now?`;
                     <div className="grid grid-cols-3 gap-4 text-center">
                       <div>
                         <div className="text-lg font-bold text-blue-600">{classData.subjects.length}</div>
-                        <div className="text-xs text-gray-500">Subjects</div>
+                        <div className="text-xs text-gray-500">Units</div>
                       </div>
                       <div>
                         <div className="text-lg font-bold text-blue-600">{classData.subjects.reduce((acc, s) => acc + s.chapters.length, 0)}</div>
@@ -914,8 +804,6 @@ Would you like to refresh the page now?`;
                       </span>
                     ) : isProcessing ? (
                       'Processing...'
-                    ) : isUpgradeScenario ? (
-                      `Upgrade to Full Access - ₹${classPrice}`
                     ) : (
                       `Subscribe for ₹${classPrice}`
                     )}
@@ -923,172 +811,7 @@ Would you like to refresh the page now?`;
                 </CardContent>
               </Card>
             )}
-          </TabsContent>
-
-          <TabsContent value="subjects" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Zap className="h-5 w-5 text-purple-600" />
-                  Individual Subjects
-                </CardTitle>
-                <div className="text-sm text-gray-600">
-                  {unsubscribedSubjects.length > 0 
-                    ? `Choose from ${unsubscribedSubjects.length} available subjects.`
-                    : 'You have access to all subjects in this class!'
-                  }
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Show current subscriptions if any */}
-                {subscribedSubjects.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-green-800 mb-3 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4" />
-                      Your Current Access ({subscribedSubjects.length})
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {subscribedSubjects.map((subject) => {
-                        const topicCount = subject.chapters.reduce((acc, ch) => acc + ch.topics.length, 0);
-                        
-                        return (
-                          <Card 
-                            key={subject.id}
-                            className="border-green-200 bg-green-50 opacity-90"
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                  <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center text-lg">
-                                    {subject.icon}
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium text-green-800">{subject.name}</h4>
-                                    <div className="text-xs text-green-600 flex items-center gap-1">
-                                      <CheckCircle className="h-3 w-3" />
-                                      {subject.subscriptionType?.replace('_', ' ') || 'active'}
-                                    </div>
-                                  </div>
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-green-700">
-                                <BookOpen className="h-4 w-4" />
-                                <span>{topicCount} topics available</span>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-
-                {/* Show available subjects for subscription */}
-                {unsubscribedSubjects.length > 0 && (
-                  <div>
-                    <h4 className="text-sm font-medium text-gray-700 mb-3">
-                      Available for Subscription ({unsubscribedSubjects.length})
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                      {unsubscribedSubjects.map((subject) => {
-                        const isSelected = selectedSubjects.has(subject.id);
-                        const topicCount = subject.chapters.reduce((acc, ch) => acc + ch.topics.length, 0);
-                        
-                        return (
-                          <Card 
-                            key={subject.id}
-                            className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
-                              isSelected 
-                                ? 'ring-2 ring-purple-500 border-purple-500 bg-purple-50' 
-                                : 'border-gray-200 hover:border-purple-300'
-                            }`}
-                            onClick={() => handleSubjectToggle(subject.id)}
-                          >
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center gap-3">
-                                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center text-lg ${
-                                    isSelected ? 'bg-purple-200' : 'bg-gray-100'
-                                  }`}>
-                                    {subject.icon}
-                                  </div>
-                                  <div>
-                                    <h4 className="font-medium">{subject.name}</h4>
-                                    <div className="text-xs text-gray-500">{topicCount} activities</div>
-                                  </div>
-                                </div>
-                                <div className="text-right">
-                                  <div className="text-lg font-bold text-purple-600">
-                                    ₹{(subject.price || 7500) / 100}
-                                  </div>
-                                  {isSelected && (
-                                    <div className="text-xs text-purple-600">Selected</div>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2 text-sm text-gray-600">
-                                <BookOpen className="h-4 w-4" />
-                                <span>Interactive learning content</span>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        );
-                      })}
-                    </div>
-
-                    {/* Selection summary and subscribe button */}
-                    {selectedSubjects.size > 0 && (
-                      <div className="border-t pt-4 mt-4">
-                        <div className="flex items-center justify-between mb-4">
-                          <div>
-                            <div className="text-sm text-gray-600">
-                              {selectedSubjects.size} subject{selectedSubjects.size > 1 ? 's' : ''} selected
-                            </div>
-                            <div className="text-2xl font-bold text-purple-600">
-                              ₹{selectedSubjectsPrice}
-                            </div>
-                          </div>
-                          <Button 
-                            onClick={handleSubjectSubscribe}
-                            disabled={isProcessing || selectedSubjects.size === 0}
-                            className="bg-purple-600 hover:bg-purple-700"
-                          >
-                            {!user ? (
-                              <span className="flex items-center gap-2">
-                                <LogIn className="h-4 w-4" />
-                                Login to Subscribe
-                              </span>
-                            ) : isProcessing ? (
-                              'Processing...'
-                            ) : (
-                              `Subscribe for ₹${selectedSubjectsPrice}`
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Message when all subjects are subscribed */}
-                {unsubscribedSubjects.length === 0 && subscribedSubjects.length > 0 && (
-                  <div className="text-center py-8">
-                    <CheckCircle className="h-12 w-12 text-green-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      You have access to all subjects!
-                    </h3>
-                    <p className="text-gray-600 mb-4">
-                      Continue your learning journey with full access to this class.
-                    </p>
-                    <Button onClick={onClose} className="bg-green-600 hover:bg-green-700">
-                      Continue Learning
-                    </Button>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+        </div>
 
         <div className="flex justify-between items-center pt-4 border-t">
           <Button variant="outline" onClick={onClose}>
@@ -1100,13 +823,11 @@ Would you like to refresh the page now?`;
               <LogIn className="h-4 w-4 mr-2" />
               Login to Subscribe
             </Button>
-          ) : (
-            <>
-            </>
-          )}
+          ) : null}
         </div>
         </>
-        )} {/* Close main content wrapper */}
+        )}
+        </div>
         
         {/* Processing overlay */}
         {isProcessingPayment && (
