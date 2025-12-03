@@ -20,7 +20,8 @@ import {
   Bell,
   Megaphone,
   Activity,
-  LogOut
+  LogOut,
+  Tag
 } from 'lucide-react';
 
 const navigation = [
@@ -28,6 +29,7 @@ const navigation = [
   { name: 'Colleges', href: '/admin/colleges', icon: School },
   { name: 'Users', href: '/admin/users', icon: Users },
   { name: 'Programs', href: '/admin/programs', icon: GraduationCap },
+  { name: 'Pricing', href: '/admin/pricing', icon: Tag },
   { name: 'Subscriptions', href: '/admin/subscriptions', icon: CreditCard },
   { name: 'Payments', href: '/admin/payments', icon: DollarSign },
   { name: 'Activities', href: '/admin/activities', icon: Activity },

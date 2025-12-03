@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { generateSlug } from '@/lib/slug-utils';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const includePricing = searchParams.get('includePricing') === 'true';
+
     const classes = await prisma.class.findMany({
       include: {
         subjects: {
@@ -21,7 +24,22 @@ export async function GET() {
               }
             }
           }
-        }
+        },
+        ...(includePricing && {
+          pricingPlans: {
+            select: {
+              id: true,
+              name: true,
+              durationMonths: true,
+              price: true,
+              isActive: true,
+              isPopular: true,
+            },
+            orderBy: {
+              sortOrder: 'asc'
+            }
+          }
+        })
       },
       orderBy: {
         id: 'asc'
