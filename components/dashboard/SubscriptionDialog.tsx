@@ -120,7 +120,7 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
   }>({ show: false, type: 'program' });
   
   // Check if user has program subscription (all subjects subscribed via class_subscription)
-  const hasProgramSubscription = classData.subjects.every(subject => 
+  const hasProgramSubscription = classData.subjects.length > 0 && classData.subjects.every(subject => 
     subject.isSubscribed && subject.subscriptionType === 'class_subscription'
   );
   
@@ -134,6 +134,8 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
     discount: number | null;
     isPopular: boolean;
     features: string[];
+    workbookPrice: number | null;
+    workbookNote: string | null;
   }
   
   const [pricingPlans, setPricingPlans] = useState<PricingPlan[]>([]);
@@ -187,6 +189,20 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
     }
     const plan = pricingPlans.find(p => p.durationMonths === selectedDuration);
     return plan?.price || classData.price;
+  };
+  
+  // Get workbook price for selected plan
+  const getWorkbookPrice = () => {
+    if (!hasCustomPricing) {
+      return 0;
+    }
+    const plan = pricingPlans.find(p => p.durationMonths === selectedDuration);
+    return plan?.workbookPrice || 0;
+  };
+  
+  // Get total price including workbook
+  const getTotalPrice = () => {
+    return getSelectedPlanPrice() + getWorkbookPrice();
   };
   
   const [isProcessing, setIsProcessing] = useState(false);
@@ -305,7 +321,7 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
       if (hasCustomPricing) {
         requestBody.durationMonths = selectedDuration;
         requestBody.planName = `${classData.name} - ${selectedDuration} Month Access`;
-        requestBody.amount = getSelectedPlanPrice(); // Pass the exact price from plan
+        requestBody.amount = getTotalPrice(); // Pass total price including workbook
       }
       
       const response = await fetch('/api/payment/class', {
@@ -402,7 +418,7 @@ Would you like to refresh the page now?`;
             });
             
             // Call onSubscribe immediately to update parent state
-            onSubscribe('program', { classId: classData.id, amount: classData.price });
+            onSubscribe('program', { classId: classData.id, amount: getTotalPrice() });
             
             // Handle redirect after success message is shown (if not disabled)
             if (!disableAutoRedirect) {
@@ -427,12 +443,20 @@ Would you like to refresh the page now?`;
         }
         
         // Initialize Razorpay payment
+        const workbookPrice = getWorkbookPrice();
+        const subscriptionDescription = hasCustomPricing 
+          ? `${classData.name} - ${selectedDuration} Month Access`
+          : `${classData.name} - Full Access`;
+        const fullDescription = workbookPrice > 0
+          ? `${subscriptionDescription} + Workbook`
+          : subscriptionDescription;
+        
         const razorpay = new window.Razorpay({
         key: orderData.keyId,
         amount: orderData.amount,
         currency: orderData.currency,
         name: 'Scio Labs',
-        description: `${classData.name} - Full Access`,
+        description: fullDescription,
         order_id: orderData.orderId,
         handler: async (paymentResponse: RazorpayResponse) => {
           setIsProcessingPayment(true);
@@ -475,7 +499,7 @@ Would you like to refresh the page now?`;
               }
             });
             
-            onSubscribe('program', { classId: classData.id, amount: getSelectedPlanPrice() });
+            onSubscribe('program', { classId: classData.id, amount: getTotalPrice() });
             
             // Delayed redirect with success message
             if (!disableAutoRedirect) {
@@ -741,10 +765,45 @@ Would you like to refresh the page now?`;
                   
                   {/* Selected plan summary for programs with custom pricing */}
                   {hasCustomPricing && !isPricingLoading && (
-                    <div className="text-center p-3 bg-blue-100 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-700">₹{classPrice}</div>
-                      <div className="text-sm text-blue-600">{selectedDuration} month access</div>
-                    </div>
+                    <>
+                      <div className="text-center p-3 bg-blue-100 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-700">₹{classPrice}</div>
+                        <div className="text-sm text-blue-600">{selectedDuration} month access</div>
+                      </div>
+                      
+                      {/* Workbook pricing */}
+                      {pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookPrice && (
+                        <div className="border border-orange-200 bg-orange-50 rounded-lg p-3">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <BookOpen className="h-5 w-5 text-orange-600" />
+                              <div>
+                                <div className="font-medium text-gray-900">Workbook</div>
+                                <div className="text-xs text-gray-600">
+                                  {pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookNote || 'Physical workbook'}
+                                </div>
+                              </div>
+                            </div>
+                            <div className="text-lg font-bold text-orange-600">
+                              ₹{((pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookPrice || 0) / 100).toFixed(0)}
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Total price display when workbook is included */}
+                      {hasCustomPricing && getWorkbookPrice() > 0 && (
+                        <div className="border-t-2 border-gray-300 pt-3 mt-2">
+                          <div className="flex items-center justify-between text-lg font-bold">
+                            <span className="text-gray-900">Total Amount:</span>
+                            <span className="text-blue-700">₹{(getTotalPrice() / 100).toFixed(0)}</span>
+                          </div>
+                          <div className="text-xs text-gray-500 text-right mt-1">
+                            Includes subscription + workbook
+                          </div>
+                        </div>
+                      )}
+                    </>
                   )}
                   
                   {/* Loading state */}
@@ -800,12 +859,12 @@ Would you like to refresh the page now?`;
                     {!user ? (
                       <span className="flex items-center gap-2">
                         <LogIn className="h-4 w-4" />
-                        Login to Subscribe - ₹{classPrice}
+                        Login to Subscribe - ₹{(getTotalPrice() / 100).toFixed(0)}
                       </span>
                     ) : isProcessing ? (
                       'Processing...'
                     ) : (
-                      `Subscribe for ₹${classPrice}`
+                      `Subscribe for ₹${(getTotalPrice() / 100).toFixed(0)}`
                     )}
                   </Button>
                 </CardContent>

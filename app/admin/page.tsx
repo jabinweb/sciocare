@@ -2,11 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, CreditCard, UserCheck } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Users, CreditCard, UserCheck, TrendingUp, DollarSign, Activity, Calendar, BookOpen, Package, Award, BarChart3 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { RefreshCw, Plus } from 'lucide-react';
 import { UniversalTopicForm } from '@/components/admin/UniversalTopicForm';
+import { Badge } from '@/components/ui/badge';
 
 interface Signup {
   id: string;
@@ -170,119 +171,262 @@ export default function AdminPage() {
 
   const activeSubscriptions = Array.isArray(subscriptions) ? subscriptions.filter(s => s.status === 'ACTIVE') : [];
   const totalRevenue = Array.isArray(subscriptions) ? subscriptions.reduce((sum, s) => sum + (s.amount || 0), 0) : 0;
+  const monthlyRevenue = Array.isArray(subscriptions) ? subscriptions
+    .filter(s => new Date(s.created_at).getMonth() === new Date().getMonth())
+    .reduce((sum, s) => sum + (s.amount || 0), 0) : 0;
+  
+  const todayRegistrations = registeredUsers.filter(u => 
+    new Date(u.creationTime).toDateString() === new Date().toDateString()
+  ).length;
+
+  const weeklyRegistrations = registeredUsers.filter(u => {
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    return new Date(u.creationTime) >= weekAgo;
+  }).length;
 
   return (
-    <div className="p-6">
-      <div className="max-w-6xl mx-auto">
-        <div className="mb-6 flex justify-between items-center">
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Dashboard Overview</h1>
-            <p className="text-muted-foreground">Quick stats and recent activity</p>
-          </div>
-          <div className="flex gap-2">
-            <Button onClick={refreshData} disabled={dataLoading}>
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Refresh
-            </Button>
-            <Button onClick={() => setTopicFormOpen(true)}>
-              <Plus className="h-4 w-4 mr-2" />
-              Add Topic
-            </Button>
+    <div className="p-6 bg-gradient-to-br from-gray-50 to-gray-100 min-h-screen">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex justify-between items-start mb-4">
+            <div>
+              <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                Admin Dashboard
+              </h1>
+              <p className="text-gray-600 text-lg">Welcome back! Here's what's happening today.</p>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={refreshData} disabled={dataLoading} variant="outline" size="lg">
+                <RefreshCw className={`h-4 w-4 mr-2 ${dataLoading ? 'animate-spin' : ''}`} />
+                Refresh
+              </Button>
+              <Button onClick={() => setTopicFormOpen(true)} size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:opacity-90">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Topic
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Registered Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                <Users className="h-5 w-5 text-blue-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{registeredUsers.length}</div>
+              <div className="text-3xl font-bold text-gray-900">{registeredUsers.length}</div>
+              <p className="text-xs text-green-600 mt-1 flex items-center">
+                <TrendingUp className="h-3 w-3 mr-1" />
+                +{todayRegistrations} today
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">User Activities</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600">Active Subscriptions</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
+                <UserCheck className="h-5 w-5 text-green-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{signups.length}</div>
+              <div className="text-3xl font-bold text-gray-900">{activeSubscriptions.length}</div>
+              <p className="text-xs text-gray-500 mt-1">
+                {((activeSubscriptions.length / (registeredUsers.length || 1)) * 100).toFixed(1)}% conversion rate
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Active Subscriptions</CardTitle>
-              <UserCheck className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
+                <DollarSign className="h-5 w-5 text-purple-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{activeSubscriptions.length}</div>
+              <div className="text-3xl font-bold text-gray-900">₹{(totalRevenue/100).toLocaleString()}</div>
+              <p className="text-xs text-gray-500 mt-1">
+                ₹{(totalRevenue/(registeredUsers.length || 1)/100).toFixed(0)} per user
+              </p>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
-              <CreditCard className="h-4 w-4 text-muted-foreground" />
+              <CardTitle className="text-sm font-medium text-gray-600">Monthly Revenue</CardTitle>
+              <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <TrendingUp className="h-5 w-5 text-orange-600" />
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">₹{(totalRevenue/100).toLocaleString()}</div>
+              <div className="text-3xl font-bold text-gray-900">₹{(monthlyRevenue/100).toLocaleString()}</div>
+              <p className="text-xs text-gray-500 mt-1">
+                {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Recent Activity */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+        {/* Secondary Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="hover:shadow-lg transition-shadow">
             <CardHeader>
-              <CardTitle>Recent Registrations</CardTitle>
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                <Activity className="h-4 w-4 mr-2 text-blue-500" />
+                Weekly Activity
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-3">
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">New Registrations</span>
+                  <Badge variant="secondary">{weeklyRegistrations}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">User Activities</span>
+                  <Badge variant="secondary">{signups.filter(s => {
+                    const weekAgo = new Date();
+                    weekAgo.setDate(weekAgo.getDate() - 7);
+                    return new Date(s.timestamp) >= weekAgo;
+                  }).length}</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                <BarChart3 className="h-4 w-4 mr-2 text-purple-500" />
+                Subscription Stats
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Total Subscriptions</span>
+                  <Badge variant="secondary">{subscriptions.length}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">Avg. Subscription Value</span>
+                  <Badge variant="secondary">₹{subscriptions.length > 0 ? (totalRevenue/subscriptions.length/100).toFixed(0) : 0}</Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader>
+              <CardTitle className="text-sm font-medium text-gray-600 flex items-center">
+                <Calendar className="h-4 w-4 mr-2 text-green-500" />
+                Today's Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">New Users</span>
+                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100">{todayRegistrations}</Badge>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-gray-600">New Subscriptions</span>
+                  <Badge className="bg-green-100 text-green-700 hover:bg-green-100">
+                    {subscriptions.filter(s => 
+                      new Date(s.created_at).toDateString() === new Date().toDateString()
+                    ).length}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Recent Activity Tables */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-purple-50">
+              <CardTitle className="flex items-center">
+                <Users className="h-5 w-5 mr-2 text-blue-600" />
+                Recent Registrations
+              </CardTitle>
+              <CardDescription>Latest users who joined the platform</CardDescription>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="space-y-4">
                 {registeredUsers.slice(0, 5).map((user) => (
-                  <div key={user.uid} className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">{user.displayName || 'Anonymous'}</p>
-                      <p className="text-sm text-muted-foreground">{user.email}</p>
+                  <div key={user.uid} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-semibold">
+                        {(user.displayName || user.email || 'A')[0].toUpperCase()}
+                      </div>
+                      <div>
+                        <p className="font-medium text-gray-900">{user.displayName || 'Anonymous'}</p>
+                        <p className="text-sm text-gray-500">{user.email}</p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-gray-500">
                         {new Date(user.creationTime).toLocaleDateString()}
                       </p>
+                      {user.hasActiveSubscription && (
+                        <Badge className="mt-1 bg-green-100 text-green-700 border-green-200">Active</Badge>
+                      )}
                     </div>
                   </div>
                 ))}
                 {registeredUsers.length === 0 && (
-                  <p className="text-muted-foreground text-center py-4">No users found</p>
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No users found</p>
+                  </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Subscriptions</CardTitle>
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardHeader className="border-b bg-gradient-to-r from-green-50 to-emerald-50">
+              <CardTitle className="flex items-center">
+                <CreditCard className="h-5 w-5 mr-2 text-green-600" />
+                Recent Subscriptions
+              </CardTitle>
+              <CardDescription>Latest subscription payments received</CardDescription>
             </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
+            <CardContent className="pt-6">
+              <div className="space-y-4">
                 {subscriptions.slice(0, 5).map((subscription) => (
-                  <div key={subscription.id} className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium">₹{(subscription.amount/100 || 0)}</p>
-                      <p className="text-sm text-muted-foreground">{subscription.userId.slice(0, 8)}...</p>
+                  <div key={subscription.id} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-3">
+                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-green-400 to-emerald-400 flex items-center justify-center">
+                        <DollarSign className="h-5 w-5 text-white" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-900">₹{((subscription.amount || 0)/100).toLocaleString()}</p>
+                        <p className="text-sm text-gray-500">ID: {subscription.userId.slice(0, 12)}...</p>
+                      </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-xs text-gray-500 mb-1">
                         {new Date(subscription.created_at).toLocaleDateString()}
                       </p>
+                      <Badge className={subscription.status === 'ACTIVE' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}>
+                        {subscription.status}
+                      </Badge>
                     </div>
                   </div>
                 ))}
                 {subscriptions.length === 0 && (
-                  <p className="text-muted-foreground text-center py-4">No subscriptions found</p>
+                  <div className="text-center py-8">
+                    <CreditCard className="h-12 w-12 text-gray-300 mx-auto mb-3" />
+                    <p className="text-gray-500">No subscriptions found</p>
+                  </div>
                 )}
               </div>
             </CardContent>

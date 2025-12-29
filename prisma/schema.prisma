@@ -291,6 +291,9 @@ model PricingPlan {
   isPopular      Boolean  @default(false) // Mark as "Best Value" etc
   features       String[] @default([])
   sortOrder      Int      @default(0)
+  workbookPrice  Int?     // Workbook price in paise (e.g., 24900 = ₹249)
+  workbookNote   String?  // Note about workbook (e.g., "inclusive of shipping")
+  comboDiscount  Int?     // Discount % when buying both programs (e.g., 20 for 20% off)
   created_at     DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @updatedAt @map("updated_at")
   class          Class    @relation(fields: [classId], references: [id], onDelete: Cascade)

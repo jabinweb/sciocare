@@ -157,6 +157,16 @@ export async function createSubscriptionWithRetry(
       classId?: number;
       subjectId?: string;
       subjectIds?: string[];
+      // Combo subscription fields
+      basicsClassId?: number;
+      advancedClassId?: number;
+      basicsPricingPlanId?: string;
+      advancedPricingPlanId?: string;
+      basicsPrice?: number;
+      advancedPrice?: number;
+      basicsWorkbookPrice?: number;
+      advancedWorkbookPrice?: number;
+      durationMonths?: number;
     };
     payment: {
       id: string;
@@ -247,6 +257,73 @@ export async function createSubscriptionWithRetry(
         });
 
         return subscriptionData;
+      } else if (metadata.type === 'combo') {
+        // Combo subscription: Create subscriptions for both programs
+        const basicsClassId = metadata.basicsClassId as number;
+        const advancedClassId = metadata.advancedClassId as number;
+        const basicsPrice = metadata.basicsPrice || 0;
+        const advancedPrice = metadata.advancedPrice || 0;
+        const basicsWorkbookPrice = metadata.basicsWorkbookPrice || 0;
+        const advancedWorkbookPrice = metadata.advancedWorkbookPrice || 0;
+
+        // Check for existing subscriptions
+        const existingSubscriptions = await prisma.subscription.findMany({
+          where: {
+            userId: metadata.userId,
+            classId: { in: [basicsClassId, advancedClassId] },
+            subjectId: null,
+            status: 'ACTIVE',
+            endDate: { gte: new Date() }
+          }
+        });
+
+        const existingClassIds = existingSubscriptions.map(s => s.classId).filter((id): id is number => id !== null);
+        
+        const subscriptions = [];
+        const endDate = getAcademicYearEndDate();
+
+        // Create subscription for Basics if not exists
+        if (!existingClassIds.includes(basicsClassId)) {
+          const basicsSubscription = await prisma.subscription.create({
+            data: {
+              userId: metadata.userId,
+              classId: basicsClassId,
+              subjectId: null,
+              status: 'ACTIVE',
+              planType: 'class_subscription',
+              amount: basicsPrice + basicsWorkbookPrice,
+              currency: payment.currency || 'INR',
+              startDate: new Date(),
+              endDate: endDate
+            }
+          });
+          subscriptions.push(basicsSubscription);
+        }
+
+        // Create subscription for Advanced if not exists
+        if (!existingClassIds.includes(advancedClassId)) {
+          const advancedSubscription = await prisma.subscription.create({
+            data: {
+              userId: metadata.userId,
+              classId: advancedClassId,
+              subjectId: null,
+              status: 'ACTIVE',
+              planType: 'class_subscription',
+              amount: advancedPrice + advancedWorkbookPrice,
+              currency: payment.currency || 'INR',
+              startDate: new Date(),
+              endDate: endDate
+            }
+          });
+          subscriptions.push(advancedSubscription);
+        }
+
+        if (subscriptions.length === 0) {
+          console.log('Combo subscriptions already exist, skipping creation');
+          return existingSubscriptions;
+        }
+
+        return subscriptions;
       }
 
       throw new Error('Invalid subscription type');

@@ -4,7 +4,7 @@ import { createPaymentOrder, getPaymentConfig } from '@/lib/payment-service';
 
 export async function POST(req: Request) {
   try {
-    const { classId, userId, planId, durationMonths } = await req.json();
+    const { classId, userId, planId, durationMonths, amount } = await req.json();
 
     if (!classId || !userId) {
       return NextResponse.json({ error: 'Class ID and User ID are required' }, { status: 400 });
@@ -31,13 +31,23 @@ export async function POST(req: Request) {
     let finalDurationMonths = 12; // Default to 12 months
     let planName = `${classData.name} Access`;
 
-    // Check if using a pricing plan from database
-    if (planId) {
+    // If amount is explicitly provided (e.g., including workbook), use it
+    if (amount && typeof amount === 'number' && amount > 0) {
+      finalPrice = amount;
+    } else if (planId) {
+      // Check if using a pricing plan from database
       const plan = await prisma.pricingPlan.findUnique({
-        where: { id: planId }
+        where: { id: planId },
+        select: {
+          price: true,
+          durationMonths: true,
+          name: true,
+          workbookPrice: true
+        }
       });
       if (plan) {
-        finalPrice = plan.price;
+        // Include workbook price if available
+        finalPrice = plan.price + (plan.workbookPrice || 0);
         finalDurationMonths = plan.durationMonths;
         planName = plan.name;
       }
@@ -48,11 +58,18 @@ export async function POST(req: Request) {
           classId: classId,
           durationMonths: durationMonths,
           isActive: true
+        },
+        select: {
+          price: true,
+          durationMonths: true,
+          name: true,
+          workbookPrice: true
         }
       });
       
       if (plan) {
-        finalPrice = plan.price;
+        // Include workbook price if available
+        finalPrice = plan.price + (plan.workbookPrice || 0);
         finalDurationMonths = plan.durationMonths;
         planName = plan.name;
       } else {

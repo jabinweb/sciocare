@@ -7,6 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { ArrowRight, Play, LogIn, Globe, Palette, Heart, MapPin, BookOpen, Type, Download, FileText } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
@@ -18,6 +20,7 @@ import {
 import BookDemo from '@/components/BookDemo';
 import { usePathname } from 'next/navigation';
 import Footer from '@/components/layout/Footer';
+import ComboSubscriptionDialog from '@/components/dashboard/ComboSubscriptionDialog';
 
 // Custom Header Component
 function CustomHeader() {
@@ -301,7 +304,7 @@ function RevisionProblems() {
                   transition: { duration: 0.2 }
                 }}
               >
-                <Card className="shadow-sm hover:shadow-md transition-shadow">
+                <Card className="shadow-sm hover:shadow-md transition-shadow p-0">
                   <CardContent className="">
                     <div className="flex items-start gap-3 md:gap-4">
                       {/* Emoji Icon */}
@@ -700,6 +703,321 @@ function TryGamesSection() {
   );
 }
 
+// Pricing Section
+function PricingSection() {
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [pricingData, setPricingData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedPlan, setSelectedPlan] = useState<{ planName: string; duration: string; price: string; classSlug: string } | null>(null);
+  const [comboDialogOpen, setComboDialogOpen] = useState(false);
+  const [selectedComboDuration, setSelectedComboDuration] = useState(3);
+
+  useEffect(() => {
+    const fetchPricing = async () => {
+      try {
+        // Fetch pricing for CareBridge programs (only Basics and Advanced)
+        const responses = await Promise.all([
+          fetch('/api/programs/pricing?slug=carebridge-basics'),
+          fetch('/api/programs/pricing?slug=carebridge-advanced')
+        ]);
+
+        const [basicsData, advancedData] = await Promise.all(
+          responses.map(r => r.json())
+        );
+
+        setPricingData({
+          basics: basicsData,
+          advanced: advancedData
+        });
+      } catch (error) {
+        console.error('Error fetching pricing:', error);
+        // Fallback to hardcoded pricing if API fails
+        setPricingData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPricing();
+  }, []);
+
+  // Hardcoded fallback pricing
+  const fallbackPricingPlans = [
+    {
+      name: 'Basics',
+      description: 'Access to complete learning portal',
+      subscriptions: [
+        { duration: '3 Months', price: 'Rs.399' },
+        { duration: '6 Months', price: 'Rs.699' },
+        { duration: '12 Months', price: 'Rs.999' },
+      ],
+      workbook: { price: 'Rs.249', note: 'inclusive of shipping' },
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-blue-50',
+    },
+    {
+      name: 'Advanced',
+      description: 'Access to complete learning portal',
+      subscriptions: [
+        { duration: '3 Months', price: 'Rs.499' },
+        { duration: '6 Months', price: 'Rs.799' },
+        { duration: '12 Months', price: 'Rs.1099' },
+      ],
+      workbook: { price: 'Rs.250', note: 'inclusive of shipping' },
+      color: 'from-purple-500 to-pink-500',
+      bgColor: 'bg-purple-50',
+      featured: true,
+    }
+  ];
+
+  // Convert API data to display format or use fallback
+  const pricingPlans = pricingData ? [
+    {
+      name: 'Basics',
+      description: 'Access to complete learning portal',
+      subscriptions: pricingData.basics?.plans?.map((p: any) => ({
+        duration: p.name,
+        price: `Rs.${(p.price / 100).toFixed(0)}`,
+        planId: p.id
+      })) || fallbackPricingPlans[0].subscriptions,
+      workbook: pricingData.basics?.plans?.[0]?.workbookPrice ? {
+        price: `Rs.${(pricingData.basics.plans[0].workbookPrice / 100).toFixed(0)}`,
+        note: pricingData.basics.plans[0].workbookNote || 'inclusive of shipping'
+      } : { price: 'Rs.249', note: 'inclusive of shipping' },
+      color: 'from-blue-500 to-cyan-500',
+      bgColor: 'bg-blue-50',
+    },
+    {
+      name: 'Advanced',
+      description: 'Access to complete learning portal',
+      subscriptions: pricingData.advanced?.plans?.map((p: any) => ({
+        duration: p.name,
+        price: `Rs.${(p.price / 100).toFixed(0)}`,
+        planId: p.id
+      })) || fallbackPricingPlans[1].subscriptions,
+      workbook: pricingData.advanced?.plans?.[0]?.workbookPrice ? {
+        price: `Rs.${(pricingData.advanced.plans[0].workbookPrice / 100).toFixed(0)}`,
+        note: pricingData.advanced.plans[0].workbookNote || 'inclusive of shipping'
+      } : { price: 'Rs.250', note: 'inclusive of shipping' },
+      color: 'from-purple-500 to-pink-500',
+      bgColor: 'bg-purple-50',
+      featured: true,
+    }
+  ] : fallbackPricingPlans;
+
+  return (
+    <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <Badge className="mb-4 bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20">
+            Pricing
+          </Badge>
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 tracking-tight">
+            <span className="bg-gradient-to-r from-brand-blue to-brand-orange bg-clip-text">
+              Choose Your Plan
+            </span>
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Flexible pricing options to suit your learning needs
+          </p>
+        </div>
+
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-blue"></div>
+          </div>
+        ) : (
+          <>
+            <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+          {pricingPlans.map((plan, index) => (
+            <Card
+              key={index}
+              className={`relative overflow-hidden transition-all p-0 duration-300 hover:shadow-2xl ${
+                plan.featured 
+                  ? 'border-2 border-purple-400 shadow-xl ring-2 ring-purple-200' 
+                  : 'border border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {plan.featured && (
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg z-10">
+                  POPULAR
+                </div>
+              )}
+              
+              <CardHeader className={`pb-6 pt-8 ${plan.bgColor} border-b border-gray-200`}>
+                <div className="text-center">
+                  <h3 className={`text-3xl font-bold mb-2 bg-gradient-to-r ${plan.color} bg-clip-text text-transparent`}>
+                    {plan.name}
+                  </h3>
+                  <p className="text-sm text-gray-600">{plan.description}</p>
+                </div>
+              </CardHeader>
+
+              <CardContent className="p-6">
+                <div className="space-y-5">
+                  {/* Subscription Options */}
+                  <div>
+                    <h4 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                      Subscription Plans
+                    </h4>
+                    <div className="space-y-2.5">
+                      {plan.subscriptions.map((sub: { duration: string; price: string }, subIndex: number) => (
+                        <div
+                          key={subIndex}
+                          className="flex justify-between items-center py-3 px-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors border border-gray-100"
+                        >
+                          <span className="text-sm font-medium text-gray-700">{sub.duration}</span>
+                          <span className="text-xl font-bold text-gray-900">{sub.price}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Workbook */}
+                  <div className="pt-2 border-t border-gray-200">
+                    <h4 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                      Workbook
+                    </h4>
+                    <div className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-100">
+                      <span className="text-sm font-medium text-gray-700">{plan.workbook.note}</span>
+                      <span className="text-xl font-bold text-orange-600">{plan.workbook.price}</span>
+                    </div>
+                  </div>
+
+                  {/* Subscribe Button */}
+                  <div className="pt-4">
+                    <Link href={session ? '/dashboard' : '/auth/login?redirect=/dashboard'}>
+                      <Button 
+                        className={`w-full bg-gradient-to-r ${plan.color} hover:opacity-90 text-white font-semibold py-6 text-base shadow-lg hover:shadow-xl transition-all`}
+                      >
+                        {session ? 'View in Dashboard' : 'Get Started'}
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+            {/* Buy Both & Save Section */}
+            {pricingData?.basics?.plans && pricingData?.advanced?.plans && (
+              <Card className="mt-12 border-2 border-orange-300 bg-gradient-to-br from-orange-50 to-red-50 shadow-xl">
+                <CardContent className="p-8">
+                  <div className="text-center mb-6">
+                    <Badge className="mb-3 bg-orange-600 text-white text-base px-4 py-2">
+                      🎯 Best Value
+                    </Badge>
+                    <h3 className="text-3xl font-bold text-gray-900 mb-2">
+                      Buy Both Programs & Save!
+                    </h3>
+                    <p className="text-gray-600">
+                      Get complete CareBridge English - Basics + Advanced with exclusive discount
+                    </p>
+                  </div>
+
+                  <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                    {pricingData.basics.plans.map((basicsPlan: any, index: number) => {
+                      const advancedPlan = pricingData.advanced.plans.find((p: any) => p.durationMonths === basicsPlan.durationMonths);
+                      if (!advancedPlan) return null;
+
+                      const comboDiscount = basicsPlan.comboDiscount || 0;
+                      const basicsWorkbook = basicsPlan.workbookPrice || 0;
+                      const advancedWorkbook = advancedPlan.workbookPrice || 0;
+                      const originalTotal = basicsPlan.price + advancedPlan.price + basicsWorkbook + advancedWorkbook;
+                      const discountAmount = Math.round(originalTotal * (comboDiscount / 100));
+                      const finalTotal = originalTotal - discountAmount;
+
+                      return (
+                        <div key={basicsPlan.durationMonths} className="bg-white rounded-xl p-6 shadow-md border border-orange-200 hover:shadow-lg transition-all">
+                          <div className="text-center mb-4">
+                            <div className="text-2xl font-bold text-orange-600">{basicsPlan.name}</div>
+                            {comboDiscount > 0 && (
+                              <Badge className="mt-2 bg-green-100 text-green-700 border-green-300">
+                                Save {comboDiscount}%
+                              </Badge>
+                            )}
+                          </div>
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex justify-between text-sm text-gray-600">
+                              <span>Basics</span>
+                              <span>₹{(basicsPlan.price / 100).toFixed(0)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm text-gray-600">
+                              <span>Advanced</span>
+                              <span>₹{(advancedPlan.price / 100).toFixed(0)}</span>
+                            </div>
+                            {(basicsWorkbook > 0 || advancedWorkbook > 0) && (
+                              <div className="flex justify-between text-sm text-gray-600">
+                                <span>Workbooks (2)</span>
+                                <span>₹{((basicsWorkbook + advancedWorkbook) / 100).toFixed(0)}</span>
+                              </div>
+                            )}
+                            {comboDiscount > 0 && (
+                              <div className="flex justify-between text-sm text-green-600 font-medium">
+                                <span>Discount ({comboDiscount}%)</span>
+                                <span>-₹{(discountAmount / 100).toFixed(0)}</span>
+                              </div>
+                            )}
+                            <div className="border-t-2 pt-2 mt-2 flex justify-between font-bold text-lg">
+                              <span>Total</span>
+                              <span className="text-orange-600">₹{(finalTotal / 100).toFixed(0)}</span>
+                            </div>
+                          </div>
+
+                          <Button 
+                            onClick={() => {
+                              if (session) {
+                                setSelectedComboDuration(basicsPlan.durationMonths);
+                                setComboDialogOpen(true);
+                              } else {
+                                router.push('/auth/login?redirect=/carebridge');
+                              }
+                            }}
+                            className="w-full bg-gradient-to-r from-orange-500 to-red-500 hover:opacity-90 text-white font-semibold"
+                          >
+                            {session ? 'Buy Both Programs' : 'Login to Subscribe'}
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Combo Subscription Dialog */}
+            {pricingData?.basics && pricingData?.advanced && (
+              <ComboSubscriptionDialog
+                isOpen={comboDialogOpen}
+                onClose={() => setComboDialogOpen(false)}
+                basicsProgram={{
+                  id: pricingData.basics.classId,
+                  name: pricingData.basics.className,
+                  plans: pricingData.basics.plans,
+                }}
+                advancedProgram={{
+                  id: pricingData.advanced.classId,
+                  name: pricingData.advanced.className,
+                  plans: pricingData.advanced.plans,
+                }}
+                selectedDuration={selectedComboDuration}
+              />
+            )}
+
+            {/* GST Notice */}
+            <div className="text-center mt-8">
+              <p className="text-sm text-gray-500">All prices inclusive of GST</p>
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
+
 // Start Your Journey Section
 function StartJourneySection() {
   return (
@@ -868,6 +1186,7 @@ export default function CareBridgePage() {
       <RevisionProblems />
       <CareBridgePromise />
       <TryGamesSection />
+      <PricingSection />
       <StartJourneySection />
       <FAQSection />
       <Footer />

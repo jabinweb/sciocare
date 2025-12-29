@@ -45,6 +45,8 @@ interface PricingPlan {
   isPopular: boolean;
   features: string[];
   sortOrder: number;
+  workbookPrice: number | null;
+  workbookNote: string | null;
   class: {
     id: number;
     name: string;
@@ -81,6 +83,8 @@ export default function PricingPage() {
     isPopular: false,
     features: '',
     sortOrder: 0,
+    workbookPrice: 0,
+    workbookNote: 'inclusive of shipping',
   });
 
   const isAdmin = user && userRole === 'ADMIN';
@@ -135,6 +139,8 @@ export default function PricingPage() {
       isPopular: false,
       features: '',
       sortOrder: 0,
+      workbookPrice: 0,
+      workbookNote: 'inclusive of shipping',
     });
     setDialogOpen(true);
   };
@@ -152,6 +158,8 @@ export default function PricingPage() {
       isPopular: plan.isPopular,
       features: plan.features.join('\n'),
       sortOrder: plan.sortOrder,
+      workbookPrice: (plan.workbookPrice || 0) / 100,
+      workbookNote: plan.workbookNote || 'inclusive of shipping',
     });
     setDialogOpen(true);
   };
@@ -175,6 +183,8 @@ export default function PricingPage() {
         isPopular: formData.isPopular,
         features: formData.features.split('\n').filter(f => f.trim()),
         sortOrder: formData.sortOrder,
+        workbookPrice: formData.workbookPrice > 0 ? Math.round(formData.workbookPrice * 100) : null,
+        workbookNote: formData.workbookNote || null,
       };
 
       const url = editingPlan
@@ -332,8 +342,8 @@ export default function PricingPage() {
                       isActive: true,
                       isPopular: false,
                       features: '',
-                      sortOrder: programPlans.length,
-                    });
+                      sortOrder: programPlans.length,                      workbookPrice: 0,
+                      workbookNote: 'inclusive of shipping',                    });
                     setDialogOpen(true);
                   }}>
                     <Plus className="h-4 w-4 mr-2" />

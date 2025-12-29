@@ -64,7 +64,9 @@ export async function PUT(
       isActive,
       isPopular,
       features,
-      sortOrder
+      sortOrder,
+      workbookPrice,
+      workbookNote
     } = body;
 
     // Check if plan exists
@@ -86,7 +88,9 @@ export async function PUT(
         ...(isActive !== undefined && { isActive }),
         ...(isPopular !== undefined && { isPopular }),
         ...(features !== undefined && { features }),
-        ...(sortOrder !== undefined && { sortOrder: parseInt(sortOrder) })
+        ...(sortOrder !== undefined && { sortOrder: parseInt(sortOrder) }),
+        ...(workbookPrice !== undefined && { workbookPrice: workbookPrice ? parseInt(workbookPrice) : null }),
+        ...(workbookNote !== undefined && { workbookNote: workbookNote || null })
       },
       include: {
         class: {

@@ -44,7 +44,10 @@ export async function GET(request: Request) {
         originalPrice: true,
         discount: true,
         isPopular: true,
-        features: true
+        features: true,
+        workbookPrice: true,
+        workbookNote: true,
+        comboDiscount: true
       }
     });
 

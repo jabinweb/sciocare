@@ -59,7 +59,9 @@ export async function POST(request: Request) {
       isActive,
       isPopular,
       features,
-      sortOrder
+      sortOrder,
+      workbookPrice,
+      workbookNote
     } = body;
 
     // Validate required fields
@@ -98,7 +100,9 @@ export async function POST(request: Request) {
         isActive: isActive ?? true,
         isPopular: isPopular ?? false,
         features: features || [],
-        sortOrder: sortOrder ?? 0
+        sortOrder: sortOrder ?? 0,
+        workbookPrice: workbookPrice ? parseInt(workbookPrice) : null,
+        workbookNote: workbookNote || null
       },
       include: {
         class: {

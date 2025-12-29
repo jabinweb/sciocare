@@ -10,6 +10,7 @@ interface CreatePaymentOptions {
   currency?: string;
   description?: string;
   gateway?: string;
+  metadata?: Record<string, any>;
 }
 
 interface PaymentGatewayConfig {
