@@ -304,17 +304,17 @@ function RevisionProblems() {
                   transition: { duration: 0.2 }
                 }}
               >
-                <Card className="shadow-sm hover:shadow-md transition-shadow p-0">
-                  <CardContent className="">
-                    <div className="flex items-start gap-3 md:gap-4">
+                <Card className="shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-transparent hover:border-l-orange-400 p-0">
+                  <CardContent className="p-4 md:p-5">
+                    <div className="flex items-start gap-4 md:gap-5">
                       {/* Emoji Icon */}
-                      <div className={`flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-xl ${item.bgColor} flex items-center justify-center text-xl md:text-2xl`}>
+                      <div className={`flex-shrink-0 w-12 h-12 md:w-14 md:h-14 rounded-2xl ${item.bgColor} flex items-center justify-center text-2xl md:text-3xl shadow-sm`}>
                         {item.emoji}
                       </div>
                       
                       {/* Content */}
-                      <div className="flex-1">
-                        <p className="text-gray-700 leading-relaxed font-medium text-sm md:text-base lg:text-lg">
+                      <div className="flex-1 pt-1.5">
+                        <p className="text-gray-700 leading-relaxed text-base md:text-lg">
                           {item.description}
                         </p>
                       </div>
@@ -466,7 +466,7 @@ function CareBridgePromise() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {promises.map((promise, index) => (
-            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 bg-white">
+            <Card key={index} className="border-0 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 bg-white p-0">
               <CardContent className="p-6">
                 <div className={`w-16 h-16 rounded-2xl ${promise.bgColor} flex items-center justify-center mb-4`}>
                   {typeof promise.icon === 'string' ? (
