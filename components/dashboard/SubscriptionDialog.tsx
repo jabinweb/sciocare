@@ -147,6 +147,9 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
   // Duration selection for programs with custom pricing
   const [selectedDuration, setSelectedDuration] = useState<number>(6); // Default to 6 months
   
+  // Workbook selection
+  const [includeWorkbook, setIncludeWorkbook] = useState(false);
+  
   // Fetch pricing plans from database
   useEffect(() => {
     const fetchPricing = async () => {
@@ -193,7 +196,7 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
   
   // Get workbook price for selected plan
   const getWorkbookPrice = () => {
-    if (!hasCustomPricing) {
+    if (!hasCustomPricing || !includeWorkbook) {
       return 0;
     }
     const plan = pricingPlans.find(p => p.durationMonths === selectedDuration);
@@ -322,6 +325,7 @@ export const SubscriptionDialog: React.FC<SubscriptionDialogProps> = ({
         requestBody.durationMonths = selectedDuration;
         requestBody.planName = `${classData.name} - ${selectedDuration} Month Access`;
         requestBody.amount = getTotalPrice(); // Pass total price including workbook
+        requestBody.includeWorkbook = includeWorkbook;
       }
       
       const response = await fetch('/api/payment/class', {
@@ -771,35 +775,44 @@ Would you like to refresh the page now?`;
                         <div className="text-sm text-blue-600">{selectedDuration} month access</div>
                       </div>
                       
-                      {/* Workbook pricing */}
+                      {/* Optional Workbook */}
                       {pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookPrice && (
-                        <div className="border border-orange-200 bg-orange-50 rounded-lg p-3">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <BookOpen className="h-5 w-5 text-orange-600" />
-                              <div>
-                                <div className="font-medium text-gray-900">Workbook</div>
-                                <div className="text-xs text-gray-600">
-                                  {pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookNote || 'Physical workbook'}
+                        <div className="border-t border-gray-200 pt-3">
+                          <h4 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                            Optional Workbook
+                          </h4>
+                          <Button
+                            variant={includeWorkbook ? 'default' : 'outline'}
+                            onClick={() => setIncludeWorkbook(!includeWorkbook)}
+                            className={`w-full justify-between py-3 px-4 h-auto ${includeWorkbook ? 'bg-gradient-to-r from-orange-500 to-yellow-500 hover:opacity-90' : 'hover:bg-gray-50'}`}
+                          >
+                            <span className="flex items-center gap-2">
+                              <BookOpen className="w-4 h-4" />
+                              <div className="text-left">
+                                <div className={`text-sm font-medium ${includeWorkbook ? 'text-white' : 'text-gray-900'}`}>
+                                  Physical Workbook
+                                </div>
+                                <div className={`text-xs ${includeWorkbook ? 'text-white/90' : 'text-gray-600'}`}>
+                                  {pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookNote || 'Printing + Shipping'}
                                 </div>
                               </div>
-                            </div>
-                            <div className="text-lg font-bold text-orange-600">
-                              ₹{((pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookPrice || 0) / 100).toFixed(0)}
-                            </div>
-                          </div>
+                            </span>
+                            <span className={`text-lg font-bold ${includeWorkbook ? 'text-white' : 'text-orange-600'}`}>
+                              {includeWorkbook ? '✓ ' : ''}₹{((pricingPlans.find(p => p.durationMonths === selectedDuration)?.workbookPrice || 0) / 100).toFixed(0)}
+                            </span>
+                          </Button>
                         </div>
                       )}
                       
                       {/* Total price display when workbook is included */}
-                      {hasCustomPricing && getWorkbookPrice() > 0 && (
+                      {hasCustomPricing && includeWorkbook && getWorkbookPrice() > 0 && (
                         <div className="border-t-2 border-gray-300 pt-3 mt-2">
                           <div className="flex items-center justify-between text-lg font-bold">
                             <span className="text-gray-900">Total Amount:</span>
                             <span className="text-blue-700">₹{(getTotalPrice() / 100).toFixed(0)}</span>
                           </div>
                           <div className="text-xs text-gray-500 text-right mt-1">
-                            Includes subscription + workbook
+                            Subscription (₹{classPrice}) + Workbook (₹{(getWorkbookPrice() / 100).toFixed(0)})
                           </div>
                         </div>
                       )}

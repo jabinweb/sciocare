@@ -212,7 +212,7 @@ export default function AdminPage() {
 
         {/* Quick Stats Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-blue-500 hover:shadow-lg transition-shadow gap-3">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Total Users</CardTitle>
               <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
@@ -228,7 +228,7 @@ export default function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-green-500 hover:shadow-lg transition-shadow gap-3">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Active Subscriptions</CardTitle>
               <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -243,7 +243,7 @@ export default function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-purple-500 hover:shadow-lg transition-shadow gap-3">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Total Revenue</CardTitle>
               <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
@@ -258,7 +258,7 @@ export default function AdminPage() {
             </CardContent>
           </Card>
 
-          <Card className="border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow">
+          <Card className="border-l-4 border-l-orange-500 hover:shadow-lg transition-shadow gap-3">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-gray-600">Monthly Revenue</CardTitle>
               <div className="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center">

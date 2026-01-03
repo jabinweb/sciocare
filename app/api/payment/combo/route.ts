@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    const { basicsClassId, advancedClassId, durationMonths, gateway = 'RAZORPAY' } = await req.json();
+    const { basicsClassId, advancedClassId, durationMonths, gateway = 'RAZORPAY', includeWorkbooks = false } = await req.json();
 
     if (!basicsClassId || !advancedClassId || !durationMonths) {
       return NextResponse.json({ 
@@ -67,8 +67,10 @@ export async function POST(req: NextRequest) {
     }
 
     // Calculate combo pricing
-    const basicsTotal = basicsPlan.price + (basicsPlan.workbookPrice || 0);
-    const advancedTotal = advancedPlan.price + (advancedPlan.workbookPrice || 0);
+    const basicsWorkbook = includeWorkbooks ? (basicsPlan.workbookPrice || 0) : 0;
+    const advancedWorkbook = includeWorkbooks ? (advancedPlan.workbookPrice || 0) : 0;
+    const basicsTotal = basicsPlan.price + basicsWorkbook;
+    const advancedTotal = advancedPlan.price + advancedWorkbook;
     const originalTotal = basicsTotal + advancedTotal;
     
     const comboDiscount = basicsPlan.comboDiscount || 0;
@@ -89,8 +91,9 @@ export async function POST(req: NextRequest) {
         durationMonths,
         basicsPrice: basicsPlan.price,
         advancedPrice: advancedPlan.price,
-        basicsWorkbookPrice: basicsPlan.workbookPrice || 0,
-        advancedWorkbookPrice: advancedPlan.workbookPrice || 0,
+        basicsWorkbookPrice: basicsWorkbook,
+        advancedWorkbookPrice: advancedWorkbook,
+        includeWorkbooks,
         comboDiscount,
         discountAmount,
         originalTotal,
@@ -120,8 +123,9 @@ export async function POST(req: NextRequest) {
           durationMonths,
           basicsPrice: basicsPlan.price,
           advancedPrice: advancedPlan.price,
-          basicsWorkbookPrice: basicsPlan.workbookPrice || 0,
-          advancedWorkbookPrice: advancedPlan.workbookPrice || 0,
+          basicsWorkbookPrice: basicsWorkbook,
+          advancedWorkbookPrice: advancedWorkbook,
+          includeWorkbooks,
           comboDiscount,
           discountAmount,
           originalTotal,
@@ -137,8 +141,9 @@ export async function POST(req: NextRequest) {
         duration: `${durationMonths} months`,
         basicsPrice: basicsPlan.price,
         advancedPrice: advancedPlan.price,
-        basicsWorkbook: basicsPlan.workbookPrice || 0,
-        advancedWorkbook: advancedPlan.workbookPrice || 0,
+        basicsWorkbook: basicsWorkbook,
+        advancedWorkbook: advancedWorkbook,
+        includeWorkbooks,
         originalTotal,
         comboDiscount,
         discountAmount,

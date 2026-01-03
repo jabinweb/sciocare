@@ -61,7 +61,7 @@ function CustomHeader() {
             <div>
               <Button
                 variant="outline"
-                className="border-white/30 bg-white/5 backdrop-blur-sm text-white hover:bg-white/10"
+                className="border-white/30 bg-white/5 backdrop-blur-sm text-white hover:bg-white/100"
                 onClick={() => setIsDialogOpen(true)}
               >
                 <LogIn className="w-4 h-4 mr-2" />
@@ -712,6 +712,9 @@ function PricingSection() {
   const [selectedPlan, setSelectedPlan] = useState<{ planName: string; duration: string; price: string; classSlug: string } | null>(null);
   const [comboDialogOpen, setComboDialogOpen] = useState(false);
   const [selectedComboDuration, setSelectedComboDuration] = useState(3);
+  const [basicsWorkbookSelected, setBasicsWorkbookSelected] = useState(false);
+  const [advancedWorkbookSelected, setAdvancedWorkbookSelected] = useState(false);
+  const [comboWorkbooksSelected, setComboWorkbooksSelected] = useState(false);
 
   useEffect(() => {
     const fetchPricing = async () => {
@@ -752,7 +755,7 @@ function PricingSection() {
         { duration: '6 Months', price: 'Rs.699' },
         { duration: '12 Months', price: 'Rs.999' },
       ],
-      workbook: { price: 'Rs.249', note: 'inclusive of shipping' },
+      workbook: { price: 'Rs.249', note: 'Printing + Shipping' },
       color: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-50',
     },
@@ -764,7 +767,7 @@ function PricingSection() {
         { duration: '6 Months', price: 'Rs.799' },
         { duration: '12 Months', price: 'Rs.1099' },
       ],
-      workbook: { price: 'Rs.250', note: 'inclusive of shipping' },
+      workbook: { price: 'Rs.250', note: 'Printing + Shipping' },
       color: 'from-purple-500 to-pink-500',
       bgColor: 'bg-purple-50',
       featured: true,
@@ -783,8 +786,8 @@ function PricingSection() {
       })) || fallbackPricingPlans[0].subscriptions,
       workbook: pricingData.basics?.plans?.[0]?.workbookPrice ? {
         price: `Rs.${(pricingData.basics.plans[0].workbookPrice / 100).toFixed(0)}`,
-        note: pricingData.basics.plans[0].workbookNote || 'inclusive of shipping'
-      } : { price: 'Rs.249', note: 'inclusive of shipping' },
+        note: pricingData.basics.plans[0].workbookNote || 'Printing + Shipping'
+      } : { price: 'Rs.249', note: 'Printing + Shipping' },
       color: 'from-blue-500 to-cyan-500',
       bgColor: 'bg-blue-50',
     },
@@ -798,8 +801,8 @@ function PricingSection() {
       })) || fallbackPricingPlans[1].subscriptions,
       workbook: pricingData.advanced?.plans?.[0]?.workbookPrice ? {
         price: `Rs.${(pricingData.advanced.plans[0].workbookPrice / 100).toFixed(0)}`,
-        note: pricingData.advanced.plans[0].workbookNote || 'inclusive of shipping'
-      } : { price: 'Rs.250', note: 'inclusive of shipping' },
+        note: pricingData.advanced.plans[0].workbookNote || 'Printing + Shipping'
+      } : { price: 'Rs.250', note: 'Printing + Shipping' },
       color: 'from-purple-500 to-pink-500',
       bgColor: 'bg-purple-50',
       featured: true,
@@ -874,15 +877,30 @@ function PricingSection() {
                     </div>
                   </div>
 
-                  {/* Workbook */}
+                  {/* Optional Workbook */}
                   <div className="pt-2 border-t border-gray-200">
                     <h4 className="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">
-                      Workbook
+                      Optional Workbook
                     </h4>
-                    <div className="flex justify-between items-center py-3 px-4 bg-gradient-to-r from-orange-50 to-yellow-50 rounded-lg border border-orange-100">
-                      <span className="text-sm font-medium text-gray-700">{plan.workbook.note}</span>
-                      <span className="text-xl font-bold text-orange-600">{plan.workbook.price}</span>
-                    </div>
+                    <Button
+                      variant={(plan.name === 'Basics' && basicsWorkbookSelected) || (plan.name === 'Advanced' && advancedWorkbookSelected) ? 'default' : 'outline'}
+                      onClick={() => {
+                        if (plan.name === 'Basics') {
+                          setBasicsWorkbookSelected(!basicsWorkbookSelected);
+                        } else {
+                          setAdvancedWorkbookSelected(!advancedWorkbookSelected);
+                        }
+                      }}
+                      className={`w-full justify-between py-3 px-4 h-auto ${((plan.name === 'Basics' && basicsWorkbookSelected) || (plan.name === 'Advanced' && advancedWorkbookSelected)) ? 'bg-gradient-to-r from-orange-500 to-yellow-500 hover:opacity-90' : 'hover:bg-gray-50'}`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <BookOpen className="w-4 h-4" />
+                        <span className="text-sm font-medium">{plan.workbook.note}</span>
+                      </span>
+                      <span className={`text-lg font-bold ${((plan.name === 'Basics' && basicsWorkbookSelected) || (plan.name === 'Advanced' && advancedWorkbookSelected)) ? 'text-white' : 'text-orange-600'}`}>
+                        {((plan.name === 'Basics' && basicsWorkbookSelected) || (plan.name === 'Advanced' && advancedWorkbookSelected)) ? '✓ ' : ''}{plan.workbook.price}
+                      </span>
+                    </Button>
                   </div>
 
                   {/* Subscribe Button */}
@@ -917,14 +935,26 @@ function PricingSection() {
                     </p>
                   </div>
 
+                  {/* Optional Workbooks Toggle */}
+                  <div className="text-center mb-6">
+                    <Button
+                      variant={comboWorkbooksSelected ? 'default' : 'outline'}
+                      onClick={() => setComboWorkbooksSelected(!comboWorkbooksSelected)}
+                      className={`${comboWorkbooksSelected ? 'bg-gradient-to-r from-orange-500 to-yellow-500 hover:opacity-90' : 'hover:bg-gray-50'}`}
+                    >
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      {comboWorkbooksSelected ? '✓ Workbooks Included (Printing + Shipping)' : 'Add Workbooks (Printing + Shipping)'}
+                    </Button>
+                  </div>
+
                   <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                     {pricingData.basics.plans.map((basicsPlan: any, index: number) => {
                       const advancedPlan = pricingData.advanced.plans.find((p: any) => p.durationMonths === basicsPlan.durationMonths);
                       if (!advancedPlan) return null;
 
                       const comboDiscount = basicsPlan.comboDiscount || 0;
-                      const basicsWorkbook = basicsPlan.workbookPrice || 0;
-                      const advancedWorkbook = advancedPlan.workbookPrice || 0;
+                      const basicsWorkbook = comboWorkbooksSelected ? (basicsPlan.workbookPrice || 0) : 0;
+                      const advancedWorkbook = comboWorkbooksSelected ? (advancedPlan.workbookPrice || 0) : 0;
                       const originalTotal = basicsPlan.price + advancedPlan.price + basicsWorkbook + advancedWorkbook;
                       const discountAmount = Math.round(originalTotal * (comboDiscount / 100));
                       const finalTotal = originalTotal - discountAmount;
@@ -949,7 +979,7 @@ function PricingSection() {
                               <span>Advanced</span>
                               <span>₹{(advancedPlan.price / 100).toFixed(0)}</span>
                             </div>
-                            {(basicsWorkbook > 0 || advancedWorkbook > 0) && (
+                            {comboWorkbooksSelected && (basicsWorkbook > 0 || advancedWorkbook > 0) && (
                               <div className="flex justify-between text-sm text-gray-600">
                                 <span>Workbooks (2)</span>
                                 <span>₹{((basicsWorkbook + advancedWorkbook) / 100).toFixed(0)}</span>

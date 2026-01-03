@@ -4,7 +4,7 @@ import { createPaymentOrder, getPaymentConfig } from '@/lib/payment-service';
 
 export async function POST(req: Request) {
   try {
-    const { classId, userId, planId, durationMonths, amount } = await req.json();
+    const { classId, userId, planId, durationMonths, amount, includeWorkbook = false } = await req.json();
 
     if (!classId || !userId) {
       return NextResponse.json({ error: 'Class ID and User ID are required' }, { status: 400 });
@@ -46,8 +46,8 @@ export async function POST(req: Request) {
         }
       });
       if (plan) {
-        // Include workbook price if available
-        finalPrice = plan.price + (plan.workbookPrice || 0);
+        // Include workbook price only if requested
+        finalPrice = plan.price + (includeWorkbook ? (plan.workbookPrice || 0) : 0);
         finalDurationMonths = plan.durationMonths;
         planName = plan.name;
       }
@@ -68,8 +68,8 @@ export async function POST(req: Request) {
       });
       
       if (plan) {
-        // Include workbook price if available
-        finalPrice = plan.price + (plan.workbookPrice || 0);
+        // Include workbook price only if requested
+        finalPrice = plan.price + (includeWorkbook ? (plan.workbookPrice || 0) : 0);
         finalDurationMonths = plan.durationMonths;
         planName = plan.name;
       } else {

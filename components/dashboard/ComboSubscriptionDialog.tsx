@@ -44,6 +44,7 @@ export default function ComboSubscriptionDialog({
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [duration, setDuration] = useState(selectedDuration);
+  const [includeWorkbooks, setIncludeWorkbooks] = useState(false);
 
   // Sync duration with selectedDuration prop when dialog opens with different duration
   useEffect(() => {
@@ -52,7 +53,7 @@ export default function ComboSubscriptionDialog({
     }
   }, [isOpen, selectedDuration]);
 
-  // Use useMemo to ensure calculations update when duration changes
+  // Use useMemo to ensure calculations update when duration or workbook selection changes
   const { basicsPlan, advancedPlan, prices } = useMemo(() => {
     const basics = basicsProgram.plans.find(p => p.durationMonths === duration);
     const advanced = advancedProgram.plans.find(p => p.durationMonths === duration);
@@ -61,8 +62,10 @@ export default function ComboSubscriptionDialog({
       return { basicsPlan: null, advancedPlan: null, prices: null };
     }
 
-    const basicsTotal = basics.price + (basics.workbookPrice || 0);
-    const advancedTotal = advanced.price + (advanced.workbookPrice || 0);
+    const basicsWorkbook = includeWorkbooks ? (basics.workbookPrice || 0) : 0;
+    const advancedWorkbook = includeWorkbooks ? (advanced.workbookPrice || 0) : 0;
+    const basicsTotal = basics.price + basicsWorkbook;
+    const advancedTotal = advanced.price + advancedWorkbook;
     const originalTotal = basicsTotal + advancedTotal;
     const comboDiscount = basics.comboDiscount || 0;
     const discountAmount = Math.round(originalTotal * (comboDiscount / 100));
@@ -78,9 +81,11 @@ export default function ComboSubscriptionDialog({
         comboDiscount,
         discountAmount,
         finalTotal,
+        basicsWorkbook,
+        advancedWorkbook,
       },
     };
-  }, [duration, basicsProgram.plans, advancedProgram.plans]);
+  }, [duration, includeWorkbooks, basicsProgram.plans, advancedProgram.plans]);
 
   if (!basicsPlan || !advancedPlan || !prices) {
     return null;
@@ -99,6 +104,7 @@ export default function ComboSubscriptionDialog({
           advancedClassId: advancedProgram.id,
           durationMonths: duration,
           gateway: 'RAZORPAY',
+          includeWorkbooks,
         }),
       });
 
@@ -228,14 +234,6 @@ export default function ComboSubscriptionDialog({
                       <span className="text-sm text-gray-500">Subscription</span>
                       <span className="font-medium">₹{(basicsPlan.price / 100).toFixed(0)}</span>
                     </div>
-                    {basicsPlan.workbookPrice > 0 && (
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="text-sm text-gray-500 flex items-center gap-1">
-                          <Package size={14} /> Workbook
-                        </span>
-                        <span className="font-medium">₹{(basicsPlan.workbookPrice / 100).toFixed(0)}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
@@ -253,26 +251,53 @@ export default function ComboSubscriptionDialog({
                       <span className="text-sm text-gray-500">Subscription</span>
                       <span className="font-medium">₹{(advancedPlan.price / 100).toFixed(0)}</span>
                     </div>
-                    {advancedPlan.workbookPrice > 0 && (
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="text-sm text-gray-500 flex items-center gap-1">
-                          <Package size={14} /> Workbook
-                        </span>
-                        <span className="font-medium">₹{(advancedPlan.workbookPrice / 100).toFixed(0)}</span>
-                      </div>
-                    )}
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Optional Workbooks */}
+          {(basicsPlan.workbookPrice > 0 || advancedPlan.workbookPrice > 0) && (
+            <div className="border-t border-gray-200 pt-4">
+              <h4 className="text-sm font-bold text-gray-500 mb-3 uppercase tracking-wider">
+                Optional Workbooks
+              </h4>
+              <Button
+                variant={includeWorkbooks ? 'default' : 'outline'}
+                onClick={() => setIncludeWorkbooks(!includeWorkbooks)}
+                className={`w-full justify-between py-4 px-4 h-auto ${includeWorkbooks ? 'bg-gradient-to-r from-orange-500 to-yellow-500 hover:opacity-90' : 'hover:bg-gray-50'}`}
+              >
+                <span className="flex items-center gap-2">
+                  <Package className="w-5 h-5" />
+                  <div className="text-left">
+                    <div className={`text-sm font-medium ${includeWorkbooks ? 'text-white' : 'text-gray-900'}`}>
+                      Physical Workbooks (Both Programs)
+                    </div>
+                    <div className={`text-xs ${includeWorkbooks ? 'text-white/90' : 'text-gray-600'}`}>
+                      {basicsPlan.workbookNote || 'Printing + Shipping'}
+                    </div>
+                  </div>
+                </span>
+                <span className={`text-lg font-bold ${includeWorkbooks ? 'text-white' : 'text-orange-600'}`}>
+                  {includeWorkbooks ? '✓ ' : ''}₹{(((basicsPlan.workbookPrice || 0) + (advancedPlan.workbookPrice || 0)) / 100).toFixed(0)}
+                </span>
+              </Button>
+            </div>
+          )}
+
           {/* Price Breakdown */}
           <div className="space-y-2">
             <div className="flex justify-between text-gray-600">
-              <span>Total Price (Both Programs)</span>
-              <span>₹{(prices.originalTotal / 100).toFixed(0)}</span>
+              <span>Subscriptions Total</span>
+              <span>₹{((basicsPlan.price + advancedPlan.price) / 100).toFixed(0)}</span>
             </div>
+            {includeWorkbooks && (prices.basicsWorkbook > 0 || prices.advancedWorkbook > 0) && (
+              <div className="flex justify-between text-gray-600">
+                <span>Workbooks (2)</span>
+                <span>₹{((prices.basicsWorkbook + prices.advancedWorkbook) / 100).toFixed(0)}</span>
+              </div>
+            )}
             {prices.comboDiscount > 0 && (
               <div className="flex justify-between text-green-600 font-medium">
                 <span>Combo Discount ({prices.comboDiscount}%)</span>
@@ -285,14 +310,6 @@ export default function ComboSubscriptionDialog({
             </div>
             <p className="text-xs text-gray-500 text-right">All prices inclusive of GST</p>
           </div>
-
-          {/* Workbook Note */}
-          {(basicsPlan.workbookNote || advancedPlan.workbookNote) && (
-            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg border border-blue-200">
-              <Package className="inline mr-2" size={16} />
-              <strong>Workbook Delivery:</strong> {basicsPlan.workbookNote || advancedPlan.workbookNote}
-            </div>
-          )}
 
           {/* Action Buttons */}
           <div className="flex gap-3">
