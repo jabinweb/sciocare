@@ -57,19 +57,10 @@ export function DashboardContent() {
   // No need for a separate effect here since the data comes from the same API call
 
   const handleProgramClick = (programData: ProgramWithSubjects) => {
-    // Check if user has any access (school, full subscription, or partial subject access)
-    if (programData.accessType === 'school' || programData.schoolAccess || programData.subscriptionAccess || programData.hasPartialAccess) {
-      const identifier = programData.slug || programData.id;
-      router.push(`/dashboard/program/${identifier}`);
-    } else if (programData.price === 0 || programData.price === null) {
-      // Free program (price is 0) - allow direct access without subscription dialog
-      const identifier = programData.slug || programData.id;
-      router.push(`/dashboard/program/${identifier}`);
-    } else {
-      // Paid program without access - show payment dialog
-      setSelectedProgram(programData);
-      setShowPaymentDialog(true);
-    }
+    // Always allow navigation to program page since first unit is free trial
+    // The program page will handle showing which units are locked/unlocked
+    const identifier = programData.slug || programData.id;
+    router.push(`/dashboard/program/${identifier}`);
   };
 
   const handlePaymentDialogClose = () => {

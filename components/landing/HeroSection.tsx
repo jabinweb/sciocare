@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import BookDemo from "@/components/BookDemo";
+import ProgramSelectionDialog from "@/components/ProgramSelectionDialog";
 
 export default function HeroSection() {
   const skills = [
@@ -16,6 +17,7 @@ export default function HeroSection() {
 
   const [currentSkillIndex, setCurrentSkillIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
+  const [isProgramDialogOpen, setIsProgramDialogOpen] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -82,14 +84,22 @@ export default function HeroSection() {
         </p>
 
         {/* Professional CTA */}
-        <div className="mb-14">
+        <div className="mb-14 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <Button
+            size="lg"
+            onClick={() => setIsProgramDialogOpen(true)}
+            className="bg-white text-blue-700 hover:bg-blue-50 px-12 py-6 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+          >
+            Get Started
+            <ArrowRight className="w-5 h-5 ml-2" />
+          </Button>
           <BookDemo>
             <Button
               size="lg"
-              className="bg-white animate-shake text-blue-700 hover:bg-blue-50 px-12 py-5 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              variant="outline"
+              className="bg-white/10 backdrop-blur-sm border-2 border-white/30 text-white hover:bg-white/20 hover:text-white px-12 py-6 text-lg font-semibold rounded-full shadow-xl hover:shadow-2xl transition-all duration-300"
             >
               Book a Demo
-              <ArrowRight className="w-5 h-5 ml-2" />
             </Button>
           </BookDemo>
         </div>
@@ -125,6 +135,12 @@ export default function HeroSection() {
           </div>
         </div> */}
       </div>
+
+      {/* Program Selection Dialog */}
+      <ProgramSelectionDialog 
+        isOpen={isProgramDialogOpen}
+        onClose={() => setIsProgramDialogOpen(false)}
+      />
     </section>
   );
 }

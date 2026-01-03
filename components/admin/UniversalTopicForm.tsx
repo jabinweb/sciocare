@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { LoadingSpinner } from '@/components/ui/loading';
+import { FileUpload } from '@/components/ui/FileUpload';
+import { toast } from 'sonner';
 
 // Simple UUID generator using crypto API
 const generateId = (): string => {
@@ -232,16 +234,16 @@ export function UniversalTopicForm({ isOpen, onClose, onSubmit }: UniversalTopic
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Add Topic to Any Chapter</DialogTitle>
+          <DialogTitle className="text-2xl font-bold">Create New Topic</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-6">
           {/* Program Dropdown */}
           <div>
-            <Label>Program</Label>
+            <Label className="text-sm font-semibold">Program</Label>
             <Select value={selectedProgram} onValueChange={setSelectedProgram}>
-              <SelectTrigger>
+              <SelectTrigger className="mt-1.5">
                 <SelectValue placeholder="Select Program" />
               </SelectTrigger>
               <SelectContent className="bg-white shadow-lg z-50">
@@ -384,24 +386,28 @@ export function UniversalTopicForm({ isOpen, onClose, onSubmit }: UniversalTopic
             )}
           </div>
           {/* Topic Fields */}
-          <div>
-            <Label htmlFor="name">Topic Name</Label>
-            <Input
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleChange('name', e.target.value)}
-              placeholder="e.g., Introduction to Variables"
-              required
-            />
+          <div className="bg-gray-50 p-4 rounded-lg space-y-4">
+            <h3 className="font-semibold text-base">Topic Details</h3>
+            <div>
+              <Label htmlFor="name" className="text-sm font-medium">Topic Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => handleChange('name', e.target.value)}
+                placeholder="e.g., Introduction to Variables"
+                className="mt-1.5"
+                required
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label htmlFor="type">Topic Type</Label>
+              <Label htmlFor="type" className="text-sm font-medium">Topic Type</Label>
               <Select 
                 value={formData.type} 
                 onValueChange={(value) => handleChange('type', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="mt-1.5">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -413,37 +419,38 @@ export function UniversalTopicForm({ isOpen, onClose, onSubmit }: UniversalTopic
               </Select>
             </div>
             <div>
-              <Label htmlFor="duration">Duration</Label>
+              <Label htmlFor="duration" className="text-sm font-medium">Duration (Optional)</Label>
               <Input
                 id="duration"
                 value={formData.duration}
                 onChange={(e) => handleChange('duration', e.target.value)}
                 placeholder="e.g., 15 min"
-                required
+                className="mt-1.5"
               />
             </div>
           </div>
           <div>
-            <Label htmlFor="orderIndex">Order Index</Label>
+            <Label htmlFor="orderIndex" className="text-sm font-medium">Order Index</Label>
             <Input
               id="orderIndex"
               type="number"
               value={formData.orderIndex}
               onChange={(e) => handleChange('orderIndex', parseInt(e.target.value))}
               min="0"
+              className="mt-1.5"
               required
             />
           </div>
           {/* Content Section */}
-          <div className="border-t pt-4 space-y-4">
-            <h4 className="font-medium">Content Details</h4>
+          <div className="border-t border-gray-200 pt-6 space-y-4">
+            <h3 className="font-semibold text-base">Content Details</h3>
             <div>
-              <Label htmlFor="contentType">Content Type</Label>
+              <Label htmlFor="contentType" className="text-sm font-medium">Content Type</Label>
               <Select 
                 value={formData.content?.contentType || 'EXTERNAL_LINK'} 
                 onValueChange={(value) => handleContentChange('contentType', value)}
               >
-                <SelectTrigger>
+                <SelectTrigger className="mt-1.5">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -456,47 +463,78 @@ export function UniversalTopicForm({ isOpen, onClose, onSubmit }: UniversalTopic
               </Select>
             </div>
             {(formData.content?.contentType === 'EXTERNAL_LINK' || formData.content?.contentType === 'PDF') && (
-              <div>
-                <Label htmlFor="url">URL</Label>
-                <Input
-                  id="url"
-                  value={formData.content?.url || ''}
-                  onChange={(e) => handleContentChange('url', e.target.value)}
-                  placeholder="https://example.com"
-                />
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="url" className="text-sm font-medium">{formData.content?.contentType === 'PDF' ? 'PDF URL' : 'URL'}</Label>
+                  <Input
+                    id="url"
+                    value={formData.content?.url || ''}
+                    onChange={(e) => handleContentChange('url', e.target.value)}
+                    placeholder={formData.content?.contentType === 'PDF' ? "https://example.com/file.pdf or upload below" : "https://example.com"}
+                    className="mt-1.5"
+                  />
+                </div>
+                {formData.content?.contentType === 'PDF' && (
+                  <div>
+                    <Label className="text-sm font-medium">Or Upload PDF File</Label>
+                    <FileUpload
+                      folder="sciocare"
+                      onUploadComplete={(file) => {
+                        handleContentChange('url', file.url);
+                        toast.success('PDF uploaded successfully');
+                      }}
+                      accept=".pdf,application/pdf"
+                    />
+                  </div>
+                )}
               </div>
             )}
             {formData.content?.contentType === 'VIDEO' && (
-              <div>
-                <Label htmlFor="videoUrl">Video URL</Label>
-                <Input
-                  id="videoUrl"
-                  value={formData.content?.videoUrl || ''}
-                  onChange={(e) => handleContentChange('videoUrl', e.target.value)}
-                  placeholder="https://youtube.com/watch?v=..."
-                />
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="videoUrl" className="text-sm font-medium">Video URL</Label>
+                  <Input
+                    id="videoUrl"
+                    value={formData.content?.videoUrl || ''}
+                    onChange={(e) => handleContentChange('videoUrl', e.target.value)}
+                    placeholder="https://youtube.com/watch?v=... or upload below"
+                    className="mt-1.5"
+                  />
+                </div>
+                <div>
+                  <Label className="text-sm font-medium">Or Upload Video File</Label>
+                  <FileUpload
+                    folder="sciocare"
+                    onUploadComplete={(file) => {
+                      handleContentChange('videoUrl', file.url);
+                      toast.success('Video uploaded successfully');
+                    }}
+                    accept="video/*"
+                  />
+                </div>
               </div>
             )}
             {formData.content?.contentType === 'TEXT' && (
               <div>
-                <Label htmlFor="textContent">Text Content</Label>
+                <Label htmlFor="textContent" className="text-sm font-medium">Text Content</Label>
                 <Textarea
                   id="textContent"
                   value={formData.content?.textContent || ''}
                   onChange={(e) => handleContentChange('textContent', e.target.value)}
                   placeholder="Enter the text content..."
                   rows={4}
+                  className="mt-1.5"
                 />
               </div>
             )}
           </div>
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 pt-4 border-t">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button type="submit" disabled={isAddTopicDisabled || isLoading}>
+            <Button type="submit" disabled={isAddTopicDisabled || isLoading} className="min-w-[120px]">
               {isLoading && <LoadingSpinner className="mr-2" />}
-              Add Topic
+              {isLoading ? 'Creating...' : 'Create Topic'}
             </Button>
           </div>
         </form>

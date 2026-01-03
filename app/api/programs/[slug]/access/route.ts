@@ -5,10 +5,11 @@ interface UnitAccess {
   id: string;
   name: string;
   hasAccess: boolean;
-  accessType: 'school' | 'class_subscription' | 'subject_subscription' | 'none';
+  accessType: 'school' | 'class_subscription' | 'subject_subscription' | 'free_trial' | 'none';
   price?: number;
   currency?: string;
   canUpgrade?: boolean;
+  accessibleChapters?: string[]; // IDs of chapters user can access
 }
 
 interface DbSubject {
@@ -19,6 +20,11 @@ interface DbSubject {
   orderIndex: number;
   price: number | null;
   currency: string;
+  chapters: Array<{
+    id: string;
+    name: string;
+    orderIndex: number;
+  }>;
 }
 
 export async function GET(
@@ -63,8 +69,17 @@ export async function GET(
             color: true,
             orderIndex: true,
             price: true,
-            currency: true
-          }
+            currency: true,
+            chapters: {
+              select: {
+                id: true,
+                name: true,
+                orderIndex: true
+              },
+              orderBy: { orderIndex: 'asc' }
+            }
+          },
+          orderBy: { orderIndex: 'asc' }
         }
       }
     });
@@ -116,13 +131,29 @@ export async function GET(
     // Build subject access information
     const unitAccess: UnitAccess[] = programData.subjects.map((subject: DbSubject) => {
       const hasSubjectSubscription = subjectSubscriptions.has(subject.id);
-      // Grant access for free programs, or if user has subscription/school access
-      const hasAccess = isFreeProgram || hasSchoolAccess || !!classSubscription || hasSubjectSubscription;
+      
+      // Determine accessible chapters
+      let accessibleChapters: string[] = [];
+      
+      if (isFreeProgram || hasSchoolAccess || !!classSubscription || hasSubjectSubscription) {
+        // Full access to all chapters in this unit
+        accessibleChapters = subject.chapters.map(ch => ch.id);
+      } else if (subject.chapters.length > 0) {
+        // Free trial: first chapter of every unit
+        const firstChapter = subject.chapters.sort((a, b) => a.orderIndex - b.orderIndex)[0];
+        accessibleChapters = [firstChapter.id];
+      }
+      
+      // Unit has access if there are any accessible chapters
+      const hasAccess = accessibleChapters.length > 0;
       
       let accessType: UnitAccess['accessType'] = 'none';
       if (hasSchoolAccess) accessType = 'school';
       else if (classSubscription) accessType = 'class_subscription';
       else if (hasSubjectSubscription) accessType = 'subject_subscription';
+      else if (accessibleChapters.length > 0 && accessibleChapters.length < subject.chapters.length) {
+        accessType = 'free_trial'; // Partial access (first chapter only)
+      }
 
       return {
         id: subject.id,
@@ -131,7 +162,8 @@ export async function GET(
         accessType,
         price: subject.price || undefined,
         currency: subject.currency,
-        canUpgrade: hasSubjectSubscription && !classSubscription // Can upgrade from subject to class
+        canUpgrade: hasSubjectSubscription && !classSubscription,
+        accessibleChapters
       };
     });
 

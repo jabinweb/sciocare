@@ -49,6 +49,8 @@ export default function ProgramPage() {
     userProgress, 
     markTopicComplete, 
     unitAccess, 
+    unitAccessTypes,
+    chapterAccess,
     accessType, 
     accessMessage, 
     loading, 
@@ -86,7 +88,7 @@ export default function ProgramPage() {
 
   const handleTopicClick = (topic: DbTopic) => {
     // Check if user has access to this unit
-    const hasUnitAccess = unitAccess[selectedUnit] !== false;
+    const hasUnitAccess = unitAccess[selectedUnit] === true;
     
     // For free programs (price === 0), don't show subscription manager
     if (!hasUnitAccess && currentProgram.price !== 0) {
@@ -344,7 +346,8 @@ export default function ProgramPage() {
 
         <UnitContent
           units={currentProgram.units.map((unit) => {
-            const hasUnitAccess = unitAccess[unit.id] !== false;
+            const hasUnitAccess = unitAccess[unit.id] === true;
+            const accessType = unitAccessTypes[unit.id] || 'none';
             return {
               id: unit.id,
               name: unit.name,
@@ -357,9 +360,10 @@ export default function ProgramPage() {
                   ...topic,
                   completed: userProgress.get(topic.id) || false
                 })),
-                isLocked: !hasUnitAccess
+                isLocked: !chapterAccess[chapter.id] // Use chapter-level access
               })),
-              isLocked: unit.isLocked || !hasUnitAccess
+              isLocked: unit.isLocked || !hasUnitAccess,
+              isFreeTrialUnit: accessType === 'free_trial'
             };
           })}
           selectedUnit={selectedUnit}
@@ -375,9 +379,10 @@ export default function ProgramPage() {
                 ...topic,
                 completed: userProgress.get(topic.id) || false
               })),
-              isLocked: !unitAccess[selectedUnitData.id]
+              isLocked: !chapterAccess[chapter.id] // Use chapter-level access
             })),
-            isLocked: selectedUnitData.isLocked || !unitAccess[selectedUnitData.id]
+            isLocked: selectedUnitData.isLocked || !unitAccess[selectedUnitData.id],
+            isFreeTrialUnit: unitAccessTypes[selectedUnitData.id] === 'free_trial'
           } : null}
           completedTopics={new Set(
             Array.from(userProgress.entries())
@@ -388,14 +393,14 @@ export default function ProgramPage() {
           showUpgradeButton={false}
           onUnitSelect={(unitId) => {
             const unit = currentProgram.units.find(s => s.id === unitId);
-            const hasUnitAccess = unitAccess[unitId] !== false;
+            const hasUnitAccess = unitAccess[unitId] === true;
             const isAccessible = !unit?.isLocked && hasUnitAccess;
             if (isAccessible) {
               setSelectedUnit(unitId);
             }
           }}
           onTopicClick={(topic) => {
-            const hasUnitAccess = selectedUnitData && (unitAccess[selectedUnitData.id] || false);
+            const hasUnitAccess = selectedUnitData && unitAccess[selectedUnitData.id] === true;
             if (hasUnitAccess) {
               // Find the actual DbTopic from the selected unit data
               const dbTopic = selectedUnitData.chapters

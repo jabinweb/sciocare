@@ -14,7 +14,10 @@ async function verifyTopicAccess(userId: string, topicId: string) {
           include: {
             subject: {
               include: {
-                class: true
+                class: true,
+                chapters: {
+                  orderBy: { orderIndex: 'asc' }
+                }
               }
             }
           }
@@ -35,11 +38,21 @@ async function verifyTopicAccess(userId: string, topicId: string) {
     const classId = topic.chapter.subject.classId;
     const subjectId = topic.chapter.subjectId;
     const classPrice = topic.chapter.subject.class.price;
+    const chapterId = topic.chapter.id;
 
     // Check if program is free (price = 0)
     const isFreeProgram = classPrice === 0 || classPrice === null;
     if (isFreeProgram) {
       return { hasAccess: true, topic };
+    }
+
+    // Check if this chapter is the first chapter of its subject (free trial access)
+    const firstChapter = topic.chapter.subject.chapters.find(ch => ch.orderIndex === 0) || 
+                        topic.chapter.subject.chapters.sort((a, b) => a.orderIndex - b.orderIndex)[0];
+    
+    if (firstChapter && firstChapter.id === chapterId) {
+      console.log('Free trial access granted for first chapter:', chapterId);
+      return { hasAccess: true, topic, isFreeTrialAccess: true };
     }
 
     // Check individual subscriptions

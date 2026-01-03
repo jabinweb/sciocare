@@ -45,9 +45,9 @@ function LoginForm() {
               className="rounded-lg"
             />
           </div>
-          <h1 className="text-2xl font-bold">Welcome Back</h1>
+          <h1 className="text-2xl font-bold">Welcome to ScioCare</h1>
           <p className="text-muted-foreground">
-            Sign in to your account
+            Sign in or create a new account
           </p>
         </div>
 

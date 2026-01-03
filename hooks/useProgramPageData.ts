@@ -10,6 +10,7 @@ interface UnitAccessData {
   name: string;
   hasAccess: boolean;
   accessType: string;
+  accessibleChapters?: string[];
 }
 
 interface ProgramAccessResponse {
@@ -24,6 +25,8 @@ interface UseProgramPageDataResult {
   userProgress: Map<string, boolean>;
   markTopicComplete: (topicId: string, completed?: boolean) => Promise<void>;
   unitAccess: Record<string, boolean>;
+  unitAccessTypes: Record<string, string>;
+  chapterAccess: Record<string, boolean>;
   accessType: string;
   accessMessage: string;
   loading: boolean;
@@ -40,6 +43,8 @@ export function useProgramPageData(programId: string): UseProgramPageDataResult 
   
   // Access verification state
   const [unitAccess, setUnitAccess] = useState<Record<string, boolean>>({});
+  const [unitAccessTypes, setUnitAccessTypes] = useState<Record<string, string>>({});
+  const [chapterAccess, setChapterAccess] = useState<Record<string, boolean>>({});
   const [accessType, setAccessType] = useState<string>('');
   const [accessMessage, setAccessMessage] = useState<string>('');
   const [accessLoading, setAccessLoading] = useState(true);
@@ -63,16 +68,9 @@ export function useProgramPageData(programId: string): UseProgramPageDataResult 
         const data: ProgramAccessResponse = await response.json();
 
         if (response.ok) {
-          // Check if user has any access at all
-          const hasAnyAccess = data.hasFullAccess || data.unitAccess.some((s: UnitAccessData) => s.hasAccess);
+          // With free trial, all logged-in users have access to at least the first unit
+          // No need to redirect - let the program page handle showing locked/unlocked units
           
-          if (!hasAnyAccess) {
-            // User has no access to this program - redirect to dashboard
-            console.log('No access to program, redirecting to dashboard');
-            router.push('/dashboard');
-            return;
-          }
-
           setAccessType(data.accessType);
           setAccessMessage(
             data.hasFullAccess 
@@ -84,10 +82,24 @@ export function useProgramPageData(programId: string): UseProgramPageDataResult 
 
           // Set unit-level access
           const unitAccessMap: Record<string, boolean> = {};
+          const unitAccessTypesMap: Record<string, string> = {};
+          const chapterAccessMap: Record<string, boolean> = {};
+          
           data.unitAccess.forEach((unit: UnitAccessData) => {
             unitAccessMap[unit.id] = unit.hasAccess;
+            unitAccessTypesMap[unit.id] = unit.accessType;
+            
+            // Build chapter-level access map
+            if (unit.accessibleChapters) {
+              unit.accessibleChapters.forEach(chapterId => {
+                chapterAccessMap[chapterId] = true;
+              });
+            }
           });
+          
           setUnitAccess(unitAccessMap);
+          setUnitAccessTypes(unitAccessTypesMap);
+          setChapterAccess(chapterAccessMap);
         } else {
           console.error('Error checking access:', data.error);
           setAccessError(data.error || 'Failed to check access');
@@ -108,6 +120,8 @@ export function useProgramPageData(programId: string): UseProgramPageDataResult 
     userProgress,
     markTopicComplete,
     unitAccess,
+    unitAccessTypes,
+    chapterAccess,
     accessType,
     accessMessage,
     loading,

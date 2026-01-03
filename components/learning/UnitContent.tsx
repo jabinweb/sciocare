@@ -37,6 +37,7 @@ export interface BaseUnit {
   color: string;
   chapters: BaseChapter[];
   isLocked?: boolean;
+  isFreeTrialUnit?: boolean;
 }
 
 interface UnitContentProps {
@@ -132,7 +133,14 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                 <div className="flex items-center gap-2 sm:gap-3">
                   <span className="text-lg sm:text-xl">{unit.icon}</span>
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium text-sm sm:text-base truncate">{unit.name}</div>
+                    <div className="font-medium text-sm sm:text-base truncate flex items-center gap-2">
+                      {unit.name}
+                      {unit.isFreeTrialUnit && (
+                        <Badge variant="secondary" className="text-[10px] sm:text-xs px-1.5 py-0 bg-green-500 text-white hover:bg-green-600">
+                          Free Trial
+                        </Badge>
+                      )}
+                    </div>
                     <div className={`text-xs ${selectedUnit === unit.id ? 'text-white/80' : 'text-muted-foreground'}`}>
                       {unit.chapters.length} chapters
                     </div>

@@ -61,17 +61,27 @@ export function ContentPlayer({
         .then(async response => {
           if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            // For 403 errors (access denied), just set content to null - the UI will handle it
+            if (response.status === 403) {
+              console.warn('Access denied for topic:', topic.id);
+              setTopicContent(null);
+              setContentLoading(false);
+              return null;
+            }
             throw new Error(`Failed to fetch content: ${response.status} - ${errorData.error || response.statusText}`);
           }
           return response.json();
         })
         .then(data => {
-          console.log('ContentPlayer: Fetched content from API:', data.content);
-          setTopicContent(data.content);
+          if (data) {
+            console.log('ContentPlayer: Fetched content from API:', data.content);
+            setTopicContent(data.content);
+          }
           setContentLoading(false);
         })
         .catch(error => {
           console.error('Error fetching topic content:', error);
+          setTopicContent(null);
           setContentLoading(false);
         });
     }

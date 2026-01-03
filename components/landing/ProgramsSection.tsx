@@ -82,7 +82,7 @@ export default function ProgramsSection() {
             const isEven = index % 2 === 0;
             
             return (
-              <div key={program.id} className="space-y-8 lg:space-y-0">
+              <div key={program.id} id={program.id} className="space-y-8 lg:space-y-0 scroll-mt-20">
                 {/* Mobile: Image first, then content */}
                 <div className="lg:hidden">
                   {/* Mobile Image */}

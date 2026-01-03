@@ -13,10 +13,11 @@ interface UnitAccess {
   id: string;
   name: string;
   hasAccess: boolean;
-  accessType: 'school' | 'class_subscription' | 'subject_subscription' | 'none';
+  accessType: 'school' | 'class_subscription' | 'subject_subscription' | 'free_trial' | 'none';
   price?: number;
   currency?: string;
   canUpgrade?: boolean;
+  accessibleChapters?: string[];
 }
 
 interface ProgramAccessData {
@@ -215,8 +216,8 @@ export const ProgramSubscriptionManager: React.FC<ProgramSubscriptionManagerProp
         icon: '📚', // Default icon
         color: 'from-blue-500 to-indigo-600', // Default color
         price: subject.price || 7500, // Use actual subject price in paisa, default to 7500 if not set
-        isSubscribed: subject.hasAccess, // Mark if user already has access
-        subscriptionType: subject.hasAccess && subject.accessType !== 'none' ? subject.accessType : undefined, // How they have access
+        isSubscribed: subject.hasAccess && subject.accessType !== 'free_trial', // Don't count free trial as subscribed
+        subscriptionType: subject.hasAccess && subject.accessType !== 'none' && subject.accessType !== 'free_trial' ? subject.accessType : undefined,
         chapters: [] // We don't need chapter details for subscription
       }))
     };
@@ -238,8 +239,8 @@ export const ProgramSubscriptionManager: React.FC<ProgramSubscriptionManagerProp
     setSelectedUnitId(null);
   };
 
-  const subjectsWithAccess = accessData?.subjectAccess.filter(s => s.hasAccess) || [];
-  const subjectsWithoutAccess = accessData?.subjectAccess.filter(s => !s.hasAccess) || [];
+  const subjectsWithAccess = accessData?.subjectAccess.filter(s => s.hasAccess && s.accessType !== 'free_trial') || [];
+  const subjectsWithoutAccess = accessData?.subjectAccess.filter(s => !s.hasAccess || s.accessType === 'free_trial') || [];
 
   const renderContent = () => {
     if (loading) {
@@ -269,7 +270,7 @@ export const ProgramSubscriptionManager: React.FC<ProgramSubscriptionManagerProp
     const subscriptionDetails = accessData.subscriptionDetails;
 
     return (
-      <div className="space-y-4 p-4 md:p-6 overflow-y-auto flex-1">
+      <div className="space-y-4 p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
         {/* Current Access Status Card */}
         {accessData.hasFullAccess ? (
           <Card className="border-green-200 bg-green-50">
@@ -496,40 +497,85 @@ export const ProgramSubscriptionManager: React.FC<ProgramSubscriptionManagerProp
 
             {/* Full Program Subscription Option */}
             {!accessData.canUpgradeToProgram && subjectsWithoutAccess.length > 0 && (
-              <Card className="border-blue-200 bg-blue-50">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-blue-800">
-                    <Star className="h-5 w-5" />
+              <Card className="border-blue-200 bg-gradient-to-br from-blue-50 to-indigo-50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="flex items-center gap-2 text-blue-900">
+                    <Star className="h-5 w-5 fill-blue-600 text-blue-600" />
                     Full Program Access
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-blue-700 font-medium">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex-1">
+                      <p className="text-blue-900 font-semibold text-lg">
                         Access all {accessData.subjectAccess.length} units
                       </p>
-                      <p className="text-sm text-blue-600">
-                        Best value for complete learning
+                      <p className="text-sm text-blue-700 mt-1">
+                        Try first chapter of each unit for free, then subscribe for complete access
                       </p>
                     </div>
-                    <div className="text-right">
-                      <span className="text-2xl font-bold text-blue-800">
-                        ₹{accessData.classPrice / 100}
-                      </span>
-                      {subjectsWithoutAccess.length > 1 && (
-                        <p className="text-sm text-blue-600">
-                          vs ₹{subjectsWithoutAccess.reduce((total, subject) => total + ((subject.price || 7500) / 100), 0)} individual
-                        </p>
-                      )}
+                    <div className="text-left sm:text-right shrink-0">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-bold text-blue-900">
+                          ₹{accessData.classPrice / 100}
+                        </span>
+                      </div>
+                      <p className="text-xs text-blue-600 mt-1">One-time payment</p>
                     </div>
                   </div>
                   <Button 
                     onClick={handleProgramSubscribe}
-                    className="w-full bg-blue-600 hover:bg-blue-700"
+                    className="w-full bg-blue-600 hover:bg-blue-700 h-12 text-base font-semibold shadow-md hover:shadow-lg transition-all"
                   >
                     Subscribe to Full Program
                   </Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Units Overview */}
+            {subjectsWithoutAccess.length > 0 && (
+              <Card className="border-gray-200">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg font-semibold">What You'll Get</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {accessData.subjectAccess.map(subject => (
+                      <div 
+                        key={subject.id} 
+                        className="relative flex items-start gap-3 p-4 bg-white rounded-lg border-2 border-gray-200 hover:border-blue-200 transition-colors"
+                      >
+                        <div className="shrink-0 mt-0.5">
+                          {subject.accessType === 'free_trial' ? (
+                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center">
+                              <Gift className="w-3 h-3 text-white" />
+                            </div>
+                          ) : subject.hasAccess ? (
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                          ) : (
+                            <Lock className="w-5 h-5 text-gray-400" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 text-sm leading-snug">
+                            {subject.name}
+                          </p>
+                          {subject.accessType === 'free_trial' && (
+                            <Badge variant="secondary" className="bg-green-500 text-white text-xs mt-1.5 px-2 py-0.5">
+                              Free Trial
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="flex items-start gap-2 p-3 bg-green-50 rounded-lg border border-green-200">
+                    <Info className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                    <p className="text-sm text-green-800">
+                      <span className="font-semibold">Free Trial:</span> First chapter of each unit unlocked. Subscribe for full access to all chapters and content.
+                    </p>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -555,39 +601,6 @@ export const ProgramSubscriptionManager: React.FC<ProgramSubscriptionManagerProp
                 </CardContent>
               </Card>
             )}
-
-            {/* Individual Unit Subscriptions */}
-            {subjectsWithoutAccess.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Subscribe to Individual Units</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {subjectsWithoutAccess.map(subject => (
-                      <Card key={subject.id} className="border border-gray-200">
-                        <CardContent className="p-4">
-                          <div className="flex items-center justify-between mb-3">
-                            <h4 className="font-medium">{subject.name}</h4>
-                            <Lock className="h-4 w-4 text-gray-400" />
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-lg font-bold">₹{(subject.price || 7500) / 100}</span>
-                            <Button 
-                              size="sm"
-                              onClick={() => handleUnitSubscribe(subject.id)}
-                              variant="outline"
-                            >
-                              Subscribe
-                            </Button>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </>
         )}
       </div>
@@ -597,8 +610,8 @@ export const ProgramSubscriptionManager: React.FC<ProgramSubscriptionManagerProp
   return (
     <>
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
-        <DialogContent className="w-screen h-screen max-w-none max-h-none m-0 p-0 gap-0 rounded-none flex flex-col">
-          <DialogHeader className="px-4 md:px-6 py-3 border-b bg-white shrink-0">
+        <DialogContent className="max-w-4xl max-h-[90vh] p-0 gap-0 flex flex-col">
+          <DialogHeader className="px-6 py-4 border-b bg-white shrink-0">
             <DialogTitle className="text-xl font-bold">
               Manage Access - {accessData?.className || 'Loading...'}
             </DialogTitle>

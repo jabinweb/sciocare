@@ -810,7 +810,7 @@ function PricingSection() {
   ] : fallbackPricingPlans;
 
   return (
-    <section className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
+    <section id="pricing" className="py-20 bg-gradient-to-br from-gray-50 via-white to-gray-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-16">
           <Badge className="mb-4 bg-brand-blue/10 text-brand-blue hover:bg-brand-blue/20">
