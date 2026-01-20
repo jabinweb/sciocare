@@ -74,6 +74,8 @@ async function verifyTopicAccess(userId: string, topicId: string) {
   }
 }
 
+
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ topicId: string }> }
