@@ -62,7 +62,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { name, description, isActive, price, logo } = await request.json();
+    const { name, description, isActive, hideFromStudents, price, logo } = await request.json();
     
     if (!name || !description) {
       return NextResponse.json({ error: 'Name and description are required' }, { status: 400 });
@@ -86,6 +86,7 @@ export async function POST(request: Request) {
         description,
         logo: logo || null,
         isActive: isActive !== undefined ? isActive : true,
+        hideFromStudents: hideFromStudents ?? false,
         price: pricePaisa,
         currency: 'INR',
         created_at: new Date(),
@@ -102,7 +103,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const { id, name, description, isActive, price, logo } = await request.json();
+    const { id, name, description, isActive, hideFromStudents, price, logo } = await request.json();
     
     if (!id) {
       return NextResponse.json({ error: 'Program ID is required' }, { status: 400 });
@@ -116,6 +117,7 @@ export async function PUT(request: Request) {
     if (name !== undefined) updateData.name = name;
     if (description !== undefined) updateData.description = description;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (hideFromStudents !== undefined) updateData.hideFromStudents = hideFromStudents;
     if (logo !== undefined) updateData.logo = logo || null;
     if (price !== undefined && price !== null) {
       const numeric = typeof price === 'number' ? price : parseInt(String(price));

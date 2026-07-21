@@ -15,6 +15,7 @@ interface Program {
   slug?: string; // Add slug field
   description: string;
   isActive: boolean;
+  hideFromStudents: boolean;
   price: string;
   currency: string;
   created_at: string;
@@ -29,6 +30,7 @@ interface ProgramFormData {
   logo?: string;
   description: string;
   isActive: boolean;
+  hideFromStudents: boolean;
   price?: string; // Keep as string for form handling
 }
 

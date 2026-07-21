@@ -50,6 +50,7 @@ export default function ProgramPage() {
     markTopicComplete, 
     unitAccess, 
     unitAccessTypes,
+    unitDaysRemaining,
     chapterAccess,
     accessType, 
     accessMessage, 
@@ -348,6 +349,7 @@ export default function ProgramPage() {
           units={currentProgram.units.map((unit) => {
             const hasUnitAccess = unitAccess[unit.id] === true;
             const accessType = unitAccessTypes[unit.id] || 'none';
+            const daysRemaining = unitDaysRemaining[unit.id] ?? 0;
             return {
               id: unit.id,
               name: unit.name,
@@ -363,11 +365,12 @@ export default function ProgramPage() {
                 isLocked: !chapterAccess[chapter.id] // Use chapter-level access
               })),
               isLocked: unit.isLocked || !hasUnitAccess,
-              isFreeTrialUnit: accessType === 'free_trial'
+              isFreeTrialUnit: accessType === 'free_trial',
+              daysRemaining
             };
           })}
           selectedUnit={selectedUnit}
-          selectedUnitData={selectedUnitData ? {
+          selectedUnitData={selectedUnitData && unitAccess[selectedUnitData.id] ? {
             id: selectedUnitData.id,
             name: selectedUnitData.name,
             icon: selectedUnitData.icon,
@@ -382,7 +385,8 @@ export default function ProgramPage() {
               isLocked: !chapterAccess[chapter.id] // Use chapter-level access
             })),
             isLocked: selectedUnitData.isLocked || !unitAccess[selectedUnitData.id],
-            isFreeTrialUnit: unitAccessTypes[selectedUnitData.id] === 'free_trial'
+            isFreeTrialUnit: unitAccessTypes[selectedUnitData.id] === 'free_trial',
+            daysRemaining: unitDaysRemaining[selectedUnitData.id] ?? 0
           } : null}
           completedTopics={new Set(
             Array.from(userProgress.entries())
@@ -397,6 +401,10 @@ export default function ProgramPage() {
             const isAccessible = !unit?.isLocked && hasUnitAccess;
             if (isAccessible) {
               setSelectedUnit(unitId);
+            } else if ((unitDaysRemaining[unitId] ?? 0) > 0) {
+              setSelectedUnit(unitId);
+            } else {
+              setShowSubscriptionManager(true);
             }
           }}
           onTopicClick={(topic) => {

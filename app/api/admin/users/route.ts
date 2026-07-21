@@ -12,6 +12,9 @@ export async function GET() {
         },
         payments: {
           orderBy: { created_at: 'desc' }
+        },
+        batch: {
+          select: { id: true, name: true }
         }
       },
       orderBy: { created_at: 'desc' }
@@ -44,7 +47,9 @@ export async function GET() {
         } : null,
         hasActiveSubscription: !!activeSubscription,
         totalPayments: user.payments.length,
-        totalAmountPaid: completedPayments.reduce((sum: number, payment: { amount: number; status: string }) => sum + payment.amount, 0)
+        totalAmountPaid: completedPayments.reduce((sum: number, payment: { amount: number; status: string }) => sum + payment.amount, 0),
+        batchId: user.batchId,
+        batch: user.batch
       };
     });
 
@@ -81,7 +86,7 @@ export async function DELETE(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { email, displayName, password, role, isActive, collegeName, phone } = await request.json();
+    const { email, displayName, password, role, isActive, collegeName, phone, batchId } = await request.json();
     
     if (!email || !displayName || !password) {
       return NextResponse.json({ error: 'Email, display name, and password are required' }, { status: 400 });
@@ -109,6 +114,7 @@ export async function POST(request: Request) {
         isActive: isActive !== undefined ? isActive : true,
         collegeName: collegeName || null,
         phone: phone || null,
+        batchId: batchId || null,
         emailVerified: new Date(), // Mark as verified for admin-created users
       }
     });
@@ -131,7 +137,7 @@ export async function POST(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
-    const { userId, displayName, role, isActive, collegeName, phone } = await request.json();
+    const { userId, displayName, role, isActive, collegeName, phone, batchId } = await request.json();
     
     if (!userId) {
       return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
@@ -143,6 +149,7 @@ export async function PATCH(request: Request) {
       isActive?: boolean;
       collegeName?: string;
       phone?: string;
+      batchId?: string | null;
     } = {};
     
     if (displayName !== undefined) updateData.name = displayName;
@@ -150,6 +157,7 @@ export async function PATCH(request: Request) {
     if (isActive !== undefined) updateData.isActive = isActive;
     if (collegeName !== undefined) updateData.collegeName = collegeName;
     if (phone !== undefined) updateData.phone = phone;
+    if (batchId !== undefined) updateData.batchId = batchId || null;
 
     // Update user in database
     await prisma.user.update({

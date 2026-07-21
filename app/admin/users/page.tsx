@@ -48,6 +48,8 @@ interface RegisteredUser {
   totalAmountPaid: number;
   role?: string;
   isActive?: boolean;
+  batchId?: string | null;
+  batch?: { id: string; name: string } | null;
 }
 
 interface UserFormData {
@@ -58,6 +60,7 @@ interface UserFormData {
   isActive: boolean;
   collegeName: string;
   phone: string;
+  batchId?: string;
 }
 
 export default function UsersPage() {
@@ -78,6 +81,7 @@ export default function UsersPage() {
     isActive: true,
     collegeName: '',
     phone: '',
+    batchId: '',
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
@@ -89,32 +93,37 @@ export default function UsersPage() {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [batches, setBatches] = useState<Array<{ id: string; name: string }>>([]);
 
-  // Enhanced admin check
+  // Enhanced admin/moderator check
   const isAdmin = user && userRole === 'ADMIN';
+  const isModerator = user && userRole === 'MODERATOR';
+  const canManage = isAdmin || isModerator;
   const isLoadingAuth = loading || (user && userRole === null);
 
   useEffect(() => {
-    // Only redirect if we're sure the user is not an admin and auth is fully loaded
-    if (!isLoadingAuth && user && userRole !== 'ADMIN') {
-      console.log('Redirecting non-admin user to home');
+    if (!isLoadingAuth && user && !canManage) {
+      console.log('Redirecting unauthorized user to home');
       window.location.href = '/';
       return;
     }
 
-    // Only fetch data once when user is confirmed admin and data hasn't been fetched yet
-    if (isAdmin && !dataFetched) {
+    if (canManage && !dataFetched) {
       const fetchData = async () => {
         setDataLoading(true);
         try {
-          const usersResponse = await fetch('/api/admin/users');
+          const [usersResponse, batchesResponse] = await Promise.all([
+            fetch('/api/admin/users'),
+            fetch('/api/admin/batches'),
+          ]);
           const usersData = await usersResponse.json();
+          const batchesData = await batchesResponse.json();
 
-          // Ensure array is returned and filter out invalid entries
-          const validUsers = Array.isArray(usersData) 
-            ? usersData.filter(u => u && u.uid && u.email) 
+          const validUsers = Array.isArray(usersData)
+            ? usersData.filter((u: RegisteredUser) => u && u.uid && u.email)
             : [];
           setRegisteredUsers(validUsers);
+          setBatches(Array.isArray(batchesData) ? batchesData : []);
           setDataFetched(true);
         } catch (error) {
           console.error('Error fetching users data:', error);
@@ -128,10 +137,10 @@ export default function UsersPage() {
       fetchData();
     } else if (!isLoadingAuth && !user) {
       setDataLoading(false);
-    } else if (!isLoadingAuth && userRole !== 'ADMIN') {
+    } else if (!isLoadingAuth && !canManage) {
       setDataLoading(false);
     }
-  }, [isAdmin, isLoadingAuth, dataFetched, user, userRole]);
+  }, [isAdmin, isModerator, canManage, isLoadingAuth, dataFetched, user, userRole]);
 
   const deleteUser = async (userId: string) => {
     if (!confirm('Are you sure you want to delete this user?')) return;
@@ -188,6 +197,7 @@ export default function UsersPage() {
           isActive: formData.isActive,
           collegeName: formData.collegeName,
           phone: formData.phone,
+          batchId: formData.batchId || null,
         }),
       });
 
@@ -215,6 +225,7 @@ export default function UsersPage() {
       isActive: true,
       collegeName: '',
       phone: '',
+      batchId: '',
     });
   };
 
@@ -228,6 +239,7 @@ export default function UsersPage() {
       isActive: user.isActive !== false,
       collegeName: user.collegeName || '',
       phone: user.phone || '',
+      batchId: user.batchId || '',
     });
     setFormOpen(true);
   };
@@ -477,7 +489,7 @@ export default function UsersPage() {
     );
   }
 
-  if (!isAdmin) {
+  if (!canManage) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -993,6 +1005,31 @@ export default function UsersPage() {
                     onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
                     placeholder="10-digit phone number (optional)"
                   />
+                </div>
+
+                <div>
+                  <Label htmlFor="batchId">Batch</Label>
+                  <Select
+                    value={formData.batchId || 'none'}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        batchId: value === 'none' ? '' : value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a batch (optional)" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No batch</SelectItem>
+                      {batches.map((batch) => (
+                        <SelectItem key={batch.id} value={batch.id}>
+                          {batch.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {!editingUser && (

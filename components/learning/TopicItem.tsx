@@ -19,6 +19,7 @@ interface TopicItemProps {
   topic: DbTopic;
   isCompleted: boolean;
   isDisabled?: boolean; // Whether this topic is locked/disabled
+  disabledLabel?: string;
   onClick: (topic: DbTopic) => void;
   onLockedClick?: () => void; // New prop for handling locked item clicks
 }
@@ -27,6 +28,7 @@ export function TopicItem({
   topic, 
   isCompleted, 
   isDisabled = false,
+  disabledLabel = 'Locked',
   onClick,
   onLockedClick
 }: TopicItemProps) {
@@ -99,7 +101,7 @@ export function TopicItem({
           <span className={`text-xs font-medium ${
             isDisabled ? 'text-gray-500' : 'text-blue-700'
           }`}>
-            {isDisabled ? 'Locked' : 'Play'}
+            {isDisabled ? disabledLabel : 'Play'}
           </span>
         </div>
       </div>

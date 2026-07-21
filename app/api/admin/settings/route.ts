@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { clearSmtpCache } from '@/lib/mail';
 import { clearRazorpayCache } from '@/lib/razorpay-global';
+import { auth } from '@/auth';
 
 export async function GET() {
   try {
@@ -59,6 +60,7 @@ export async function GET() {
       smtpFromName: 'ScioLabs Team'
     });
 
+    settingsObj.rbacConfig = settingsObj.RBAC_CONFIG || '';
     return NextResponse.json(settingsObj);
   } catch (error) {
     console.error('Unexpected error fetching settings:', error);
@@ -171,6 +173,39 @@ export async function PUT(request: Request) {
     return NextResponse.json({ 
       error: 'Failed to update settings. Please try again.' 
     }, { status: 500 });
+  }
+}
+
+export async function PATCH(request: Request) {
+  const session = await auth();
+  if (!session || session.user?.role !== 'ADMIN') {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const data = await request.json();
+    if (typeof data.rbacConfig !== 'string') {
+      return NextResponse.json({ error: 'rbacConfig must be a JSON string' }, { status: 400 });
+    }
+
+    JSON.parse(data.rbacConfig);
+    await prisma.adminSettings.upsert({
+      where: { key: 'RBAC_CONFIG' },
+      update: { value: data.rbacConfig },
+      create: {
+        key: 'RBAC_CONFIG',
+        value: data.rbacConfig,
+        description: 'Role-based access control configuration',
+        category: 'system',
+        dataType: 'json',
+        isPublic: false,
+      },
+    });
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error updating RBAC settings:', error);
+    return NextResponse.json({ error: 'Invalid RBAC configuration' }, { status: 400 });
   }
 }
 

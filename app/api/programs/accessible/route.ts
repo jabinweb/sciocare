@@ -1,36 +1,30 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { canAccessClass, canAccessSubject, isPricingEnabled } from '@/lib/lms-access';
+import { getSessionUserId } from '@/lib/session';
 
-interface Subject {
-  id: string;
-  name: string;
-}
-
-export async function GET(request: Request) {
+export async function GET() {
   try {
-    const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    const userId = await getSessionUserId();
 
     if (!userId) {
-      return NextResponse.json({ error: 'User ID is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
     }
 
-    // Get user details with school information
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      include: {
-        school: true
-      }
+      include: { school: true },
     });
 
     if (!user) {
-      console.error('User not found');
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    // Get all active classes (excluding content for security)
     const allClasses = await prisma.class.findMany({
-      where: { isActive: true },
+      where: {
+        isActive: true,
+        hideFromStudents: false,
+      },
       include: {
         subjects: {
           include: {
@@ -43,144 +37,106 @@ export async function GET(request: Request) {
                     type: true,
                     duration: true,
                     description: true,
-                    orderIndex: true
-                    // Explicitly excluding content for security
-                  }
-                }
-              }
-            }
-          }
-        }
+                    orderIndex: true,
+                  },
+                },
+              },
+            },
+          },
+        },
       },
-      orderBy: { id: 'asc' }
+      orderBy: { id: 'asc' },
     });
 
-    if (!allClasses) {
-      console.error('Error fetching classes');
-      return NextResponse.json({ error: 'Failed to fetch classes' }, { status: 500 });
-    }
+    const pricingEnabled = await isPricingEnabled();
 
-    // Check user's paid subscriptions (both class-wide and subject-specific)
-    const subscriptions = await prisma.subscription.findMany({
-      where: {
-        userId: userId,
-        status: 'ACTIVE',
-        endDate: {
-          gte: new Date()
-        }
-      },
-      select: {
-        classId: true,
-        subjectId: true,
-        planType: true,
-        status: true,
-        endDate: true
-      }
-    });
+    const classesWithAccess = await Promise.all(
+      allClasses.map(async (cls) => {
+        const classAccess = await canAccessClass(userId, cls.id);
 
-    // Separate class-wide and subject-specific subscriptions
-    const classSubscriptions = new Set(
-      subscriptions?.filter((s: typeof subscriptions[number]) => s.classId && !s.subjectId).map((s: typeof subscriptions[number]) => s.classId) || []
+        const subjectAccessEntries = await Promise.all(
+          cls.subjects.map(async (subject) => {
+            const subjectAccess = await canAccessSubject(userId, cls.id, subject.id);
+            return [
+              subject.id,
+              {
+                hasAccess: subjectAccess.hasAccess,
+                accessType:
+                  subjectAccess.accessType === 'drip_locked'
+                    ? 'drip_locked'
+                    : subjectAccess.accessType === 'school'
+                      ? 'school'
+                      : subjectAccess.accessType === 'subject'
+                        ? 'subject_subscription'
+                        : subjectAccess.accessType === 'class' ||
+                            subjectAccess.accessType === 'premium'
+                          ? 'class_subscription'
+                          : subjectAccess.accessType === 'free'
+                            ? 'free'
+                            : 'none',
+                dripLocked: subjectAccess.accessType === 'drip_locked',
+                daysRemaining: subjectAccess.daysRemaining ?? 0,
+              },
+            ] as const;
+          })
+        );
+
+        const subjectAccess = Object.fromEntries(subjectAccessEntries);
+        const hasSchoolAccess = classAccess.accessType === 'school';
+        const hasClassSubscription =
+          classAccess.accessType === 'class' || classAccess.accessType === 'premium';
+        const hasPartialAccess =
+          !hasSchoolAccess &&
+          !hasClassSubscription &&
+          Object.values(subjectAccess).some((entry) => entry.hasAccess);
+
+        return {
+          ...cls,
+          accessType: hasSchoolAccess
+            ? 'school'
+            : hasClassSubscription
+              ? 'subscription'
+              : 'none',
+          schoolAccess: hasSchoolAccess,
+          subscriptionAccess: hasClassSubscription,
+          subjectAccess,
+          hasPartialAccess,
+        };
+      })
     );
-    const subjectSubscriptions = new Map(
-      subscriptions?.filter((s: typeof subscriptions[number]) => s.subjectId).map((s: typeof subscriptions[number]) => [s.subjectId, s.classId]) || []
-    );
-    const subscribedClassIds = classSubscriptions; // Keep for backward compatibility
-    
-    // Define grade to class mapping at the top level
-    const gradeToClassMap: Record<string, number[]> = {
-      '5': [5],
-      '6': [6], 
-      '7': [7],
-      '8': [8],
-      '9': [9],
-      '10': [10],
-      // Add more mappings as needed
-    };
 
-    // Always show all active classes, but mark their access type
-    const accessibleClasses = allClasses || [];
-    let accessMessage = '';
     let accessType: 'subscription' | 'school' | 'free' | 'none' = 'none';
-
-    // School-based access logic
-    if (user.school && user.school.isActive && user.grade) {
-      const schoolAccessClassIds = gradeToClassMap[user.grade] || [];
-      
-      if (schoolAccessClassIds.length > 0) {
-        accessMessage = `School access granted for Grade ${user.grade} content`;
-        accessType = 'school';
-      }
-    }
-
-    // If user has paid subscriptions, update access type
-    if (subscribedClassIds.size > 0) {
-      if (accessType === 'school') {
-        accessMessage = `School access for Grade ${user.grade} + ${subscribedClassIds.size} subscribed classes`;
-      } else {
-        accessMessage = `Access via ${subscribedClassIds.size} active subscriptions`;
+    if (!pricingEnabled || classesWithAccess.some((cls) => cls.subscriptionAccess || cls.schoolAccess)) {
+      if (classesWithAccess.some((cls) => cls.subscriptionAccess)) {
         accessType = 'subscription';
+      } else if (classesWithAccess.some((cls) => cls.schoolAccess)) {
+        accessType = 'school';
+      } else if (!pricingEnabled) {
+        accessType = 'free';
       }
     }
 
-    // If no school or subscription access, show message for discovery
-    if (accessType === 'none') {
-      if (user.school) {
-        if (!user.school.isActive) {
-          accessMessage = 'Your school account is currently inactive. You can still subscribe to individual classes.';
-        } else if (!user.grade) {
-          accessMessage = 'No grade assigned. Contact your school administrator or subscribe to individual classes.';
-        } else {
-          accessMessage = `Browse and subscribe to classes available for Grade ${user.grade}`;
-        }
-      } else {
-        accessMessage = 'Browse and subscribe to available classes';
-      }
-    }
+    const accessMessage =
+      accessType === 'subscription'
+        ? 'Access via active subscriptions'
+        : accessType === 'school'
+          ? user.grade
+            ? `School access for Grade ${user.grade}`
+            : 'School access active'
+          : accessType === 'free'
+            ? 'Free access enabled'
+            : 'No active access. Renew your subscription or contact your administrator.';
 
-    // Add access metadata to each class
-    const classesWithAccess = accessibleClasses.map((cls: typeof accessibleClasses[number]) => {
-      const hasSchoolAccess = user.school?.isActive && user.grade && 
-        (gradeToClassMap[user.grade] || []).includes(cls.id);
-      const hasClassSubscription = classSubscriptions.has(cls.id);
-      
-      // Check which subjects have individual subscriptions
-      const subjectAccess = new Map();
-      if (cls.subjects) {
-        cls.subjects.forEach((subject: Subject) => {
-          const hasSubjectSubscription = subjectSubscriptions.has(subject.id);
-          subjectAccess.set(subject.id, {
-            hasAccess: hasSchoolAccess || hasClassSubscription || hasSubjectSubscription,
-            accessType: hasSchoolAccess ? 'school' : 
-                       hasClassSubscription ? 'class_subscription' :
-                       hasSubjectSubscription ? 'subject_subscription' : 'none'
-          });
-        });
-      }
-
-      return {
-        ...cls,
-        accessType: hasSchoolAccess ? 'school' : hasClassSubscription ? 'subscription' : 'none',
-        schoolAccess: hasSchoolAccess,
-        subscriptionAccess: hasClassSubscription,
-        subjectAccess: Object.fromEntries(subjectAccess),
-        hasPartialAccess: !hasSchoolAccess && !hasClassSubscription && 
-          Array.from(subjectAccess.values()).some(access => access.hasAccess)
-      };
-    });
-
-    return NextResponse.json({ 
+    return NextResponse.json({
       accessibleClasses: classesWithAccess,
       userGrade: user.grade,
       schoolName: user.school?.name,
       schoolActive: user.school?.isActive,
       accessType,
-      message: accessMessage
+      message: accessMessage,
     });
-
   } catch (error) {
     console.error('Error in accessible classes API:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
-     

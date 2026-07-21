@@ -18,8 +18,10 @@ import {
   RefreshCw,
   BarChart3,
   PieChart,
-  Activity
+  Activity,
+  Download
 } from 'lucide-react';
+import { exportBatchPDF } from '@/lib/pdf-export';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, BarChart, Bar, Pie } from 'recharts';
 
 interface TopPerformer {
@@ -68,6 +70,9 @@ export default function SubscriptionAnalyticsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [timePeriod, setTimePeriod] = useState('30');
+  const [batches, setBatches] = useState<Array<{ id: string; name: string }>>([]);
+  const [selectedBatchId, setSelectedBatchId] = useState('all');
+  const [isExporting, setIsExporting] = useState(false);
 
   const isAdmin = user && userRole === 'ADMIN';
   const isLoadingAuth = loading || (user && userRole === null);
@@ -75,7 +80,9 @@ export default function SubscriptionAnalyticsPage() {
   const fetchAnalytics = useCallback(async () => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/admin/analytics/subscriptions?period=${timePeriod}`);
+      const query = new URLSearchParams({ period: timePeriod });
+      if (selectedBatchId !== 'all') query.set('batchId', selectedBatchId);
+      const response = await fetch(`/api/admin/analytics/subscriptions?${query}`);
       const data = await response.json();
 
       if (!response.ok) {
@@ -88,7 +95,30 @@ export default function SubscriptionAnalyticsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [timePeriod]);
+  }, [timePeriod, selectedBatchId]);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    fetch('/api/admin/batches')
+      .then((response) => response.json())
+      .then((data) => setBatches(Array.isArray(data) ? data : []))
+      .catch((error) => console.error('Failed to fetch batches:', error));
+  }, [isAdmin]);
+
+  const exportSelectedBatch = async () => {
+    if (selectedBatchId === 'all') return;
+    setIsExporting(true);
+    try {
+      const response = await fetch(`/api/admin/analytics/batches/${selectedBatchId}/report`);
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.error || 'Failed to build batch report');
+      exportBatchPDF(data);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Failed to export batch report');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   useEffect(() => {
     if (!isLoadingAuth && user && userRole !== 'ADMIN') {
@@ -133,6 +163,17 @@ export default function SubscriptionAnalyticsPage() {
             <p className="text-muted-foreground">Monitor subscription metrics and revenue insights</p>
           </div>
           <div className="flex items-center gap-4">
+            <Select value={selectedBatchId} onValueChange={setSelectedBatchId}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="All batches" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All batches</SelectItem>
+                {batches.map((batch) => (
+                  <SelectItem key={batch.id} value={batch.id}>{batch.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             <Select value={timePeriod} onValueChange={setTimePeriod}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Select period" />
@@ -148,6 +189,12 @@ export default function SubscriptionAnalyticsPage() {
               <RefreshCw className="h-4 w-4 mr-2" />
               Refresh
             </Button>
+            {selectedBatchId !== 'all' && (
+              <Button onClick={exportSelectedBatch} disabled={isExporting}>
+                <Download className="mr-2 h-4 w-4" />
+                {isExporting ? 'Exporting...' : 'Batch PDF'}
+              </Button>
+            )}
           </div>
         </div>
 

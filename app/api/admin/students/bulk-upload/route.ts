@@ -17,6 +17,7 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
     const file = formData.get('file') as File;
+    const batchId = formData.get('batchId') as string | null;
 
     if (!file) {
       return NextResponse.json({ error: 'File is required' }, { status: 400 });
@@ -127,6 +128,7 @@ export async function POST(request: Request) {
               name: studentData.name,
               collegeName: studentData.college_name,
               phone: studentData.phone,
+              ...(batchId ? { batchId } : {}),
               role: 'USER',
               isActive: true,
             }
@@ -144,6 +146,13 @@ export async function POST(request: Request) {
             role: 'USER',
             isActive: true,
           });
+
+          if (batchId) {
+            await prisma.user.update({
+              where: { email: studentData.email.toLowerCase() },
+              data: { batchId, emailVerified: new Date() },
+            });
+          }
           
           result.created++;
         }

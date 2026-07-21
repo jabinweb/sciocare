@@ -15,6 +15,7 @@ interface ProgramFormData {
   name: string;
   description: string;
   isActive: boolean;
+  hideFromStudents: boolean;
   price?: string; // Keep as string for form input
   logo?: string;
 }
@@ -32,6 +33,7 @@ export function ProgramForm({ isOpen, onClose, onSubmit, initialData, mode }: Pr
     name: '',
     description: '',
     isActive: true,
+    hideFromStudents: false,
     price: '299', // Default price in rupees
     logo: '',
   });
@@ -47,6 +49,7 @@ export function ProgramForm({ isOpen, onClose, onSubmit, initialData, mode }: Pr
           name: initialData.name || '',
           description: initialData.description || '',
           isActive: initialData.isActive !== undefined ? initialData.isActive : true,
+          hideFromStudents: initialData.hideFromStudents ?? false,
           price: initialData.price || '299',
           logo: initialData.logo || '',
         });
@@ -57,6 +60,7 @@ export function ProgramForm({ isOpen, onClose, onSubmit, initialData, mode }: Pr
           name: '',
           description: '',
           isActive: true,
+          hideFromStudents: false,
           price: '299',
           logo: '',
         });
@@ -219,6 +223,15 @@ export function ProgramForm({ isOpen, onClose, onSubmit, initialData, mode }: Pr
               onCheckedChange={(checked) => updateFormData('isActive', checked)}
             />
             <Label htmlFor="active">Active</Label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="hideFromStudents"
+              checked={formData.hideFromStudents}
+              onCheckedChange={(checked) => updateFormData('hideFromStudents', checked)}
+            />
+            <Label htmlFor="hideFromStudents">Hide from learners</Label>
           </div>
 
           <div className="flex justify-end space-x-2 pt-4">

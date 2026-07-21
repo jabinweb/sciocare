@@ -12,7 +12,8 @@ import {
   Lock, 
   Star, 
   ChevronDown, 
-  ChevronRight 
+  ChevronRight,
+  Clock
 } from 'lucide-react';
 
 // Base interfaces for the component
@@ -38,6 +39,7 @@ export interface BaseUnit {
   chapters: BaseChapter[];
   isLocked?: boolean;
   isFreeTrialUnit?: boolean;
+  daysRemaining?: number;
 }
 
 interface UnitContentProps {
@@ -120,7 +122,9 @@ export const UnitContent: React.FC<UnitContentProps> = ({
             <CardTitle className="text-base sm:text-lg">Units</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2 sm:space-y-3">
-            {units.map((unit) => (
+            {units.map((unit) => {
+              const daysRemaining = unit.daysRemaining ?? 0;
+              return (
               <div
                 key={unit.id}
                 className={`p-3 sm:p-4 rounded-lg sm:rounded-xl cursor-pointer transition-all ${
@@ -128,7 +132,7 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                     ? `bg-gradient-to-r ${unit.color} text-white shadow-lg` 
                     : 'bg-gray-50 hover:bg-gray-100'
                 } ${unit.isLocked ? 'opacity-50 cursor-not-allowed' : ''}`}
-                onClick={() => !unit.isLocked && onUnitSelect(unit.id)}
+                onClick={() => onUnitSelect(unit.id)}
               >
                 <div className="flex items-center gap-2 sm:gap-3">
                   <span className="text-lg sm:text-xl">{unit.icon}</span>
@@ -142,7 +146,11 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                       )}
                     </div>
                     <div className={`text-xs ${selectedUnit === unit.id ? 'text-white/80' : 'text-muted-foreground'}`}>
-                      {unit.chapters.length} chapters
+                      {unit.isLocked && daysRemaining > 0 ? (
+                        <span className="flex items-center gap-1 text-amber-600">
+                          <Clock className="h-3 w-3" /> Unlocks in {daysRemaining}d
+                        </span>
+                      ) : `${unit.chapters.length} chapters`}
                     </div>
                   </div>
                   {unit.isLocked ? (
@@ -160,7 +168,8 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                   )}
                 </div>
               </div>
-            ))}
+              );
+            })}
             
             {/* Upgrade Now Button */}
             {showUpgradeButton && onUpgradeClick && (
@@ -293,6 +302,7 @@ export const UnitContent: React.FC<UnitContentProps> = ({
                                   topic={topicForItem}
                                   isCompleted={isCompleted}
                                   isDisabled={isDisabled}
+                                  disabledLabel={selectedUnitData.daysRemaining ? `${selectedUnitData.daysRemaining}d` : 'Locked'}
                                   onClick={() => onTopicClick(topic, chapterIndex)}
                                   onLockedClick={onLockedClick}
                                 />
@@ -306,6 +316,24 @@ export const UnitContent: React.FC<UnitContentProps> = ({
               </div>
             </CardContent>
           </Card>
+        ) : selectedUnit && units.find((unit) => unit.id === selectedUnit)?.isLocked ? (
+          (() => {
+            const lockedUnit = units.find((unit) => unit.id === selectedUnit)!;
+            const daysRemaining = lockedUnit.daysRemaining ?? 0;
+            return (
+              <Card className="p-8 text-center">
+                <Lock className="mx-auto mb-4 h-12 w-12 text-amber-500" />
+                <h2 className="text-2xl font-bold">{lockedUnit.name}</h2>
+                {daysRemaining > 0 ? (
+                  <p className="mt-2 text-muted-foreground">
+                    This unit unlocks in {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'}.
+                  </p>
+                ) : (
+                  <p className="mt-2 text-muted-foreground">This unit is currently locked.</p>
+                )}
+              </Card>
+            );
+          })()
         ) : (
           <EmptyUnitContent />
         )}

@@ -17,6 +17,8 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const period = searchParams.get('period') || '30'; // days or 'month'
+    const batchId = searchParams.get('batchId');
+    const batchFilter = batchId && batchId !== 'all' ? { user: { batchId } } : {};
     
     const now = new Date();
     const daysAgo = parseInt(period);
@@ -39,11 +41,12 @@ export async function GET(request: NextRequest) {
       churnData
     ] = await Promise.all([
       // Total subscriptions
-      prisma.subscription.count(),
+      prisma.subscription.count({ where: batchFilter }),
       
       // Active subscriptions
       prisma.subscription.count({
         where: {
+          ...batchFilter,
           status: 'ACTIVE',
           endDate: { gt: now }
         }
@@ -52,6 +55,7 @@ export async function GET(request: NextRequest) {
       // Expired subscriptions
       prisma.subscription.count({
         where: {
+          ...batchFilter,
           status: 'EXPIRED'
         }
       }),
@@ -59,6 +63,7 @@ export async function GET(request: NextRequest) {
       // Grace period subscriptions
       prisma.subscription.count({
         where: {
+          ...batchFilter,
           status: 'GRACE_PERIOD'
         }
       }),
@@ -66,6 +71,7 @@ export async function GET(request: NextRequest) {
       // Recent subscriptions (last 30 days)
       prisma.subscription.count({
         where: {
+          ...batchFilter,
           created_at: {
             gte: startDate,
             lte: endDate
@@ -76,6 +82,7 @@ export async function GET(request: NextRequest) {
       // Expiring in next 7 days
       prisma.subscription.count({
         where: {
+          ...batchFilter,
           status: 'ACTIVE',
           endDate: {
             gte: now,
@@ -90,6 +97,7 @@ export async function GET(request: NextRequest) {
           amount: true
         },
         where: {
+          ...batchFilter,
           status: { in: ['ACTIVE', 'EXPIRED'] },
           created_at: {
             gte: startDate,
@@ -101,18 +109,21 @@ export async function GET(request: NextRequest) {
       // Subscriptions by status
       prisma.subscription.groupBy({
         by: ['status'],
-        _count: true
+        _count: true,
+        where: batchFilter
       }),
       
       // Subscriptions by type
       prisma.subscription.groupBy({
         by: ['planType'],
-        _count: true
+        _count: true,
+        where: batchFilter
       }),
       
       // Churn data (cancellations and expirations in period)
       prisma.subscription.count({
         where: {
+          ...batchFilter,
           OR: [
             { status: 'CANCELLED' },
             { status: 'EXPIRED' }
@@ -135,6 +146,7 @@ export async function GET(request: NextRequest) {
 
     const previousPeriodSubscriptions = await prisma.subscription.count({
       where: {
+        ...batchFilter,
         created_at: {
           gte: previousPeriodStart,
           lte: previousPeriodEnd
@@ -156,6 +168,7 @@ export async function GET(request: NextRequest) {
         id: true
       },
       where: {
+        ...batchFilter,
         created_at: {
           gte: startDate,
           lte: endDate
